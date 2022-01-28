@@ -4,6 +4,7 @@ import { CreateGradientTexture } from './Gradient';
 import { FragAura, FragTexture, VertDefault } from './shaders/Shaders';
 import { FullScreenQuad } from './Geometry';
 import { GUI } from 'dat.gui';
+import * as Settings from '../settings.json'
 
 
 let auraCanvas = document.getElementById('aura_canvas');
@@ -26,17 +27,21 @@ let layer2 = {
   enabled: false
 }
 
+let appParams = {
+  autoSave: true,
+  fullscreen: false,
+}
+
 let globalParams =
 {
   time: 0.,
   speed: .1,
   seed: 100,
-  autoSave: true,
-  fullscreen: false,
+
   noise: 1.
 }
 
-let autoSave = true;
+console.log(`Settings: `, Settings)
 
 let setFullscreen = (isFullscreen) =>
 {
@@ -51,17 +56,15 @@ let setFullscreen = (isFullscreen) =>
 }
 
 let initGui = () => {
-  let gui = new GUI({ name: 'params' })
+  let gui = new GUI({ name: 'params', load: Settings })
 
   // Global
   gui.remember(globalParams);
-  gui.add(globalParams, 'time');
-  gui.add(globalParams, 'autoSave');
-  gui.add(globalParams, 'fullscreen').listen().onChange(setFullscreen)
-
+  gui.add(appParams, 'autoSave');
+  gui.add(appParams, 'fullscreen').listen().onChange(setFullscreen)
 
   let folder = gui.addFolder('Global')
-  folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
+  // folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
   folder.add(globalParams, 'speed').min(0.01).max(1).step(.01).listen();
   folder.add(globalParams, 'noise').min(0.).max(.1).step(.001).listen();
   folder.open();
@@ -85,16 +88,13 @@ let initGui = () => {
   layer2Folder.add(layer2, 'cycleSpeed').min(0).max(2).step(.01).listen();
   layer2Folder.open();
 
+  // Autosave interval
   setInterval(() => {
-    if (globalParams.autoSave)
+    if (appParams.autoSave)
       gui.save()
   }, 1000);
 
 }
-
-
-
-
 
 
 let rgbVals = [
@@ -112,7 +112,6 @@ var grad = CreateGradientTexture(glGrad, {
   steps: 16,
   colors: rgbVals
 });
-
 
 
 let gradShader = twgl.createProgramInfo(glGrad, [VertDefault, FragTexture])

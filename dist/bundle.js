@@ -8588,6 +8588,77 @@
 	}
 	var GUI$1 = GUI;
 
+	var preset = "Default";
+	var closed = false;
+	var remembered = {
+		Default: {
+			"0": {
+				time: 229.69792694640034,
+				autoSave: true,
+				fullscreen: false,
+				seed: 100,
+				speed: 0.13,
+				noise: 0.005
+			},
+			"1": {
+				color1: [
+					79.4577205882353,
+					210,
+					79.4577205882353
+				],
+				color2: [
+					13.639705882352938,
+					43.74167591564929,
+					120
+				],
+				brightness: 0.38,
+				blobbyness: 3.8000000000000003,
+				blur: 1.1400000000000001,
+				enabled: true
+			},
+			"2": {
+				brightness: 0.77,
+				enabled: true,
+				cycleSpeed: 0.8
+			}
+		}
+	};
+	var folders = {
+		Global: {
+			preset: "Default",
+			closed: false,
+			folders: {
+			}
+		},
+		"Layer 1": {
+			preset: "Default",
+			closed: false,
+			folders: {
+			}
+		},
+		"Layer 2": {
+			preset: "Default",
+			closed: false,
+			folders: {
+			}
+		}
+	};
+	var settings = {
+		preset: preset,
+		closed: closed,
+		remembered: remembered,
+		folders: folders
+	};
+
+	var Settings = /*#__PURE__*/Object.freeze({
+		__proto__: null,
+		preset: preset,
+		closed: closed,
+		remembered: remembered,
+		folders: folders,
+		'default': settings
+	});
+
 	var auraCanvas = document.getElementById('aura_canvas');
 	var layer1 = {
 	  color1: [255.0, 0.0, 0.0],
@@ -8602,14 +8673,17 @@
 	  cycleSpeed: .2,
 	  enabled: false
 	};
+	var appParams = {
+	  autoSave: true,
+	  fullscreen: false
+	};
 	var globalParams = {
 	  time: 0.,
 	  speed: .1,
 	  seed: 100,
-	  autoSave: true,
-	  fullscreen: false,
 	  noise: 1.
 	};
+	console.log("Settings: ", Settings);
 
 	var setFullscreen = function setFullscreen(isFullscreen) {
 	  console.log("set fullscreen: ".concat(isFullscreen));
@@ -8624,15 +8698,15 @@
 
 	var initGui = function initGui() {
 	  var gui = new GUI$1({
-	    name: 'params'
+	    name: 'params',
+	    load: Settings
 	  }); // Global
 
 	  gui.remember(globalParams);
-	  gui.add(globalParams, 'time');
-	  gui.add(globalParams, 'autoSave');
-	  gui.add(globalParams, 'fullscreen').listen().onChange(setFullscreen);
-	  var folder = gui.addFolder('Global');
-	  folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
+	  gui.add(appParams, 'autoSave');
+	  gui.add(appParams, 'fullscreen').listen().onChange(setFullscreen);
+	  var folder = gui.addFolder('Global'); // folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
+
 	  folder.add(globalParams, 'speed').min(0.01).max(1).step(.01).listen();
 	  folder.add(globalParams, 'noise').min(0.).max(.1).step(.001).listen();
 	  folder.open(); // Layer 1
@@ -8652,9 +8726,10 @@
 	  layer2Folder.add(layer2, 'brightness').min(0).max(1).step(.01).listen();
 	  layer2Folder.add(layer2, 'enabled').listen();
 	  layer2Folder.add(layer2, 'cycleSpeed').min(0).max(2).step(.01).listen();
-	  layer2Folder.open();
+	  layer2Folder.open(); // Autosave interval
+
 	  setInterval(function () {
-	    if (globalParams.autoSave) gui.save();
+	    if (appParams.autoSave) gui.save();
 	  }, 1000);
 	};
 

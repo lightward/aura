@@ -1,0 +1,54 @@
+{
+    "preset": "Default",
+    "closed": false,
+    "remembered": {
+      "Default": {
+        "0": {
+          "time": 229.69792694640034,
+          "autoSave": true,
+          "fullscreen": false,
+          "seed": 100,
+          "speed": 0.13,
+          "noise": 0.005
+        },
+        "1": {
+          "color1": [
+            79.4577205882353,
+            210,
+            79.4577205882353
+          ],
+          "color2": [
+            13.639705882352938,
+            43.74167591564929,
+            120
+          ],
+          "brightness": 0.38,
+          "blobbyness": 3.8000000000000003,
+          "blur": 1.1400000000000001,
+          "enabled": true
+        },
+        "2": {
+          "brightness": 0.77,
+          "enabled": true,
+          "cycleSpeed": 0.8
+        }
+      }
+    },
+    "folders": {
+      "Global": {
+        "preset": "Default",
+        "closed": false,
+        "folders": {}
+      },
+      "Layer 1": {
+        "preset": "Default",
+        "closed": false,
+        "folders": {}
+      },
+      "Layer 2": {
+        "preset": "Default",
+        "closed": false,
+        "folders": {}
+      }
+    }
+  }
