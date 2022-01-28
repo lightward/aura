@@ -1,5 +1,8 @@
 import { LabColorSpace } from "./LabColorSpace"
-import { Noise3DGrad } from "./noise/Noise3DGrad"
+import { Noise3DGrad, Noise3D, Noise2D } from "./noise/Noise"
+import { Random } from "./noise/Random"
+import { Saturate } from "./Saturate"
+import { Shapes } from "./shapes/Shapes"
 
 let VertDefault = `
 attribute vec4 position;
@@ -48,6 +51,7 @@ void main() {
   vec4 colOut;
   colOut.a = 1.;
   // colOut.rgb = saturate(xyz2rgb(texCol));
+  // colOut.rgb = lab2rgb2(texCol);
 
   colOut.rgb = saturate(texCol);
 // colOut.rgb = vec3(1.,1.,0.);
@@ -62,57 +66,93 @@ let FragAura = `
 // #version 300 es
 precision mediump float;
 
+${Shapes}
+${Random}
 ${Noise3DGrad}
+${Noise3D}
+${Saturate}
 
-// float fbm(vec2 n) {
-// 	float total = 0.0, amplitude = 0.1;
-// 	for (int i = 0; i < 7; i++) {
-// 		total += noise(n) * amplitude;
-// 		n = m * n;
-// 		amplitude *= 0.4;
-// 	}
-// 	return total;
-// }
+struct Layer1
+{
+  vec3 color1;
+  vec3 color2;
+  float brightness;
+  float blobbyness;
+  float blur;
+
+  bool enabled;
+};
+
+struct Layer2
+{
+  float brightness;
+  float cycleSpeed;
+  bool enabled;
+};
 
 uniform vec2 resolution;
-uniform float time;
+uniform vec4 time; // [time, time/2, time*2, time/10]
 uniform sampler2D ramp;
+uniform Layer1 layer1;
+uniform Layer2 layer2;
+
+uniform float noiseDither;
+
+#define TO_FLOAT (1./255.0)
+
+#define sin01(x) (sin(x)*.5)+.5
+
+#define disabled vec3(0.0)
+
+void doLayer1(in vec4 uv, inout vec3 col)
+{
+  vec2 st = uv.zw;
+  // st = scale(st, 2.);
+  float sk = .1*sin(time.y);
+  float d = sdParallelogram(st, .4, .1, sk);
+  // d += snoise(vec3(uv.xy, time.x));
+  float d2 = sdRhombus(st, vec2(1.,1.));
+  
+  float noise = snoise(vec3(uv.xy, time.x));
+  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.z) ));
+
+dMix+=layer1.blobbyness*noise;
+d += noise*layer1.blobbyness;
+
+  vec3 layer1Col = layer1.brightness*(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, d))));
+
+  col += layer1.enabled ? layer1Col : disabled;
+}
+
+void doLayer2(in vec4 uv, inout vec3 col)
+{
+  vec3 grad;
+  float noise = snoise(vec3(uv.xy, time.x), grad);
+  noise *= 0.4;
+  noise = smoothstep(-1.,1., noise);
+  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed  , .5));
+  
+  vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;
+  col.rgb += layer2.enabled ? layer2Col : disabled;
+
+}
 
 void main() {
   vec2 uv = gl_FragCoord.xy / resolution;
   vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;
 
+  uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));
   uv *= .5;
 
-  vec3 grad;
-  vec3 grad2;
+ vec4 col = vec4(0.);
+ col.a = 1.;
 
-  float noise = snoise(vec3(uv, time), grad);
-  float noise2 = snoise(vec3((uv + vec2(12123.234,.235235))*.6, time), grad2);
-  noise*=0.4;
-  noise = smoothstep(-1.,1., noise);
-  
-  vec4 col = vec4(0.);
+ doLayer1(vec4(uv, st), col.rgb);
+ doLayer2(vec4(uv, st), col.rgb);
 
-  col.a = 1.;
-
-  vec3 pos = vec3(uv*2., noise);
-
-  float dot = dot(normalize(grad), vec3(0.,0., 1.));
-
-  vec4 rampSample = texture2D(ramp, vec2(noise + dot*.5  , .5));
-  vec4 rampSample2 = texture2D(ramp, vec2(1.-noise2, .5));
-  col.rgb = rampSample.rgb*noise;
-  // col.rgb = mix(col.rgb, rampSample2.rgb, noise2);
-
-  col.rgb = clamp(col.rgb, 0.,1.);
-
+  col.rgb = saturate(col.rgb);
   gl_FragColor = col;
-  // gl_FragColor = texture2D(ramp, uv);
-  // gl_FragColor = vec4(vec3(noise), 1.);
-  // gl_FragColor = vec4( grad, 1.);
-  // gl_FragColor = vec4(dot, dot, dot, 1);
-  // gl_FragColor = vec4(length(st), 0, 1, 1);
+
 }
 `
 

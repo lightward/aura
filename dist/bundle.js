@@ -197,7 +197,7 @@
 	const ε = .000075;
 	const hasDOM = typeof document !== "undefined";
 
-	class Color$1 {
+	class Color$1$1 {
 	  // Signatures:
 	  // new Color(stringToParse)
 	  // new Color(otherColor)
@@ -222,7 +222,7 @@
 	      }
 
 	      if (str) {
-	        color = Color$1.parse(str);
+	        color = Color$1$1.parse(str);
 	      }
 	    }
 
@@ -262,7 +262,7 @@
 	  }
 
 	  get space() {
-	    return Color$1.spaces[this.spaceId];
+	    return Color$1$1.spaces[this.spaceId];
 	  }
 
 	  set space(value) {
@@ -276,7 +276,7 @@
 
 
 	  set spaceId(id) {
-	    let newSpace = Color$1.space(id);
+	    let newSpace = Color$1$1.space(id);
 	    id = newSpace.id;
 
 	    if (this.space && newSpace && this.space !== newSpace) {
@@ -297,7 +297,7 @@
 	  }
 
 	  get white() {
-	    return this.space.white || Color$1.whites.D50;
+	    return this.space.white || Color$1$1.whites.D50;
 	  } // Set properties and return current instance
 
 
@@ -322,14 +322,14 @@
 	  }
 
 	  lighten(amount = .25) {
-	    let ret = new Color$1(this);
+	    let ret = new Color$1$1(this);
 	    let lightness = ret.lightness;
 	    ret.lightness = lightness * (1 + amount);
 	    return ret;
 	  }
 
 	  darken(amount = .25) {
-	    let ret = new Color$1(this);
+	    let ret = new Color$1$1(this);
 	    let lightness = ret.lightness;
 	    ret.lightness = lightness * (1 - amount);
 	    return ret;
@@ -337,8 +337,8 @@
 
 
 	  distance(color, space = "lab") {
-	    color = Color$1.get(color);
-	    space = Color$1.space(space);
+	    color = Color$1$1.get(color);
+	    space = Color$1$1.space(space);
 	    let coords1 = this[space.id];
 	    let coords2 = color[space.id];
 	    return Math.sqrt(coords1.reduce((a, c, i) => {
@@ -358,10 +358,10 @@
 	    }
 
 	    let {
-	      method = Color$1.defaults.deltaE,
+	      method = Color$1$1.defaults.deltaE,
 	      ...rest
 	    } = o;
-	    color = Color$1.get(color);
+	    color = Color$1$1.get(color);
 
 	    if (this["deltaE" + method]) {
 	      return this["deltaE" + method](color, rest);
@@ -386,7 +386,7 @@
 
 
 	  contrast(color) {
-	    color = Color$1.get(color);
+	    color = Color$1$1.get(color);
 	    let L1 = this.luminance;
 	    let L2 = color.luminance;
 
@@ -415,7 +415,7 @@
 
 	  getCoords({
 	    inGamut,
-	    precision = Color$1.defaults.precision
+	    precision = Color$1$1.defaults.precision
 	  } = {}) {
 	    let coords = this.coords;
 
@@ -436,14 +436,14 @@
 
 
 	  inGamut(space = this.space, options) {
-	    space = Color$1.space(space);
-	    return Color$1.inGamut(space, this[space.id], options);
+	    space = Color$1$1.space(space);
+	    return Color$1$1.inGamut(space, this[space.id], options);
 	  }
 
 	  static inGamut(space, coords, {
 	    epsilon = ε
 	  } = {}) {
-	    space = Color$1.space(space);
+	    space = Color$1$1.space(space);
 
 	    if (space.inGamut) {
 	      return space.inGamut(coords);
@@ -478,7 +478,7 @@
 
 
 	  toGamut({
-	    method = Color$1.defaults.gamutMapping,
+	    method = Color$1$1.defaults.gamutMapping,
 	    space = this.space,
 	    inPlace
 	  } = {}) {
@@ -486,7 +486,7 @@
 	      space = arguments[0];
 	    }
 
-	    space = Color$1.space(space);
+	    space = Color$1$1.space(space);
 
 	    if (this.inGamut(space, {
 	      epsilon: 0
@@ -594,7 +594,7 @@
 	  }
 
 	  clone() {
-	    return new Color$1(this.spaceId, this.coords, this.alpha);
+	    return new Color$1$1(this.spaceId, this.coords, this.alpha);
 	  }
 	  /**
 	   * Convert to color space and return a new color
@@ -608,9 +608,9 @@
 	  to(space, {
 	    inGamut
 	  } = {}) {
-	    space = Color$1.space(space);
+	    space = Color$1$1.space(space);
 	    let id = space.id;
-	    let color = new Color$1(id, this[id], this.alpha);
+	    let color = new Color$1$1(id, this[id], this.alpha);
 
 	    if (inGamut) {
 	      color.toGamut({
@@ -640,7 +640,7 @@
 
 
 	  toString({
-	    precision = Color$1.defaults.precision,
+	    precision = Color$1$1.defaults.precision,
 	    format,
 	    commas,
 	    inGamut,
@@ -695,10 +695,10 @@
 	        return ret;
 	      }
 
-	      let fallbacks = Array.isArray(fallback) ? fallback.slice() : Color$1.defaults.fallbackSpaces;
+	      let fallbacks = Array.isArray(fallback) ? fallback.slice() : Color$1$1.defaults.fallbackSpaces;
 
 	      for (let i = 0, fallbackSpace; fallbackSpace = fallbacks[i]; i++) {
-	        if (Color$1.spaces[fallbackSpace]) {
+	        if (Color$1$1.spaces[fallbackSpace]) {
 	          let color = this.to(fallbackSpace);
 	          ret = color.toString({
 	            precision
@@ -708,7 +708,7 @@
 	            ret = new String(ret);
 	            ret.color = color;
 	            return ret;
-	          } else if (fallbacks === Color$1.defaults.fallbackSpaces) {
+	          } else if (fallbacks === Color$1$1.defaults.fallbackSpaces) {
 	            // Drop this space from the default fallbacks since it's not supported
 	            fallbacks.splice(i, 1);
 	            i--;
@@ -728,14 +728,14 @@
 	  }
 
 	  equals(color) {
-	    color = Color$1.get(color);
+	    color = Color$1$1.get(color);
 	    return this.spaceId === color.spaceId && this.alpha === color.alpha && this.coords.every((c, i) => c === color.coords[i]);
 	  } // Adapt XYZ from white point W1 to W2
 
 
 	  static chromaticAdaptation(W1, W2, XYZ, options = {}) {
-	    W1 = W1 || Color$1.whites.D50;
-	    W2 = W2 || Color$1.whites.D50;
+	    W1 = W1 || Color$1$1.whites.D50;
+	    W2 = W2 || Color$1$1.whites.D50;
 
 	    if (W1 === W2) {
 	      return XYZ;
@@ -747,18 +747,18 @@
 	      XYZ,
 	      options
 	    };
-	    Color$1.hooks.run("chromatic-adaptation-start", env);
+	    Color$1$1.hooks.run("chromatic-adaptation-start", env);
 
 	    if (!env.M) {
-	      if (env.W1 === Color$1.whites.D65 && env.W2 === Color$1.whites.D50) {
+	      if (env.W1 === Color$1$1.whites.D65 && env.W2 === Color$1$1.whites.D50) {
 	        // Linear Bradford CAT
 	        env.M = [[1.0478112, 0.0228866, -0.0501270], [0.0295424, 0.9904844, -0.0170491], [-0.0092345, 0.0150436, 0.7521316]];
-	      } else if (env.W1 === Color$1.whites.D50 && env.W2 === Color$1.whites.D65) {
+	      } else if (env.W1 === Color$1$1.whites.D50 && env.W2 === Color$1$1.whites.D65) {
 	        env.M = [[0.9555766, -0.0230393, 0.0631636], [-0.0282895, 1.0099416, 0.0210077], [0.0122982, -0.0204830, 1.3299098]];
 	      }
 	    }
 
-	    Color$1.hooks.run("chromatic-adaptation-end", env);
+	    Color$1$1.hooks.run("chromatic-adaptation-end", env);
 
 	    if (env.M) {
 	      return multiplyMatrices(env.M, env.XYZ);
@@ -772,21 +772,21 @@
 	    let env = {
 	      str
 	    };
-	    Color$1.hooks.run("parse-start", env);
+	    Color$1$1.hooks.run("parse-start", env);
 
 	    if (env.color) {
 	      return env.color;
 	    }
 
-	    env.parsed = Color$1.parseFunction(env.str);
-	    Color$1.hooks.run("parse-function-start", env);
+	    env.parsed = Color$1$1.parseFunction(env.str);
+	    Color$1$1.hooks.run("parse-function-start", env);
 
 	    if (env.color) {
 	      return env.color;
 	    } // Try colorspace-specific parsing
 
 
-	    for (let space of Object.values(Color$1.spaces)) {
+	    for (let space of Object.values(Color$1$1.spaces)) {
 	      if (space.parse) {
 	        let color = space.parse(env.str, env.parsed);
 
@@ -812,7 +812,7 @@
 
 	        if (computed) {
 	          str = computed;
-	          env.parsed = Color$1.parseFunction(computed);
+	          env.parsed = Color$1$1.parseFunction(computed);
 	          name = env.parsed.name;
 	        }
 	      }
@@ -829,7 +829,7 @@
 	        };
 	      } else if (name === "color") {
 	        let spaceId = env.parsed.args.shift().toLowerCase();
-	        let space = Object.values(Color$1.spaces).find(space => (space.cssId || space.id) === spaceId);
+	        let space = Object.values(Color$1$1.spaces).find(space => (space.cssId || space.id) === spaceId);
 
 	        if (space) {
 	          // From https://drafts.csswg.org/css-color-4/#color-function
@@ -904,8 +904,8 @@
 
 
 	  static convert(coords, fromSpace, toSpace) {
-	    fromSpace = Color$1.space(fromSpace);
-	    toSpace = Color$1.space(toSpace);
+	    fromSpace = Color$1$1.space(fromSpace);
+	    toSpace = Color$1$1.space(toSpace);
 
 	    if (fromSpace === toSpace) {
 	      // Same space, no change needed
@@ -932,7 +932,7 @@
 
 	    if (toSpace.white !== fromSpace.white) {
 	      // Different white point, perform white point adaptation
-	      XYZ = Color$1.chromaticAdaptation(fromSpace.white, toSpace.white, XYZ);
+	      XYZ = Color$1$1.chromaticAdaptation(fromSpace.white, toSpace.white, XYZ);
 	    }
 
 	    return toSpace.fromXYZ(XYZ);
@@ -944,11 +944,11 @@
 
 
 	  static get(color, ...args) {
-	    if (color instanceof Color$1) {
+	    if (color instanceof Color$1$1) {
 	      return color;
 	    }
 
-	    return new Color$1(color, ...args);
+	    return new Color$1$1(color, ...args);
 	  }
 	  /**
 	   * Return a color space object from an id or color space object
@@ -961,7 +961,7 @@
 
 	    if (type$1 === "string") {
 	      // It's a color space id
-	      let ret = Color$1.spaces[space.toLowerCase()];
+	      let ret = Color$1$1.spaces[space.toLowerCase()];
 
 	      if (!ret) {
 	        throw new TypeError(`No color space found with id = "${space}"`);
@@ -980,11 +980,11 @@
 	    id,
 	    inherits
 	  }) {
-	    let space = Color$1.spaces[id] = arguments[0];
+	    let space = Color$1$1.spaces[id] = arguments[0];
 
 	    if (inherits) {
 	      const except = ["id", "parse", "instance", "properties"];
-	      let parent = Color$1.spaces[inherits];
+	      let parent = Color$1$1.spaces[inherits];
 
 	      for (let prop in parent) {
 	        if (!except.includes(prop) && !(prop in space)) {
@@ -996,7 +996,7 @@
 	    let coords = space.coords;
 
 	    if (space.properties) {
-	      extend(Color$1.prototype, space.properties);
+	      extend(Color$1$1.prototype, space.properties);
 	    }
 
 	    if (!space.fromXYZ && !space.toXYZ) {
@@ -1010,14 +1010,14 @@
 	        let candidates = [...from].filter(id => {
 	          if (to.has(id)) {
 	            // Of those, only keep those that have fromXYZ and toXYZ
-	            let space = Color$1.spaces[id];
+	            let space = Color$1$1.spaces[id];
 	            return space && space.fromXYZ && space.toXYZ;
 	          }
 	        });
 
 	        if (candidates.length > 0) {
 	          // Great, we found connection spaces! Pick the first one
-	          connectionSpace = Color$1.spaces[candidates[0]];
+	          connectionSpace = Color$1$1.spaces[candidates[0]];
 	        }
 	      }
 
@@ -1044,12 +1044,12 @@
 	    let coordNames = Object.keys(coords); // Define getters and setters for color[spaceId]
 	    // e.g. color.lch on *any* color gives us the lch coords
 
-	    Object.defineProperty(Color$1.prototype, id, {
+	    Object.defineProperty(Color$1$1.prototype, id, {
 	      // Convert coords to coords in another colorspace and return them
 	      // Source colorspace: this.spaceId
 	      // Target colorspace: id
 	      get() {
-	        let ret = Color$1.convert(this.coords, this.spaceId, id);
+	        let ret = Color$1$1.convert(this.coords, this.spaceId, id);
 
 	        if (!self.Proxy) {
 	          return ret;
@@ -1080,7 +1080,7 @@
 	            if (i > -1) {
 	              obj[i] = value; // Update color.coords
 
-	              this.coords = Color$1.convert(obj, id, this.spaceId);
+	              this.coords = Color$1$1.convert(obj, id, this.spaceId);
 	              return true;
 	            }
 
@@ -1093,7 +1093,7 @@
 	      // Target colorspace: this.spaceId
 	      // Source colorspace: id
 	      set(coords) {
-	        this.coords = Color$1.convert(coords, id, this.spaceId);
+	        this.coords = Color$1$1.convert(coords, id, this.spaceId);
 	      },
 
 	      configurable: true,
@@ -1105,18 +1105,18 @@
 	  // If `long` is provided, it's added to Color.shortcuts as well, otherwise it's assumed to be already there
 
 
-	  static defineShortcut(prop, obj = Color$1.prototype, long) {
+	  static defineShortcut(prop, obj = Color$1$1.prototype, long) {
 	    if (long) {
-	      Color$1.shortcuts[prop] = long;
+	      Color$1$1.shortcuts[prop] = long;
 	    }
 
 	    Object.defineProperty(obj, prop, {
 	      get() {
-	        return value(this, Color$1.shortcuts[prop]);
+	        return value(this, Color$1$1.shortcuts[prop]);
 	      },
 
 	      set(value$1) {
-	        return value(this, Color$1.shortcuts[prop], value$1);
+	        return value(this, Color$1$1.shortcuts[prop], value$1);
 	      },
 
 	      configurable: true,
@@ -1126,10 +1126,10 @@
 
 
 	  static statify(names = []) {
-	    names = names || Object.getOwnPropertyNames(Color$1.prototype);
+	    names = names || Object.getOwnPropertyNames(Color$1$1.prototype);
 
-	    for (let prop of Object.getOwnPropertyNames(Color$1.prototype)) {
-	      let descriptor = Object.getOwnPropertyDescriptor(Color$1.prototype, prop);
+	    for (let prop of Object.getOwnPropertyNames(Color$1$1.prototype)) {
+	      let descriptor = Object.getOwnPropertyDescriptor(Color$1$1.prototype, prop);
 
 	      if (descriptor.get || descriptor.set) {
 	        continue; // avoid accessors
@@ -1137,10 +1137,10 @@
 
 	      let method = descriptor.value;
 
-	      if (typeof method === "function" && !(prop in Color$1)) {
+	      if (typeof method === "function" && !(prop in Color$1$1)) {
 	        // We have a function, and no static version already
-	        Color$1[prop] = function (color, ...args) {
-	          color = Color$1.get(color);
+	        Color$1$1[prop] = function (color, ...args) {
+	          color = Color$1$1.get(color);
 	          return color[prop](...args);
 	        };
 	      }
@@ -1149,7 +1149,7 @@
 
 	}
 
-	Object.assign(Color$1, {
+	Object.assign(Color$1$1, {
 	  util,
 	  hooks: new Hooks(),
 	  whites: {
@@ -1174,7 +1174,7 @@
 	    fallbackSpaces: ["p3", "srgb"]
 	  }
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "xyz",
 	  name: "XYZ",
 	  coords: {
@@ -1182,20 +1182,20 @@
 	    Y: [],
 	    Z: []
 	  },
-	  white: Color$1.whites.D50,
+	  white: Color$1$1.whites.D50,
 	  inGamut: coords => true,
 	  toXYZ: coords => coords,
 	  fromXYZ: coords => coords
 	});
 
-	for (let prop in Color$1.shortcuts) {
-	  Color$1.defineShortcut(prop);
+	for (let prop in Color$1$1.shortcuts) {
+	  Color$1$1.defineShortcut(prop);
 	} // Make static methods for all instance methods
 
 
-	Color$1.statify(); // Color.DEBUGGING = true;
+	Color$1$1.statify(); // Color.DEBUGGING = true;
 
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "lab",
 	  name: "Lab",
 	  coords: {
@@ -1206,7 +1206,7 @@
 	  inGamut: coords => true,
 	  // Assuming XYZ is relative to D50, convert to CIE Lab
 	  // from CIE standard, which now defines these as a rational fraction
-	  white: Color$1.whites.D50,
+	  white: Color$1$1.whites.D50,
 	  ε: 216 / 24389,
 	  // 6^3/29^3
 	  κ: 24389 / 27,
@@ -1247,7 +1247,7 @@
 	    return xyz.map((value, i) => value * white[i]);
 	  },
 
-	  parse(str, parsed = Color$1.parseFunction(str)) {
+	  parse(str, parsed = Color$1$1.parseFunction(str)) {
 	    if (parsed && parsed.name === "lab") {
 	      let L = parsed.args[0]; // Percentages in lab() don't translate to a 0-1 range, but a 0-100 range
 
@@ -1272,7 +1272,7 @@
 	        format = (c, i) => i === 0 ? c + "%" : c;
 	      }
 
-	      return Color$1.prototype.toString.call(this, {
+	      return Color$1$1.prototype.toString.call(this, {
 	        name: "lab",
 	        format,
 	        ...rest
@@ -1323,7 +1323,7 @@
 	  return [a1, a2];
 	}
 
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "lch",
 	  name: "LCH",
 	  coords: {
@@ -1332,7 +1332,7 @@
 	    hue: range
 	  },
 	  inGamut: coords => true,
-	  white: Color$1.whites.D50,
+	  white: Color$1$1.whites.D50,
 	  from: {
 	    lab(Lab) {
 	      // Convert to polar form
@@ -1375,7 +1375,7 @@
 
 	  },
 
-	  parse(str, parsed = Color$1.parseFunction(str)) {
+	  parse(str, parsed = Color$1$1.parseFunction(str)) {
 	    if (parsed && parsed.name === "lch") {
 	      let L = parsed.args[0]; // Percentages in lch() don't translate to a 0-1 range, but a 0-100 range
 
@@ -1400,7 +1400,7 @@
 	        format = (c, i) => i === 0 ? c + "%" : c;
 	      }
 
-	      return Color$1.prototype.toString.call(this, {
+	      return Color$1$1.prototype.toString.call(this, {
 	        name: "lch",
 	        format,
 	        ...rest
@@ -1409,7 +1409,7 @@
 
 	  }
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "srgb",
 	  name: "sRGB",
 	  coords: {
@@ -1417,7 +1417,7 @@
 	    green: [0, 1],
 	    blue: [0, 1]
 	  },
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 
 	  // convert an array of sRGB values in the range 0.0 - 1.0
 	  // to linear light (un-companded) form.
@@ -1509,7 +1509,7 @@
 	        return this.toHex(arguments[0]);
 	      }
 
-	      return Color$1.prototype.toString.call(this, {
+	      return Color$1$1.prototype.toString.call(this, {
 	        inGamut,
 	        commas,
 	        format,
@@ -1538,14 +1538,14 @@
 	  }
 
 	});
-	Color$1.hooks.add("parse-start", env => {
+	Color$1$1.hooks.add("parse-start", env => {
 	  let str = env.str;
 
 	  if (/^#([a-f0-9]{3,4}){1,2}$/i.test(str)) {
-	    env.color = Color$1.spaces.srgb.parseHex(str);
+	    env.color = Color$1$1.spaces.srgb.parseHex(str);
 	  }
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "hsl",
 	  name: "HSL",
 	  coords: {
@@ -1556,10 +1556,10 @@
 
 	  inGamut(coords) {
 	    let rgb = this.to.srgb(coords);
-	    return Color$1.inGamut("srgb", rgb);
+	    return Color$1$1.inGamut("srgb", rgb);
 	  },
 
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 	  // Adapted from https://en.wikipedia.org/wiki/HSL_and_HSV#From_RGB
 	  from: {
 	    srgb(rgb) {
@@ -1617,7 +1617,7 @@
 
 	  },
 
-	  parse(str, parsed = Color$1.parseFunction(str)) {
+	  parse(str, parsed = Color$1$1.parseFunction(str)) {
 	    if (parsed && /^hsla?$/.test(parsed.name)) {
 	      let hsl = parsed.args; // percentages are converted to [0, 1] by parseFunction
 
@@ -1643,7 +1643,7 @@
 	        format = (c, i) => i > 0 ? c + "%" : c;
 	      }
 
-	      return Color$1.prototype.toString.call(this, {
+	      return Color$1$1.prototype.toString.call(this, {
 	        inGamut: true,
 	        // hsl() out of gamut makes no sense
 	        commas,
@@ -1659,7 +1659,7 @@
 	// Note that, like HSL, calculations are done directly on
 	// gamma-corrected sRGB values rather than linearising them first.
 
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "hwb",
 	  name: "HWB",
 	  coords: {
@@ -1670,13 +1670,13 @@
 
 	  inGamut(coords) {
 	    let rgb = this.to.srgb(coords);
-	    return Color$1.inGamut("srgb", rgb);
+	    return Color$1$1.inGamut("srgb", rgb);
 	  },
 
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 	  from: {
 	    srgb(rgb) {
-	      let hsl = Color$1.spaces.hsl.from.srgb(rgb);
+	      let hsl = Color$1$1.spaces.hsl.from.srgb(rgb);
 	      let h = hsl[0]; // calculate white and black
 
 	      let w = Math.min(...rgb);
@@ -1692,7 +1692,7 @@
 	    },
 
 	    hsl(hsl) {
-	      let hsv = Color$1.spaces.hsv.from.hsl(hsl);
+	      let hsv = Color$1$1.spaces.hsv.from.hsl(hsl);
 	      return this.hsv(hsv);
 	    }
 
@@ -1712,7 +1712,7 @@
 	      } // From https://drafts.csswg.org/css-color-4/#hwb-to-rgb
 
 
-	      let rgb = Color$1.spaces.hsl.to.srgb([h, 100, 50]);
+	      let rgb = Color$1$1.spaces.hsl.to.srgb([h, 100, 50]);
 
 	      for (var i = 0; i < 3; i++) {
 	        rgb[i] *= 1 - w - b;
@@ -1741,13 +1741,13 @@
 	    },
 
 	    hsl(hwb) {
-	      let hsv = Color$1.spaces.hwb.to.hsv(hwb);
-	      return Color$1.spaces.hsv.to.hsl(hsv);
+	      let hsv = Color$1$1.spaces.hwb.to.hsv(hwb);
+	      return Color$1$1.spaces.hsv.to.hsl(hsv);
 	    }
 
 	  },
 
-	  parse(str, parsed = Color$1.parseFunction(str)) {
+	  parse(str, parsed = Color$1$1.parseFunction(str)) {
 	    if (parsed && /^hwba?$/.test(parsed.name)) {
 	      let hwb = parsed.args; // white and black percentages are converted to [0, 1] by parseFunction
 
@@ -1772,7 +1772,7 @@
 	        format = (c, i) => i > 0 ? c + "%" : c;
 	      }
 
-	      return Color$1.prototype.toString.call(this, {
+	      return Color$1$1.prototype.toString.call(this, {
 	        inGamut: true,
 	        // hwb() out of gamut makes no sense
 	        commas: false,
@@ -1789,7 +1789,7 @@
 	// Note that, like HSL, calculations are done directly on
 	// gamma-corrected sRGB values rather than linearising them first.
 
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "hsv",
 	  name: "HSV",
 	  coords: {
@@ -1800,10 +1800,10 @@
 
 	  inGamut(coords) {
 	    let hsl = this.to.hsl(coords);
-	    return Color$1.spaces.hsl.inGamut(hsl);
+	    return Color$1$1.spaces.hsl.inGamut(hsl);
 	  },
 
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 	  from: {
 	    // https://en.wikipedia.org/wiki/HSL_and_HSV#Interconversion
 	    hsl(hsl) {
@@ -1830,7 +1830,7 @@
 
 	  }
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  inherits: "srgb",
 	  id: "p3",
 	  name: "P3",
@@ -1843,7 +1843,7 @@
 	  toXYZ_M: [[0.4865709486482162, 0.26566769316909306, 0.1982172852343625], [0.2289745640697488, 0.6917385218365064, 0.079286914093745], [0.0000000000000000, 0.04511338185890264, 1.043944368900976]],
 	  fromXYZ_M: [[2.493496911941425, -0.9313836179191239, -0.40271078445071684], [-0.8294889695615747, 1.7626640603183463, 0.023624685841943577], [0.03584583024378447, -0.07617238926804182, 0.9568845240076872]]
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  inherits: "srgb",
 	  id: "a98rgb",
 	  name: "Adobe 98 RGB compatible",
@@ -1866,12 +1866,12 @@
 	  toXYZ_M: [[0.5766690429101305, 0.1855582379065463, 0.1882286462349947], [0.29734497525053605, 0.6273635662554661, 0.07529145849399788], [0.02703136138641234, 0.07068885253582723, 0.9913375368376388]],
 	  fromXYZ_M: [[2.0415879038107465, -0.5650069742788596, -0.34473135077832956], [-0.9692436362808795, 1.8759675015077202, 0.04155505740717557], [0.013444280632031142, -0.11836239223101838, 1.0151749943912054]]
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  inherits: "srgb",
 	  id: "prophoto",
 	  name: "ProPhoto",
 	  cssId: "prophoto-rgb",
-	  white: Color$1.whites.D50,
+	  white: Color$1$1.whites.D50,
 
 	  toLinear(RGB) {
 	    // Transfer curve is gamma 1.8 with a small linear portion
@@ -1902,7 +1902,7 @@
 	  toXYZ_M: [[0.7977604896723027, 0.13518583717574031, 0.0313493495815248], [0.2880711282292934, 0.7118432178101014, 0.00008565396060525902], [0.0, 0.0, 0.8251046025104601]],
 	  fromXYZ_M: [[1.3457989731028281, -0.25558010007997534, -0.05110628506753401], [-0.5446224939028347, 1.5082327413132781, 0.02053603239147973], [0.0, 0.0, 1.2119675456389454]]
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  inherits: "srgb",
 	  id: "rec2020",
 	  name: "REC.2020",
@@ -1945,7 +1945,7 @@
 	  // from ITU-R BT.2124-0 Annex 2 p.3
 	  fromXYZ_M: [[1.716651187971268, -0.355670783776392, -0.253366281373660], [-0.666684351832489, 1.616481236634939, 0.0157685458139111], [0.017639857445311, -0.042770613257809, 0.942103121235474]]
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  // Absolute CIE XYZ, with a D65 whitepoint,
 	  // as used in most HDR colorspaces as a starting point.
 	  // SDR spaces are converted per BT.2048
@@ -1957,16 +1957,16 @@
 	    Ya: [0, 10000],
 	    Za: [0, 10888.3]
 	  },
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 	  Yw: 203,
 	  // absolute luminance of media white
 	  inGamut: coords => true,
 
 	  fromXYZ(XYZ) {
 	    // First adapt from D50 to D65, with linear Bradford default
-	    const W1 = Color$1.whites.D50;
-	    const W2 = Color$1.whites.D65;
-	    XYZ = Color$1.chromaticAdaptation(W1, W2, XYZ);
+	    const W1 = Color$1$1.whites.D50;
+	    const W2 = Color$1$1.whites.D65;
+	    XYZ = Color$1$1.chromaticAdaptation(W1, W2, XYZ);
 	    const {
 	      Yw
 	    } = this; // Then make XYZ absolute, not relative to media white
@@ -1987,13 +1987,13 @@
 	      return Math.max(val / Yw, 0);
 	    }); // Then adapt to D50
 
-	    const W1 = Color$1.whites.D65;
-	    const W2 = Color$1.whites.D50;
-	    return Color$1.chromaticAdaptation(W1, W2, XYZ);
+	    const W1 = Color$1$1.whites.D65;
+	    const W2 = Color$1$1.whites.D50;
+	    return Color$1$1.chromaticAdaptation(W1, W2, XYZ);
 	  }
 
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "jzazbz",
 	  cssid: "Jzazbz",
 	  name: "Jzazbz",
@@ -2004,7 +2004,7 @@
 	  },
 	  inGamut: coords => true,
 	  // Note that XYZ is relative to D65
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 	  b: 1.15,
 	  g: 0.66,
 	  n: 2610 / 2 ** 14,
@@ -2042,7 +2042,7 @@
 	    // BT.2048 says media white Y=203 at PQ 58
 	    // console.log({XYZ});
 
-	    let [Xa, Ya, Za] = Color$1.spaces.absxyzd65.fromXYZ(XYZ); // console.log({Xa, Ya, Za});
+	    let [Xa, Ya, Za] = Color$1$1.spaces.absxyzd65.fromXYZ(XYZ); // console.log({Xa, Ya, Za});
 	    // modify X and Y
 
 	    let Xm = b * Xa - (b - 1) * Za;
@@ -2101,10 +2101,10 @@
 
 	    let Xa = (Xm + (b - 1) * Za) / b;
 	    let Ya = (Ym + (g - 1) * Xa) / g;
-	    return Color$1.spaces.absxyzd65.toXYZ([Xa, Ya, Za]);
+	    return Color$1$1.spaces.absxyzd65.toXYZ([Xa, Ya, Za]);
 	  },
 
-	  parse(str, parsed = Color$1.parseFunction(str)) {
+	  parse(str, parsed = Color$1$1.parseFunction(str)) {
 	    if (parsed && parsed.name === "jzabz") {
 	      return {
 	        spaceId: "jzazbz",
@@ -2119,7 +2119,7 @@
 	      format,
 	      ...rest
 	    } = {}) {
-	      return Color$1.prototype.toString.call(this, {
+	      return Color$1$1.prototype.toString.call(this, {
 	        name: "jzazbz",
 	        format,
 	        ...rest
@@ -2128,7 +2128,7 @@
 
 	  }
 	});
-	Color$1.defineSpace({
+	Color$1$1.defineSpace({
 	  id: "jzczhz",
 	  name: "JzCzHz",
 	  coords: {
@@ -2137,7 +2137,7 @@
 	    hue: range
 	  },
 	  inGamut: coords => true,
-	  white: Color$1.D65,
+	  white: Color$1$1.D65,
 	  from: {
 	    jzazbz(jzazbz) {
 	      // Convert to polar form
@@ -2170,7 +2170,7 @@
 
 	  },
 
-	  parse(str, parsed = Color$1.parseFunction(str)) {
+	  parse(str, parsed = Color$1$1.parseFunction(str)) {
 	    if (parsed && parsed.name === "jzczhz") {
 	      parsed.args[0];
 	      return {
@@ -2182,8 +2182,8 @@
 	  }
 
 	});
-	Color$1.spaces.rec2020;
-	Color$1.defineSpace({
+	Color$1$1.spaces.rec2020;
+	Color$1$1.defineSpace({
 	  // Only the PQ form of ICtCp is implemented here. There is also an HLG form.
 	  // from Dolby, "WHAT IS ICTCP?"
 	  // https://professional.dolby.com/siteassets/pdfs/ictcp_dolbywhitepaper_v071.pdf
@@ -2211,7 +2211,7 @@
 	  },
 	  inGamut: coords => true,
 	  // Note that XYZ is relative to D65
-	  white: Color$1.whites.D65,
+	  white: Color$1$1.whites.D65,
 	  c1: 3424 / 4096,
 	  c2: 2413 / 128,
 	  c3: 2392 / 128,
@@ -2247,7 +2247,7 @@
 	    // BT.2048 says media white Y=203 at PQ 58
 	    // This also does the D50 to D65 adaptation
 
-	    let [Xa, Ya, Za] = Color$1.spaces.absxyzd65.fromXYZ(XYZ); // console.log({Xa, Ya, Za});
+	    let [Xa, Ya, Za] = Color$1$1.spaces.absxyzd65.fromXYZ(XYZ); // console.log({Xa, Ya, Za});
 	    // move to LMS cone domain
 
 	    let LMS = multiplyMatrices(XYZtoLMS_M, [Xa, Ya, Za]); // console.log({LMS});
@@ -2262,7 +2262,7 @@
 	    let LMS = this.ICtCptoLMS(ICtCp);
 	    let XYZa = multiplyMatrices(LMStoXYZ_M, LMS); // convert from Absolute, D65 XYZ to media white relative, D50 XYZ
 
-	    return Color$1.spaces.absxyzd65.toXYZ(XYZa);
+	    return Color$1$1.spaces.absxyzd65.toXYZ(XYZa);
 	  },
 
 	  LMStoICtCp(LMS) {
@@ -2323,7 +2323,7 @@
 	});
 	let methods = {
 	  range(...args) {
-	    return Color$1.range(this, ...args);
+	    return Color$1$1.range(this, ...args);
 	  },
 
 	  /**
@@ -2341,7 +2341,7 @@
 	      space,
 	      outputSpace
 	    } = o;
-	    color = Color$1.get(color);
+	    color = Color$1$1.get(color);
 	    let range = this.range(color, {
 	      space,
 	      outputSpace
@@ -2354,12 +2354,12 @@
 	   * @returns {Array[Color]}
 	   */
 	  steps(...args) {
-	    return Color$1.steps(this, ...args);
+	    return Color$1$1.steps(this, ...args);
 	  }
 
 	};
 
-	Color$1.steps = function (color1, color2, options = {}) {
+	Color$1$1.steps = function (color1, color2, options = {}) {
 	  let range;
 
 	  if (isRange(color1)) {
@@ -2376,9 +2376,9 @@
 	  } = options;
 
 	  if (!range) {
-	    color1 = Color$1.get(color1);
-	    color2 = Color$1.get(color2);
-	    range = Color$1.range(color1, color2, rangeOptions);
+	    color1 = Color$1$1.get(color1);
+	    color2 = Color$1$1.get(color2);
+	    range = Color$1$1.range(color1, color2, rangeOptions);
 	  }
 
 	  let totalDelta = this.deltaE(color2);
@@ -2440,11 +2440,11 @@
 	 */
 
 
-	Color$1.range = function (color1, color2, options = {}) {
+	Color$1$1.range = function (color1, color2, options = {}) {
 	  if (isRange(color1)) {
 	    // Tweaking existing range
 	    let [range, options] = [color1, color2];
-	    return Color$1.range(...range.rangeArgs.colors, { ...range.rangeArgs.options,
+	    return Color$1$1.range(...range.rangeArgs.colors, { ...range.rangeArgs.options,
 	      ...options
 	    });
 	  }
@@ -2456,20 +2456,20 @@
 	    premultiplied
 	  } = options; // Make sure we're working on copies of these colors
 
-	  color1 = new Color$1(color1);
-	  color2 = new Color$1(color2);
+	  color1 = new Color$1$1(color1);
+	  color2 = new Color$1$1(color2);
 	  let rangeArgs = {
 	    colors: [color1, color2],
 	    options
 	  };
 
 	  if (space) {
-	    space = Color$1.space(space);
+	    space = Color$1$1.space(space);
 	  } else {
-	    space = Color$1.spaces[Color$1.defaults.interpolationSpace] || color1.space;
+	    space = Color$1$1.spaces[Color$1$1.defaults.interpolationSpace] || color1.space;
 	  }
 
-	  outputSpace = outputSpace ? Color$1.space(outputSpace) : color1.space || space;
+	  outputSpace = outputSpace ? Color$1$1.space(outputSpace) : color1.space || space;
 	  color1 = color1.to(space).toGamut();
 	  color2 = color2.to(space).toGamut(); // Handle hue interpolation
 	  // See https://github.com/w3c/csswg-drafts/issues/4735#issuecomment-635741840
@@ -2492,7 +2492,7 @@
 	      return interpolate(start, end, p);
 	    });
 	    let alpha = interpolate(color1.alpha, color2.alpha, p);
-	    let ret = new Color$1(space, coords, alpha);
+	    let ret = new Color$1$1(space, coords, alpha);
 
 	    if (premultiplied) {
 	      // undo premultiplication
@@ -2526,11 +2526,11 @@
 	  return start + (end - start) * p;
 	}
 
-	Object.assign(Color$1.defaults, {
+	Object.assign(Color$1$1.defaults, {
 	  interpolationSpace: "lab"
 	});
-	Object.assign(Color$1.prototype, methods);
-	Color$1.statify(Object.keys(methods)); // More accurate color-difference formulae
+	Object.assign(Color$1$1.prototype, methods);
+	Color$1$1.statify(Object.keys(methods)); // More accurate color-difference formulae
 	// than the simple 1976 Euclidean distance in Lab
 	// CMC by the Color Measurement Committee of the
 	// Bradford Society of Dyeists and Colorsts, 1994.
@@ -2538,12 +2538,12 @@
 	// with different weights for L, C and H differences
 	// A nice increase in accuracy for modest increase in complexity
 
-	Color$1.prototype.deltaECMC = function (sample, {
+	Color$1$1.prototype.deltaECMC = function (sample, {
 	  l = 2,
 	  c = 1
 	} = {}) {
 	  let color = this;
-	  sample = Color$1.get(sample); // Given this color as the reference
+	  sample = Color$1$1.get(sample); // Given this color as the reference
 	  // and a sample,
 	  // calculate deltaE CMC.
 	  // This implementation assumes the parametric
@@ -2634,7 +2634,7 @@
 	  return Math.sqrt(dE); // Yay!!!
 	};
 
-	Color$1.statify(["deltaECMC"]); // deltaE2000 is a statistically significant improvement
+	Color$1$1.statify(["deltaECMC"]); // deltaE2000 is a statistically significant improvement
 	// and is recommended by the CIE and Idealliance
 	// especially for color differences less than 10 deltaE76
 	// but is wicked complicated
@@ -2642,13 +2642,13 @@
 	// DeltaE2000 is also discontinuous; in case this
 	// matters to you, use deltaECMC instead.
 
-	Color$1.prototype.deltaE2000 = function (sample, {
+	Color$1$1.prototype.deltaE2000 = function (sample, {
 	  kL = 1,
 	  kC = 1,
 	  kH = 1
 	} = {}) {
 	  let color = this;
-	  sample = Color$1.get(sample); // Given this color as the reference
+	  sample = Color$1$1.get(sample); // Given this color as the reference
 	  // and the function parameter as the sample,
 	  // calculate deltaE 2000.
 	  // This implementation assumes the parametric
@@ -2779,15 +2779,15 @@
 	  return Math.sqrt(dE); // Yay!!!
 	};
 
-	Color$1.statify(["deltaE2000"]); // More accurate color-difference formulae
+	Color$1$1.statify(["deltaE2000"]); // More accurate color-difference formulae
 	// than the simple 1976 Euclidean distance in Lab
 	// Uses JzCzHz, which has improved perceptual uniformity
 	// and thus a simple Euclidean root-sum of ΔL² ΔC² ΔH²
 	// gives good results.
 
-	Color$1.prototype.deltaEJz = function (sample) {
+	Color$1$1.prototype.deltaEJz = function (sample) {
 	  let color = this;
-	  sample = Color$1.get(sample); // Given this color as the reference
+	  sample = Color$1$1.get(sample); // Given this color as the reference
 	  // and a sample,
 	  // calculate deltaE in JzCzHz.
 
@@ -2814,34 +2814,34 @@
 	  return Math.sqrt(ΔJ ** 2 + ΔC ** 2 + ΔH ** 2);
 	};
 
-	Color$1.statify(["deltaEJz"]);
-	Color$1.CATs = {};
-	Color$1.hooks.add("chromatic-adaptation-start", env => {
+	Color$1$1.statify(["deltaEJz"]);
+	Color$1$1.CATs = {};
+	Color$1$1.hooks.add("chromatic-adaptation-start", env => {
 	  if (env.options.method) {
-	    env.M = Color$1.adapt(env.W1, env.W2, env.options.method);
+	    env.M = Color$1$1.adapt(env.W1, env.W2, env.options.method);
 	  }
 	});
-	Color$1.hooks.add("chromatic-adaptation-end", env => {
+	Color$1$1.hooks.add("chromatic-adaptation-end", env => {
 	  if (!env.M) {
-	    env.M = Color$1.adapt(env.W1, env.W2, env.options.method);
+	    env.M = Color$1$1.adapt(env.W1, env.W2, env.options.method);
 	  }
 	});
 
-	Color$1.defineCAT = function ({
+	Color$1$1.defineCAT = function ({
 	  id,
 	  toCone_M,
 	  fromCone_M
 	}) {
 	  // Use id, toCone_M, fromCone_M like variables
-	  Color$1.CATs[id] = arguments[0];
+	  Color$1$1.CATs[id] = arguments[0];
 	};
 
-	Color$1.adapt = function (W1, W2, id = "Bradford") {
+	Color$1$1.adapt = function (W1, W2, id = "Bradford") {
 	  // adapt from a source whitepoint or illuminant W1
 	  // to a destination whitepoint or illuminant W2,
 	  // using the given chromatic adaptation transform (CAT)
 	  // debugger;
-	  let method = Color$1.CATs[id];
+	  let method = Color$1$1.CATs[id];
 	  let [ρs, γs, βs] = multiplyMatrices(method.toCone_M, W1);
 	  let [ρd, γd, βd] = multiplyMatrices(method.toCone_M, W2); // all practical illuminants have non-zero XYZ so no division by zero can occur below
 
@@ -2853,12 +2853,12 @@
 	  return adapt_M;
 	};
 
-	Color$1.defineCAT({
+	Color$1$1.defineCAT({
 	  id: "von Kries",
 	  toCone_M: [[0.4002400, 0.7076000, -0.0808100], [-0.2263000, 1.1653200, 0.0457000], [0.0000000, 0.0000000, 0.9182200]],
 	  fromCone_M: [[1.8599364, -1.1293816, 0.2198974], [0.3611914, 0.6388125, -0.0000064], [0.0000000, 0.0000000, 1.0890636]]
 	});
-	Color$1.defineCAT({
+	Color$1$1.defineCAT({
 	  id: "Bradford",
 	  // Convert an array of XYZ values in the range 0.0 - 1.0
 	  // to cone fundamentals
@@ -2866,19 +2866,19 @@
 	  // and back
 	  fromCone_M: [[0.9869929, -0.1470543, 0.1599627], [0.4323053, 0.5183603, 0.0492912], [-0.0085287, 0.0400428, 0.9684867]]
 	});
-	Color$1.defineCAT({
+	Color$1$1.defineCAT({
 	  id: "CAT02",
 	  // with complete chromatic adaptation to W2, so D = 1.0
 	  toCone_M: [[0.7328000, 0.4296000, -0.1624000], [-0.7036000, 1.6975000, 0.0061000], [0.0030000, 0.0136000, 0.9834000]],
 	  fromCone_M: [[1.0961238, -0.2788690, 0.1827452], [0.4543690, 0.4735332, 0.0720978], [-0.0096276, -0.0056980, 1.0153256]]
 	});
-	Color$1.defineCAT({
+	Color$1$1.defineCAT({
 	  id: "CAT16",
 	  toCone_M: [[0.401288, 0.650173, -0.051461], [-0.250268, 1.204414, 0.045854], [-0.002079, 0.048952, 0.953127]],
 	  // the extra precision is needed to avoid roundtripping errors
 	  fromCone_M: [[1.862067855087233e+0, -1.011254630531685e+0, 1.491867754444518e-1], [3.875265432361372e-1, 6.214474419314753e-1, -8.973985167612518e-3], [-1.584149884933386e-2, -3.412293802851557e-2, 1.049964436877850e+0]]
 	});
-	Object.assign(Color$1.whites, {
+	Object.assign(Color$1$1.whites, {
 	  // whitepoint values from ASTM E308-01 with 10nm spacing, 1931 2 degree observer
 	  // all normalized to Y (luminance) = 1.00000
 	  // Illuminant A is a tungsten electric light, giving a very warm, orange light.
@@ -5676,7 +5676,7 @@
 	  var from = colors[0];
 	  var to = colors[1];
 	  var gradData = from.steps(to, {
-	    space: 'lab',
+	    space: 'sRGB',
 	    outputSpace: 'sRGB',
 	    steps: steps
 	  });
@@ -5685,7 +5685,7 @@
 	    from = to;
 	    to = colors[i];
 	    gradData = gradData.concat(from.steps(to, {
-	      space: 'lab',
+	      space: 'sRGB',
 	      outputSpace: 'sRGB',
 	      steps: steps
 	    }));
@@ -5696,6 +5696,7 @@
 	    return e.coords.concat(1);
 	  });
 	  var pixelData = gradData.flat();
+	  console.log(gradData);
 	  return createTextureFromPixelArray(gl, {
 	    width: gradData.length,
 	    height: 1,
@@ -5703,25 +5704,2967 @@
 	  });
 	};
 
-	var LabColorSpace = "\n#ifndef __LAB_COLORSPACE__\n#define __LAB_COLORSPACE__\n\n#ifndef saturate\n#define saturate(v) clamp(v, 0.,1.)\n#endif\n\n//Lifted from https://code.google.com/p/flowabs/source/browse/glsl/?r=f36cbdcf7790a28d90f09e2cf89ec9a64911f138\n\nvec3 lab2xyz( vec3 c ) {\n    float fy = ( c.x + 16.0 ) / 116.0;\n    float fx = c.y / 500.0 + fy;\n    float fz = fy - c.z / 200.0;\n    return vec3(\n         95.047 * (( fx > 0.206897 ) ? fx * fx * fx : ( fx - 16.0 / 116.0 ) / 7.787),\n        100.000 * (( fy > 0.206897 ) ? fy * fy * fy : ( fy - 16.0 / 116.0 ) / 7.787),\n        108.883 * (( fz > 0.206897 ) ? fz * fz * fz : ( fz - 16.0 / 116.0 ) / 7.787)\n    );\n}\n\nvec3 xyz2rgb( vec3 c ) {\n    vec3 v =  c / 100.0 * mat3( \n        3.2406, -1.5372, -0.4986,\n        -0.9689, 1.8758, 0.0415,\n        0.0557, -0.2040, 1.0570\n    );\n    vec3 r;\n    r.x = ( v.r > 0.0031308 ) ? (( 1.055 * pow( v.r, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.r;\n    r.y = ( v.g > 0.0031308 ) ? (( 1.055 * pow( v.g, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.g;\n    r.z = ( v.b > 0.0031308 ) ? (( 1.055 * pow( v.b, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.b;\n    return r;\n}\n\nvec3 lab2rgb(vec3 c) {\n    return xyz2rgb( lab2xyz( vec3(100.0 * c.x, 2.0 * 127.0 * (c.y - 0.5), 2.0 * 127.0 * (c.z - 0.5)) ) );\n}\n#endif\n";
+	var LabColorSpace = "\n#ifndef __LAB_COLORSPACE__\n#define __LAB_COLORSPACE__\n\n#ifndef saturate\n#define saturate(v) clamp(v, 0.,1.)\n#endif\n\n//Lifted from https://code.google.com/p/flowabs/source/browse/glsl/?r=f36cbdcf7790a28d90f09e2cf89ec9a64911f138\n\nvec3 lab2xyz( vec3 c ) {\n    float fy = ( c.x + 16.0 ) / 116.0;\n    float fx = c.y / 500.0 + fy;\n    float fz = fy - c.z / 200.0;\n    return vec3(\n         95.047 * (( fx > 0.206897 ) ? fx * fx * fx : ( fx - 16.0 / 116.0 ) / 7.787),\n        100.000 * (( fy > 0.206897 ) ? fy * fy * fy : ( fy - 16.0 / 116.0 ) / 7.787),\n        108.883 * (( fz > 0.206897 ) ? fz * fz * fz : ( fz - 16.0 / 116.0 ) / 7.787)\n    );\n}\n\nvec3 xyz2rgb( vec3 c ) {\n    vec3 v =  c / 100.0 * mat3( \n        3.2406, -1.5372, -0.4986,\n        -0.9689, 1.8758, 0.0415,\n        0.0557, -0.2040, 1.0570\n    );\n    vec3 r;\n    r.x = ( v.r > 0.0031308 ) ? (( 1.055 * pow( v.r, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.r;\n    r.y = ( v.g > 0.0031308 ) ? (( 1.055 * pow( v.g, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.g;\n    r.z = ( v.b > 0.0031308 ) ? (( 1.055 * pow( v.b, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.b;\n    return r;\n}\n\nvec3 lab2rgb(vec3 c) {\n    return xyz2rgb( lab2xyz( vec3(100.0 * c.x, 2.0 * 127.0 * (c.y - 0.5), 2.0 * 127.0 * (c.z - 0.5)) ) );\n}\n\nvec3 lab2rgb2(vec3 c)\n{\n    float l = c.r;\n    float a = c.g;\n    float b = c.b;\n\n    vec3 rgb = vec3(0.);\n\n    float y = (l+16.)/116.;\n    float x = a/500. + y;\n    float z = y - b/200.;\n\n    y = pow(y, 3.) > 0.008856 ? pow(y,3.) : (y-16./116.)/7.787;\n    x = pow(x, 3.) > 0.008856 ? pow(x,3.) : (x-16./116.)/7.787;\n    z = pow(z, 3.) > 0.008856 ? pow(z,3.) : (z-16./116.)/7.787;\n\n    x *= 95.047;\n    y *= 100.;\n    z *= 108.883;\n\n    x /= 100.;\n    y /= 100.;\n    z /= 100.;\n\n    float R = x *  3.2406 + y * -1.5372 + z * -0.4986;\n    float G = x * -0.9689 + y *  1.8758 + z *  0.0415;\n    float B = x *  0.0557 + y * -0.2040 + z *  1.0570;\n\n    R = R > 0.0031308 ? 1.055 * pow(R , ( 1. / 2.4 ))  - 0.055 : 12.92 * R;\n    G = G > 0.0031308 ? 1.055 * pow(G , ( 1. / 2.4 ))  - 0.055 : 12.92 * G;\n    B = B > 0.0031308 ? 1.055 * pow(B , ( 1. / 2.4 ))  - 0.055 : 12.92 * B;\n\n    return vec3(R, G, B);\n\n}\n#endif\n";
 
-	var Noise3DGrad = "//\n// Description : Array and textureless GLSL 2D/3D/4D simplex \n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : stegu\n//     Lastmod : 20201014 (stegu)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//               https://github.com/stegu/webgl-noise\n// \n\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+10.0)*x);\n}\n\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n\nfloat snoise(vec3 v, out vec3 gradient)\n{\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i); \n  vec4 p = permute( permute( permute( \n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) \n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.5 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  vec4 m2 = m * m;\n  vec4 m4 = m2 * m2;\n  vec4 pdotx = vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3));\n\n// Determine noise gradient\n  vec4 temp = m2 * m * pdotx;\n  gradient = -8.0 * (temp.x * x0 + temp.y * x1 + temp.z * x2 + temp.w * x3);\n  gradient += m4.x * p0 + m4.y * p1 + m4.z * p2 + m4.w * p3;\n  gradient *= 105.0;\n\n  return 105.0 * dot(m4, pdotx);\n}\n";
+	var Noise3D = "\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex \n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : stegu\n//     Lastmod : 20201014 (stegu)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//               https://github.com/stegu/webgl-noise\n// \n\n#ifndef MOD289_3\n#define MOD289_3\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD289_4\n#define MOD289_4\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef PERMUTE_4\n#define PERMUTE_4\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+10.0)*x);\n}\n#endif\n\n#ifndef TAYLORINVSQRT\n#define TAYLORINVSQRT\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n#endif\n\nfloat snoise(vec3 v)\n  { \n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i); \n  vec4 p = permute( permute( permute( \n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) \n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.5 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 105.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), \n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n  ";
+
+	var Noise3DGrad = "//\n// Description : Array and textureless GLSL 2D/3D/4D simplex \n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : stegu\n//     Lastmod : 20201014 (stegu)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//               https://github.com/stegu/webgl-noise\n// \n\n#ifndef MOD289_3\n#define MOD289_3\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD289_4\n#define MOD289_4\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef PERMUTE_4\n#define PERMUTE_4\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+10.0)*x);\n}\n#endif\n\n#ifndef TAYLORINVSQRT\n#define TAYLORINVSQRT\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n#endif\n\nfloat snoise(vec3 v, out vec3 gradient)\n{\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i); \n  vec4 p = permute( permute( permute( \n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) \n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.5 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  vec4 m2 = m * m;\n  vec4 m4 = m2 * m2;\n  vec4 pdotx = vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3));\n\n// Determine noise gradient\n  vec4 temp = m2 * m * pdotx;\n  gradient = -8.0 * (temp.x * x0 + temp.y * x1 + temp.z * x2 + temp.w * x3);\n  gradient += m4.x * p0 + m4.y * p1 + m4.z * p2 + m4.w * p3;\n  gradient *= 105.0;\n\n  return 105.0 * dot(m4, pdotx);\n}\n";
+
+	var Random = "\nfloat rand(vec2 co){\n    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\n";
+
+	var Saturate = "\n#ifndef saturate\n#define saturate(v) clamp(v, 0., 1.)\n#endif\n";
+
+	var Shapes = "\n#ifndef SHAPES_GLSL\n#define SHAPES_GLSL\n\nfloat dot2( in vec2 v ) { return dot(v,v); }\nfloat ndot(vec2 a, vec2 b ) { return a.x*b.x - a.y*b.y; }\n\nfloat sminCubic( float a, float b, float k )\n{\n    float h = max( k-abs(a-b), 0.0 )/k;\n    return min( a, b ) - h*h*h*k*(1.0/6.0);\n}\n\nfloat sdCircle( vec2 p, float r )\n{\n    return length(p) - r;\n}\n\nfloat sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )\n{\n    r.xy = (p.x>0.0)?r.xy : r.zw;\n    r.x  = (p.y>0.0)?r.x  : r.y;\n    vec2 q = abs(p)-b+r.x;\n    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r.x;\n}\n\nfloat sdBox( in vec2 p, in vec2 b )\n{\n    vec2 d = abs(p)-b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nfloat sdOrientedBox( in vec2 p, in vec2 a, in vec2 b, float th )\n{\n    float l = length(b-a);\n    vec2  d = (b-a)/l;\n    vec2  q = (p-(a+b)*0.5);\n          q = mat2(d.x,-d.y,d.y,d.x)*q;\n          q = abs(q)-vec2(l,th)*0.5;\n    return length(max(q,0.0)) + min(max(q.x,q.y),0.0);    \n}\n\nfloat sdRhombus( in vec2 p, in vec2 b ) \n{\n    p = abs(p);\n    float h = clamp( ndot(b-2.0*p,b)/dot(b,b), -1.0, 1.0 );\n    float d = length( p-0.5*b*vec2(1.0-h,1.0+h) );\n    return d * sign( p.x*b.y + p.y*b.x - b.x*b.y );\n}\n\nfloat sdTrapezoid( in vec2 p, in float r1, float r2, float he )\n{\n    vec2 k1 = vec2(r2,he);\n    vec2 k2 = vec2(r2-r1,2.0*he);\n    p.x = abs(p.x);\n    vec2 ca = vec2(p.x-min(p.x,(p.y<0.0)?r1:r2), abs(p.y)-he);\n    vec2 cb = p - k1 + k2*clamp( dot(k1-p,k2)/dot2(k2), 0.0, 1.0 );\n    float s = (cb.x<0.0 && ca.y<0.0) ? -1.0 : 1.0;\n    return s*sqrt( min(dot2(ca),dot2(cb)) );\n}\n\nfloat sdParallelogram( in vec2 p, float wi, float he, float sk )\n{\n    vec2 e = vec2(sk,he);\n    p = (p.y<0.0)?-p:p;\n    vec2  w = p - e; w.x -= clamp(w.x,-wi,wi);\n    vec2  d = vec2(dot(w,w), -w.y);\n    float s = p.x*e.y - p.y*e.x; \n    p = (s<0.0)?-p:p;\n    vec2  v = p - vec2(wi,0); v -= e*clamp(dot(v,e)/dot(e,e),-1.0,1.0);\n    d = min( d, vec2(dot(v,v), wi*he-abs(s)));\n    return sqrt(d.x)*sign(-d.y);\n}\n\nvec2 translate(vec2 p, vec2 t)\n{\n\treturn p - t;\n}\n\nvec3 translate(vec3 p, vec3 t)\n{\n    return p - t;\n}\n\nvec2 scale(vec2 p, float zoom)\n{\n    p *= zoom;\n    return p;\n}\n\nvec2 scale(vec2 p, vec2 origin, float zoom)\n{\n    p -= origin;\n    p *= zoom;\n    p += origin;\n\n    return p;\n}\n\nvec2 rotate(vec2 p, float a)\n{\n    mat2 m = mat2(cos(a),sin(a),-sin(a),cos(a));\n    return p*m;\n}\n\nvec2 rotate(vec2 p, vec2 origin, float a)\n{\n    p -= origin;\n    mat2 m = mat2(cos(a),sin(a),-sin(a),cos(a));\n    return p*m + origin;\t\n}\n\n#endif\n";
 
 	var VertDefault = "\nattribute vec4 position;\n\nvarying vec4 uv;\n\nvoid main() {\n  gl_Position = position;\n}\n";
-	var FragTexture = "\nprecision mediump float;\n\n".concat(LabColorSpace, "\n\nuniform vec2 resolution;\nuniform sampler2D tex;\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec3 texCol = texture2D(tex, vec2(uv.x, .5)).rgb;\n\n  vec4 colOut;\n  colOut.a = 1.;\n  // colOut.rgb = saturate(xyz2rgb(texCol));\n\n  colOut.rgb = saturate(texCol);\n// colOut.rgb = vec3(1.,1.,0.);\n  gl_FragColor = colOut;\n\n  // gl_FragColor = texture2D(tex, vec2(uv.x, .5));\n  // gl_FragColor = vec4(uv.xy,0,1);\n}\n");
-	var FragAura = "\n// #version 300 es\nprecision mediump float;\n\n".concat(Noise3DGrad, "\n\n// float fbm(vec2 n) {\n// \tfloat total = 0.0, amplitude = 0.1;\n// \tfor (int i = 0; i < 7; i++) {\n// \t\ttotal += noise(n) * amplitude;\n// \t\tn = m * n;\n// \t\tamplitude *= 0.4;\n// \t}\n// \treturn total;\n// }\n\nuniform vec2 resolution;\nuniform float time;\nuniform sampler2D ramp;\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;\n\n  uv *= .5;\n\n  vec3 grad;\n  vec3 grad2;\n\n  float noise = snoise(vec3(uv, time), grad);\n  float noise2 = snoise(vec3((uv + vec2(12123.234,.235235))*.6, time), grad2);\n  noise*=0.4;\n  noise = smoothstep(-1.,1., noise);\n  \n  vec4 col = vec4(0.);\n\n  col.a = 1.;\n\n  vec3 pos = vec3(uv*2., noise);\n\n  float dot = dot(normalize(grad), vec3(0.,0., 1.));\n\n  vec4 rampSample = texture2D(ramp, vec2(noise + dot*.5  , .5));\n  vec4 rampSample2 = texture2D(ramp, vec2(1.-noise2, .5));\n  col.rgb = rampSample.rgb*noise;\n  // col.rgb = mix(col.rgb, rampSample2.rgb, noise2);\n\n  col.rgb = clamp(col.rgb, 0.,1.);\n\n  gl_FragColor = col;\n  // gl_FragColor = texture2D(ramp, uv);\n  // gl_FragColor = vec4(vec3(noise), 1.);\n  // gl_FragColor = vec4( grad, 1.);\n  // gl_FragColor = vec4(dot, dot, dot, 1);\n  // gl_FragColor = vec4(length(st), 0, 1, 1);\n}\n");
+	var FragTexture = "\nprecision mediump float;\n\n".concat(LabColorSpace, "\n\nuniform vec2 resolution;\nuniform sampler2D tex;\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec3 texCol = texture2D(tex, vec2(uv.x, .5)).rgb;\n\n  vec4 colOut;\n  colOut.a = 1.;\n  // colOut.rgb = saturate(xyz2rgb(texCol));\n  // colOut.rgb = lab2rgb2(texCol);\n\n  colOut.rgb = saturate(texCol);\n// colOut.rgb = vec3(1.,1.,0.);\n  gl_FragColor = colOut;\n\n  // gl_FragColor = texture2D(tex, vec2(uv.x, .5));\n  // gl_FragColor = vec4(uv.xy,0,1);\n}\n");
+	var FragAura = "\n// #version 300 es\nprecision mediump float;\n\n".concat(Shapes, "\n").concat(Random, "\n").concat(Noise3DGrad, "\n").concat(Noise3D, "\n").concat(Saturate, "\n\nstruct Layer1\n{\n  vec3 color1;\n  vec3 color2;\n  float brightness;\n  float blobbyness;\n  float blur;\n\n  bool enabled;\n};\n\nstruct Layer2\n{\n  float brightness;\n  float cycleSpeed;\n  bool enabled;\n};\n\nuniform vec2 resolution;\nuniform vec4 time; // [time, time/2, time*2, time/10]\nuniform sampler2D ramp;\nuniform Layer1 layer1;\nuniform Layer2 layer2;\n\nuniform float noiseDither;\n\n#define TO_FLOAT (1./255.0)\n\n#define sin01(x) (sin(x)*.5)+.5\n\n#define disabled vec3(0.0)\n\nvoid doLayer1(in vec4 uv, inout vec3 col)\n{\n  vec2 st = uv.zw;\n  // st = scale(st, 2.);\n  float sk = .1*sin(time.y);\n  float d = sdParallelogram(st, .4, .1, sk);\n  // d += snoise(vec3(uv.xy, time.x));\n  float d2 = sdRhombus(st, vec2(1.,1.));\n  \n  float noise = snoise(vec3(uv.xy, time.x));\n  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.z) ));\n\ndMix+=layer1.blobbyness*noise;\nd += noise*layer1.blobbyness;\n\n  vec3 layer1Col = layer1.brightness*(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, d))));\n\n  col += layer1.enabled ? layer1Col : disabled;\n}\n\nvoid doLayer2(in vec4 uv, inout vec3 col)\n{\n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x), grad);\n  noise *= 0.4;\n  noise = smoothstep(-1.,1., noise);\n  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed  , .5));\n  \n  vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;\n  col.rgb += layer2.enabled ? layer2Col : disabled;\n\n}\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;\n\n  uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));\n  uv *= .5;\n\n vec4 col = vec4(0.);\n col.a = 1.;\n\n doLayer1(vec4(uv, st), col.rgb);\n doLayer2(vec4(uv, st), col.rgb);\n\n  col.rgb = saturate(col.rgb);\n  gl_FragColor = col;\n\n}\n");
 
 	var FullScreenQuad = {
 	  position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0]
 	};
 
-	var glGrad = document.getElementById('gradient_canvas').getContext('webgl2');
+	/**
+	 * dat-gui JavaScript Controller Library
+	 * http://code.google.com/p/dat-gui
+	 *
+	 * Copyright 2011 Data Arts Team, Google Creative Lab
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 */
+	function ___$insertStyle(css) {
+	  if (!css) {
+	    return;
+	  }
+
+	  if (typeof window === 'undefined') {
+	    return;
+	  }
+
+	  var style = document.createElement('style');
+	  style.setAttribute('type', 'text/css');
+	  style.innerHTML = css;
+	  document.head.appendChild(style);
+	  return css;
+	}
+
+	function colorToString(color, forceCSSHex) {
+	  var colorFormat = color.__state.conversionName.toString();
+
+	  var r = Math.round(color.r);
+	  var g = Math.round(color.g);
+	  var b = Math.round(color.b);
+	  var a = color.a;
+	  var h = Math.round(color.h);
+	  var s = color.s.toFixed(1);
+	  var v = color.v.toFixed(1);
+
+	  if (forceCSSHex || colorFormat === 'THREE_CHAR_HEX' || colorFormat === 'SIX_CHAR_HEX') {
+	    var str = color.hex.toString(16);
+
+	    while (str.length < 6) {
+	      str = '0' + str;
+	    }
+
+	    return '#' + str;
+	  } else if (colorFormat === 'CSS_RGB') {
+	    return 'rgb(' + r + ',' + g + ',' + b + ')';
+	  } else if (colorFormat === 'CSS_RGBA') {
+	    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+	  } else if (colorFormat === 'HEX') {
+	    return '0x' + color.hex.toString(16);
+	  } else if (colorFormat === 'RGB_ARRAY') {
+	    return '[' + r + ',' + g + ',' + b + ']';
+	  } else if (colorFormat === 'RGBA_ARRAY') {
+	    return '[' + r + ',' + g + ',' + b + ',' + a + ']';
+	  } else if (colorFormat === 'RGB_OBJ') {
+	    return '{r:' + r + ',g:' + g + ',b:' + b + '}';
+	  } else if (colorFormat === 'RGBA_OBJ') {
+	    return '{r:' + r + ',g:' + g + ',b:' + b + ',a:' + a + '}';
+	  } else if (colorFormat === 'HSV_OBJ') {
+	    return '{h:' + h + ',s:' + s + ',v:' + v + '}';
+	  } else if (colorFormat === 'HSVA_OBJ') {
+	    return '{h:' + h + ',s:' + s + ',v:' + v + ',a:' + a + '}';
+	  }
+
+	  return 'unknown format';
+	}
+
+	var ARR_EACH = Array.prototype.forEach;
+	var ARR_SLICE = Array.prototype.slice;
+	var Common = {
+	  BREAK: {},
+	  extend: function extend(target) {
+	    this.each(ARR_SLICE.call(arguments, 1), function (obj) {
+	      var keys = this.isObject(obj) ? Object.keys(obj) : [];
+	      keys.forEach(function (key) {
+	        if (!this.isUndefined(obj[key])) {
+	          target[key] = obj[key];
+	        }
+	      }.bind(this));
+	    }, this);
+	    return target;
+	  },
+	  defaults: function defaults(target) {
+	    this.each(ARR_SLICE.call(arguments, 1), function (obj) {
+	      var keys = this.isObject(obj) ? Object.keys(obj) : [];
+	      keys.forEach(function (key) {
+	        if (this.isUndefined(target[key])) {
+	          target[key] = obj[key];
+	        }
+	      }.bind(this));
+	    }, this);
+	    return target;
+	  },
+	  compose: function compose() {
+	    var toCall = ARR_SLICE.call(arguments);
+	    return function () {
+	      var args = ARR_SLICE.call(arguments);
+
+	      for (var i = toCall.length - 1; i >= 0; i--) {
+	        args = [toCall[i].apply(this, args)];
+	      }
+
+	      return args[0];
+	    };
+	  },
+	  each: function each(obj, itr, scope) {
+	    if (!obj) {
+	      return;
+	    }
+
+	    if (ARR_EACH && obj.forEach && obj.forEach === ARR_EACH) {
+	      obj.forEach(itr, scope);
+	    } else if (obj.length === obj.length + 0) {
+	      var key = void 0;
+	      var l = void 0;
+
+	      for (key = 0, l = obj.length; key < l; key++) {
+	        if (key in obj && itr.call(scope, obj[key], key) === this.BREAK) {
+	          return;
+	        }
+	      }
+	    } else {
+	      for (var _key in obj) {
+	        if (itr.call(scope, obj[_key], _key) === this.BREAK) {
+	          return;
+	        }
+	      }
+	    }
+	  },
+	  defer: function defer(fnc) {
+	    setTimeout(fnc, 0);
+	  },
+	  debounce: function debounce(func, threshold, callImmediately) {
+	    var timeout = void 0;
+	    return function () {
+	      var obj = this;
+	      var args = arguments;
+
+	      function delayed() {
+	        timeout = null;
+	        if (!callImmediately) func.apply(obj, args);
+	      }
+
+	      var callNow = callImmediately || !timeout;
+	      clearTimeout(timeout);
+	      timeout = setTimeout(delayed, threshold);
+
+	      if (callNow) {
+	        func.apply(obj, args);
+	      }
+	    };
+	  },
+	  toArray: function toArray(obj) {
+	    if (obj.toArray) return obj.toArray();
+	    return ARR_SLICE.call(obj);
+	  },
+	  isUndefined: function isUndefined(obj) {
+	    return obj === undefined;
+	  },
+	  isNull: function isNull(obj) {
+	    return obj === null;
+	  },
+	  isNaN: function (_isNaN) {
+	    function isNaN(_x) {
+	      return _isNaN.apply(this, arguments);
+	    }
+
+	    isNaN.toString = function () {
+	      return _isNaN.toString();
+	    };
+
+	    return isNaN;
+	  }(function (obj) {
+	    return isNaN(obj);
+	  }),
+	  isArray: Array.isArray || function (obj) {
+	    return obj.constructor === Array;
+	  },
+	  isObject: function isObject(obj) {
+	    return obj === Object(obj);
+	  },
+	  isNumber: function isNumber(obj) {
+	    return obj === obj + 0;
+	  },
+	  isString: function isString(obj) {
+	    return obj === obj + '';
+	  },
+	  isBoolean: function isBoolean(obj) {
+	    return obj === false || obj === true;
+	  },
+	  isFunction: function isFunction(obj) {
+	    return obj instanceof Function;
+	  }
+	};
+	var INTERPRETATIONS = [{
+	  litmus: Common.isString,
+	  conversions: {
+	    THREE_CHAR_HEX: {
+	      read: function read(original) {
+	        var test = original.match(/^#([A-F0-9])([A-F0-9])([A-F0-9])$/i);
+
+	        if (test === null) {
+	          return false;
+	        }
+
+	        return {
+	          space: 'HEX',
+	          hex: parseInt('0x' + test[1].toString() + test[1].toString() + test[2].toString() + test[2].toString() + test[3].toString() + test[3].toString(), 0)
+	        };
+	      },
+	      write: colorToString
+	    },
+	    SIX_CHAR_HEX: {
+	      read: function read(original) {
+	        var test = original.match(/^#([A-F0-9]{6})$/i);
+
+	        if (test === null) {
+	          return false;
+	        }
+
+	        return {
+	          space: 'HEX',
+	          hex: parseInt('0x' + test[1].toString(), 0)
+	        };
+	      },
+	      write: colorToString
+	    },
+	    CSS_RGB: {
+	      read: function read(original) {
+	        var test = original.match(/^rgb\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);
+
+	        if (test === null) {
+	          return false;
+	        }
+
+	        return {
+	          space: 'RGB',
+	          r: parseFloat(test[1]),
+	          g: parseFloat(test[2]),
+	          b: parseFloat(test[3])
+	        };
+	      },
+	      write: colorToString
+	    },
+	    CSS_RGBA: {
+	      read: function read(original) {
+	        var test = original.match(/^rgba\(\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*,\s*(.+)\s*\)/);
+
+	        if (test === null) {
+	          return false;
+	        }
+
+	        return {
+	          space: 'RGB',
+	          r: parseFloat(test[1]),
+	          g: parseFloat(test[2]),
+	          b: parseFloat(test[3]),
+	          a: parseFloat(test[4])
+	        };
+	      },
+	      write: colorToString
+	    }
+	  }
+	}, {
+	  litmus: Common.isNumber,
+	  conversions: {
+	    HEX: {
+	      read: function read(original) {
+	        return {
+	          space: 'HEX',
+	          hex: original,
+	          conversionName: 'HEX'
+	        };
+	      },
+	      write: function write(color) {
+	        return color.hex;
+	      }
+	    }
+	  }
+	}, {
+	  litmus: Common.isArray,
+	  conversions: {
+	    RGB_ARRAY: {
+	      read: function read(original) {
+	        if (original.length !== 3) {
+	          return false;
+	        }
+
+	        return {
+	          space: 'RGB',
+	          r: original[0],
+	          g: original[1],
+	          b: original[2]
+	        };
+	      },
+	      write: function write(color) {
+	        return [color.r, color.g, color.b];
+	      }
+	    },
+	    RGBA_ARRAY: {
+	      read: function read(original) {
+	        if (original.length !== 4) return false;
+	        return {
+	          space: 'RGB',
+	          r: original[0],
+	          g: original[1],
+	          b: original[2],
+	          a: original[3]
+	        };
+	      },
+	      write: function write(color) {
+	        return [color.r, color.g, color.b, color.a];
+	      }
+	    }
+	  }
+	}, {
+	  litmus: Common.isObject,
+	  conversions: {
+	    RGBA_OBJ: {
+	      read: function read(original) {
+	        if (Common.isNumber(original.r) && Common.isNumber(original.g) && Common.isNumber(original.b) && Common.isNumber(original.a)) {
+	          return {
+	            space: 'RGB',
+	            r: original.r,
+	            g: original.g,
+	            b: original.b,
+	            a: original.a
+	          };
+	        }
+
+	        return false;
+	      },
+	      write: function write(color) {
+	        return {
+	          r: color.r,
+	          g: color.g,
+	          b: color.b,
+	          a: color.a
+	        };
+	      }
+	    },
+	    RGB_OBJ: {
+	      read: function read(original) {
+	        if (Common.isNumber(original.r) && Common.isNumber(original.g) && Common.isNumber(original.b)) {
+	          return {
+	            space: 'RGB',
+	            r: original.r,
+	            g: original.g,
+	            b: original.b
+	          };
+	        }
+
+	        return false;
+	      },
+	      write: function write(color) {
+	        return {
+	          r: color.r,
+	          g: color.g,
+	          b: color.b
+	        };
+	      }
+	    },
+	    HSVA_OBJ: {
+	      read: function read(original) {
+	        if (Common.isNumber(original.h) && Common.isNumber(original.s) && Common.isNumber(original.v) && Common.isNumber(original.a)) {
+	          return {
+	            space: 'HSV',
+	            h: original.h,
+	            s: original.s,
+	            v: original.v,
+	            a: original.a
+	          };
+	        }
+
+	        return false;
+	      },
+	      write: function write(color) {
+	        return {
+	          h: color.h,
+	          s: color.s,
+	          v: color.v,
+	          a: color.a
+	        };
+	      }
+	    },
+	    HSV_OBJ: {
+	      read: function read(original) {
+	        if (Common.isNumber(original.h) && Common.isNumber(original.s) && Common.isNumber(original.v)) {
+	          return {
+	            space: 'HSV',
+	            h: original.h,
+	            s: original.s,
+	            v: original.v
+	          };
+	        }
+
+	        return false;
+	      },
+	      write: function write(color) {
+	        return {
+	          h: color.h,
+	          s: color.s,
+	          v: color.v
+	        };
+	      }
+	    }
+	  }
+	}];
+	var result = void 0;
+	var toReturn = void 0;
+
+	var interpret = function interpret() {
+	  toReturn = false;
+	  var original = arguments.length > 1 ? Common.toArray(arguments) : arguments[0];
+	  Common.each(INTERPRETATIONS, function (family) {
+	    if (family.litmus(original)) {
+	      Common.each(family.conversions, function (conversion, conversionName) {
+	        result = conversion.read(original);
+
+	        if (toReturn === false && result !== false) {
+	          toReturn = result;
+	          result.conversionName = conversionName;
+	          result.conversion = conversion;
+	          return Common.BREAK;
+	        }
+	      });
+	      return Common.BREAK;
+	    }
+	  });
+	  return toReturn;
+	};
+
+	var tmpComponent = void 0;
+	var ColorMath = {
+	  hsv_to_rgb: function hsv_to_rgb(h, s, v) {
+	    var hi = Math.floor(h / 60) % 6;
+	    var f = h / 60 - Math.floor(h / 60);
+	    var p = v * (1.0 - s);
+	    var q = v * (1.0 - f * s);
+	    var t = v * (1.0 - (1.0 - f) * s);
+	    var c = [[v, t, p], [q, v, p], [p, v, t], [p, q, v], [t, p, v], [v, p, q]][hi];
+	    return {
+	      r: c[0] * 255,
+	      g: c[1] * 255,
+	      b: c[2] * 255
+	    };
+	  },
+	  rgb_to_hsv: function rgb_to_hsv(r, g, b) {
+	    var min = Math.min(r, g, b);
+	    var max = Math.max(r, g, b);
+	    var delta = max - min;
+	    var h = void 0;
+	    var s = void 0;
+
+	    if (max !== 0) {
+	      s = delta / max;
+	    } else {
+	      return {
+	        h: NaN,
+	        s: 0,
+	        v: 0
+	      };
+	    }
+
+	    if (r === max) {
+	      h = (g - b) / delta;
+	    } else if (g === max) {
+	      h = 2 + (b - r) / delta;
+	    } else {
+	      h = 4 + (r - g) / delta;
+	    }
+
+	    h /= 6;
+
+	    if (h < 0) {
+	      h += 1;
+	    }
+
+	    return {
+	      h: h * 360,
+	      s: s,
+	      v: max / 255
+	    };
+	  },
+	  rgb_to_hex: function rgb_to_hex(r, g, b) {
+	    var hex = this.hex_with_component(0, 2, r);
+	    hex = this.hex_with_component(hex, 1, g);
+	    hex = this.hex_with_component(hex, 0, b);
+	    return hex;
+	  },
+	  component_from_hex: function component_from_hex(hex, componentIndex) {
+	    return hex >> componentIndex * 8 & 0xFF;
+	  },
+	  hex_with_component: function hex_with_component(hex, componentIndex, value) {
+	    return value << (tmpComponent = componentIndex * 8) | hex & ~(0xFF << tmpComponent);
+	  }
+	};
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+	  return typeof obj;
+	} : function (obj) {
+	  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+	};
+
+	var classCallCheck = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+
+	var createClass = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];
+	      descriptor.enumerable = descriptor.enumerable || false;
+	      descriptor.configurable = true;
+	      if ("value" in descriptor) descriptor.writable = true;
+	      Object.defineProperty(target, descriptor.key, descriptor);
+	    }
+	  }
+
+	  return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	    if (staticProps) defineProperties(Constructor, staticProps);
+	    return Constructor;
+	  };
+	}();
+
+	var get = function get(object, property, receiver) {
+	  if (object === null) object = Function.prototype;
+	  var desc = Object.getOwnPropertyDescriptor(object, property);
+
+	  if (desc === undefined) {
+	    var parent = Object.getPrototypeOf(object);
+
+	    if (parent === null) {
+	      return undefined;
+	    } else {
+	      return get(parent, property, receiver);
+	    }
+	  } else if ("value" in desc) {
+	    return desc.value;
+	  } else {
+	    var getter = desc.get;
+
+	    if (getter === undefined) {
+	      return undefined;
+	    }
+
+	    return getter.call(receiver);
+	  }
+	};
+
+	var inherits = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	  }
+
+	  subClass.prototype = Object.create(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      enumerable: false,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+	};
+
+	var possibleConstructorReturn = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return call && (typeof call === "object" || typeof call === "function") ? call : self;
+	};
+
+	var Color$1 = function () {
+	  function Color() {
+	    classCallCheck(this, Color);
+	    this.__state = interpret.apply(this, arguments);
+
+	    if (this.__state === false) {
+	      throw new Error('Failed to interpret color arguments');
+	    }
+
+	    this.__state.a = this.__state.a || 1;
+	  }
+
+	  createClass(Color, [{
+	    key: 'toString',
+	    value: function toString() {
+	      return colorToString(this);
+	    }
+	  }, {
+	    key: 'toHexString',
+	    value: function toHexString() {
+	      return colorToString(this, true);
+	    }
+	  }, {
+	    key: 'toOriginal',
+	    value: function toOriginal() {
+	      return this.__state.conversion.write(this);
+	    }
+	  }]);
+	  return Color;
+	}();
+
+	function defineRGBComponent(target, component, componentHexIndex) {
+	  Object.defineProperty(target, component, {
+	    get: function get$$1() {
+	      if (this.__state.space === 'RGB') {
+	        return this.__state[component];
+	      }
+
+	      Color$1.recalculateRGB(this, component, componentHexIndex);
+	      return this.__state[component];
+	    },
+	    set: function set$$1(v) {
+	      if (this.__state.space !== 'RGB') {
+	        Color$1.recalculateRGB(this, component, componentHexIndex);
+	        this.__state.space = 'RGB';
+	      }
+
+	      this.__state[component] = v;
+	    }
+	  });
+	}
+
+	function defineHSVComponent(target, component) {
+	  Object.defineProperty(target, component, {
+	    get: function get$$1() {
+	      if (this.__state.space === 'HSV') {
+	        return this.__state[component];
+	      }
+
+	      Color$1.recalculateHSV(this);
+	      return this.__state[component];
+	    },
+	    set: function set$$1(v) {
+	      if (this.__state.space !== 'HSV') {
+	        Color$1.recalculateHSV(this);
+	        this.__state.space = 'HSV';
+	      }
+
+	      this.__state[component] = v;
+	    }
+	  });
+	}
+
+	Color$1.recalculateRGB = function (color, component, componentHexIndex) {
+	  if (color.__state.space === 'HEX') {
+	    color.__state[component] = ColorMath.component_from_hex(color.__state.hex, componentHexIndex);
+	  } else if (color.__state.space === 'HSV') {
+	    Common.extend(color.__state, ColorMath.hsv_to_rgb(color.__state.h, color.__state.s, color.__state.v));
+	  } else {
+	    throw new Error('Corrupted color state');
+	  }
+	};
+
+	Color$1.recalculateHSV = function (color) {
+	  var result = ColorMath.rgb_to_hsv(color.r, color.g, color.b);
+	  Common.extend(color.__state, {
+	    s: result.s,
+	    v: result.v
+	  });
+
+	  if (!Common.isNaN(result.h)) {
+	    color.__state.h = result.h;
+	  } else if (Common.isUndefined(color.__state.h)) {
+	    color.__state.h = 0;
+	  }
+	};
+
+	Color$1.COMPONENTS = ['r', 'g', 'b', 'h', 's', 'v', 'hex', 'a'];
+	defineRGBComponent(Color$1.prototype, 'r', 2);
+	defineRGBComponent(Color$1.prototype, 'g', 1);
+	defineRGBComponent(Color$1.prototype, 'b', 0);
+	defineHSVComponent(Color$1.prototype, 'h');
+	defineHSVComponent(Color$1.prototype, 's');
+	defineHSVComponent(Color$1.prototype, 'v');
+	Object.defineProperty(Color$1.prototype, 'a', {
+	  get: function get$$1() {
+	    return this.__state.a;
+	  },
+	  set: function set$$1(v) {
+	    this.__state.a = v;
+	  }
+	});
+	Object.defineProperty(Color$1.prototype, 'hex', {
+	  get: function get$$1() {
+	    if (this.__state.space !== 'HEX') {
+	      this.__state.hex = ColorMath.rgb_to_hex(this.r, this.g, this.b);
+	      this.__state.space = 'HEX';
+	    }
+
+	    return this.__state.hex;
+	  },
+	  set: function set$$1(v) {
+	    this.__state.space = 'HEX';
+	    this.__state.hex = v;
+	  }
+	});
+
+	var Controller = function () {
+	  function Controller(object, property) {
+	    classCallCheck(this, Controller);
+	    this.initialValue = object[property];
+	    this.domElement = document.createElement('div');
+	    this.object = object;
+	    this.property = property;
+	    this.__onChange = undefined;
+	    this.__onFinishChange = undefined;
+	  }
+
+	  createClass(Controller, [{
+	    key: 'onChange',
+	    value: function onChange(fnc) {
+	      this.__onChange = fnc;
+	      return this;
+	    }
+	  }, {
+	    key: 'onFinishChange',
+	    value: function onFinishChange(fnc) {
+	      this.__onFinishChange = fnc;
+	      return this;
+	    }
+	  }, {
+	    key: 'setValue',
+	    value: function setValue(newValue) {
+	      this.object[this.property] = newValue;
+
+	      if (this.__onChange) {
+	        this.__onChange.call(this, newValue);
+	      }
+
+	      this.updateDisplay();
+	      return this;
+	    }
+	  }, {
+	    key: 'getValue',
+	    value: function getValue() {
+	      return this.object[this.property];
+	    }
+	  }, {
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      return this;
+	    }
+	  }, {
+	    key: 'isModified',
+	    value: function isModified() {
+	      return this.initialValue !== this.getValue();
+	    }
+	  }]);
+	  return Controller;
+	}();
+
+	var EVENT_MAP = {
+	  HTMLEvents: ['change'],
+	  MouseEvents: ['click', 'mousemove', 'mousedown', 'mouseup', 'mouseover'],
+	  KeyboardEvents: ['keydown']
+	};
+	var EVENT_MAP_INV = {};
+	Common.each(EVENT_MAP, function (v, k) {
+	  Common.each(v, function (e) {
+	    EVENT_MAP_INV[e] = k;
+	  });
+	});
+	var CSS_VALUE_PIXELS = /(\d+(\.\d+)?)px/;
+
+	function cssValueToPixels(val) {
+	  if (val === '0' || Common.isUndefined(val)) {
+	    return 0;
+	  }
+
+	  var match = val.match(CSS_VALUE_PIXELS);
+
+	  if (!Common.isNull(match)) {
+	    return parseFloat(match[1]);
+	  }
+
+	  return 0;
+	}
+
+	var dom = {
+	  makeSelectable: function makeSelectable(elem, selectable) {
+	    if (elem === undefined || elem.style === undefined) return;
+	    elem.onselectstart = selectable ? function () {
+	      return false;
+	    } : function () {};
+	    elem.style.MozUserSelect = selectable ? 'auto' : 'none';
+	    elem.style.KhtmlUserSelect = selectable ? 'auto' : 'none';
+	    elem.unselectable = selectable ? 'on' : 'off';
+	  },
+	  makeFullscreen: function makeFullscreen(elem, hor, vert) {
+	    var vertical = vert;
+	    var horizontal = hor;
+
+	    if (Common.isUndefined(horizontal)) {
+	      horizontal = true;
+	    }
+
+	    if (Common.isUndefined(vertical)) {
+	      vertical = true;
+	    }
+
+	    elem.style.position = 'absolute';
+
+	    if (horizontal) {
+	      elem.style.left = 0;
+	      elem.style.right = 0;
+	    }
+
+	    if (vertical) {
+	      elem.style.top = 0;
+	      elem.style.bottom = 0;
+	    }
+	  },
+	  fakeEvent: function fakeEvent(elem, eventType, pars, aux) {
+	    var params = pars || {};
+	    var className = EVENT_MAP_INV[eventType];
+
+	    if (!className) {
+	      throw new Error('Event type ' + eventType + ' not supported.');
+	    }
+
+	    var evt = document.createEvent(className);
+
+	    switch (className) {
+	      case 'MouseEvents':
+	        {
+	          var clientX = params.x || params.clientX || 0;
+	          var clientY = params.y || params.clientY || 0;
+	          evt.initMouseEvent(eventType, params.bubbles || false, params.cancelable || true, window, params.clickCount || 1, 0, 0, clientX, clientY, false, false, false, false, 0, null);
+	          break;
+	        }
+
+	      case 'KeyboardEvents':
+	        {
+	          var init = evt.initKeyboardEvent || evt.initKeyEvent;
+	          Common.defaults(params, {
+	            cancelable: true,
+	            ctrlKey: false,
+	            altKey: false,
+	            shiftKey: false,
+	            metaKey: false,
+	            keyCode: undefined,
+	            charCode: undefined
+	          });
+	          init(eventType, params.bubbles || false, params.cancelable, window, params.ctrlKey, params.altKey, params.shiftKey, params.metaKey, params.keyCode, params.charCode);
+	          break;
+	        }
+
+	      default:
+	        {
+	          evt.initEvent(eventType, params.bubbles || false, params.cancelable || true);
+	          break;
+	        }
+	    }
+
+	    Common.defaults(evt, aux);
+	    elem.dispatchEvent(evt);
+	  },
+	  bind: function bind(elem, event, func, newBool) {
+	    var bool = newBool || false;
+
+	    if (elem.addEventListener) {
+	      elem.addEventListener(event, func, bool);
+	    } else if (elem.attachEvent) {
+	      elem.attachEvent('on' + event, func);
+	    }
+
+	    return dom;
+	  },
+	  unbind: function unbind(elem, event, func, newBool) {
+	    var bool = newBool || false;
+
+	    if (elem.removeEventListener) {
+	      elem.removeEventListener(event, func, bool);
+	    } else if (elem.detachEvent) {
+	      elem.detachEvent('on' + event, func);
+	    }
+
+	    return dom;
+	  },
+	  addClass: function addClass(elem, className) {
+	    if (elem.className === undefined) {
+	      elem.className = className;
+	    } else if (elem.className !== className) {
+	      var classes = elem.className.split(/ +/);
+
+	      if (classes.indexOf(className) === -1) {
+	        classes.push(className);
+	        elem.className = classes.join(' ').replace(/^\s+/, '').replace(/\s+$/, '');
+	      }
+	    }
+
+	    return dom;
+	  },
+	  removeClass: function removeClass(elem, className) {
+	    if (className) {
+	      if (elem.className === className) {
+	        elem.removeAttribute('class');
+	      } else {
+	        var classes = elem.className.split(/ +/);
+	        var index = classes.indexOf(className);
+
+	        if (index !== -1) {
+	          classes.splice(index, 1);
+	          elem.className = classes.join(' ');
+	        }
+	      }
+	    } else {
+	      elem.className = undefined;
+	    }
+
+	    return dom;
+	  },
+	  hasClass: function hasClass(elem, className) {
+	    return new RegExp('(?:^|\\s+)' + className + '(?:\\s+|$)').test(elem.className) || false;
+	  },
+	  getWidth: function getWidth(elem) {
+	    var style = getComputedStyle(elem);
+	    return cssValueToPixels(style['border-left-width']) + cssValueToPixels(style['border-right-width']) + cssValueToPixels(style['padding-left']) + cssValueToPixels(style['padding-right']) + cssValueToPixels(style.width);
+	  },
+	  getHeight: function getHeight(elem) {
+	    var style = getComputedStyle(elem);
+	    return cssValueToPixels(style['border-top-width']) + cssValueToPixels(style['border-bottom-width']) + cssValueToPixels(style['padding-top']) + cssValueToPixels(style['padding-bottom']) + cssValueToPixels(style.height);
+	  },
+	  getOffset: function getOffset(el) {
+	    var elem = el;
+	    var offset = {
+	      left: 0,
+	      top: 0
+	    };
+
+	    if (elem.offsetParent) {
+	      do {
+	        offset.left += elem.offsetLeft;
+	        offset.top += elem.offsetTop;
+	        elem = elem.offsetParent;
+	      } while (elem);
+	    }
+
+	    return offset;
+	  },
+	  isActive: function isActive(elem) {
+	    return elem === document.activeElement && (elem.type || elem.href);
+	  }
+	};
+
+	var BooleanController = function (_Controller) {
+	  inherits(BooleanController, _Controller);
+
+	  function BooleanController(object, property) {
+	    classCallCheck(this, BooleanController);
+
+	    var _this2 = possibleConstructorReturn(this, (BooleanController.__proto__ || Object.getPrototypeOf(BooleanController)).call(this, object, property));
+
+	    var _this = _this2;
+	    _this2.__prev = _this2.getValue();
+	    _this2.__checkbox = document.createElement('input');
+
+	    _this2.__checkbox.setAttribute('type', 'checkbox');
+
+	    function onChange() {
+	      _this.setValue(!_this.__prev);
+	    }
+
+	    dom.bind(_this2.__checkbox, 'change', onChange, false);
+
+	    _this2.domElement.appendChild(_this2.__checkbox);
+
+	    _this2.updateDisplay();
+
+	    return _this2;
+	  }
+
+	  createClass(BooleanController, [{
+	    key: 'setValue',
+	    value: function setValue(v) {
+	      var toReturn = get(BooleanController.prototype.__proto__ || Object.getPrototypeOf(BooleanController.prototype), 'setValue', this).call(this, v);
+
+	      if (this.__onFinishChange) {
+	        this.__onFinishChange.call(this, this.getValue());
+	      }
+
+	      this.__prev = this.getValue();
+	      return toReturn;
+	    }
+	  }, {
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      if (this.getValue() === true) {
+	        this.__checkbox.setAttribute('checked', 'checked');
+
+	        this.__checkbox.checked = true;
+	        this.__prev = true;
+	      } else {
+	        this.__checkbox.checked = false;
+	        this.__prev = false;
+	      }
+
+	      return get(BooleanController.prototype.__proto__ || Object.getPrototypeOf(BooleanController.prototype), 'updateDisplay', this).call(this);
+	    }
+	  }]);
+	  return BooleanController;
+	}(Controller);
+
+	var OptionController = function (_Controller) {
+	  inherits(OptionController, _Controller);
+
+	  function OptionController(object, property, opts) {
+	    classCallCheck(this, OptionController);
+
+	    var _this2 = possibleConstructorReturn(this, (OptionController.__proto__ || Object.getPrototypeOf(OptionController)).call(this, object, property));
+
+	    var options = opts;
+	    var _this = _this2;
+	    _this2.__select = document.createElement('select');
+
+	    if (Common.isArray(options)) {
+	      var map = {};
+	      Common.each(options, function (element) {
+	        map[element] = element;
+	      });
+	      options = map;
+	    }
+
+	    Common.each(options, function (value, key) {
+	      var opt = document.createElement('option');
+	      opt.innerHTML = key;
+	      opt.setAttribute('value', value);
+
+	      _this.__select.appendChild(opt);
+	    });
+
+	    _this2.updateDisplay();
+
+	    dom.bind(_this2.__select, 'change', function () {
+	      var desiredValue = this.options[this.selectedIndex].value;
+
+	      _this.setValue(desiredValue);
+	    });
+
+	    _this2.domElement.appendChild(_this2.__select);
+
+	    return _this2;
+	  }
+
+	  createClass(OptionController, [{
+	    key: 'setValue',
+	    value: function setValue(v) {
+	      var toReturn = get(OptionController.prototype.__proto__ || Object.getPrototypeOf(OptionController.prototype), 'setValue', this).call(this, v);
+
+	      if (this.__onFinishChange) {
+	        this.__onFinishChange.call(this, this.getValue());
+	      }
+
+	      return toReturn;
+	    }
+	  }, {
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      if (dom.isActive(this.__select)) return this;
+	      this.__select.value = this.getValue();
+	      return get(OptionController.prototype.__proto__ || Object.getPrototypeOf(OptionController.prototype), 'updateDisplay', this).call(this);
+	    }
+	  }]);
+	  return OptionController;
+	}(Controller);
+
+	var StringController = function (_Controller) {
+	  inherits(StringController, _Controller);
+
+	  function StringController(object, property) {
+	    classCallCheck(this, StringController);
+
+	    var _this2 = possibleConstructorReturn(this, (StringController.__proto__ || Object.getPrototypeOf(StringController)).call(this, object, property));
+
+	    var _this = _this2;
+
+	    function onChange() {
+	      _this.setValue(_this.__input.value);
+	    }
+
+	    function onBlur() {
+	      if (_this.__onFinishChange) {
+	        _this.__onFinishChange.call(_this, _this.getValue());
+	      }
+	    }
+
+	    _this2.__input = document.createElement('input');
+
+	    _this2.__input.setAttribute('type', 'text');
+
+	    dom.bind(_this2.__input, 'keyup', onChange);
+	    dom.bind(_this2.__input, 'change', onChange);
+	    dom.bind(_this2.__input, 'blur', onBlur);
+	    dom.bind(_this2.__input, 'keydown', function (e) {
+	      if (e.keyCode === 13) {
+	        this.blur();
+	      }
+	    });
+
+	    _this2.updateDisplay();
+
+	    _this2.domElement.appendChild(_this2.__input);
+
+	    return _this2;
+	  }
+
+	  createClass(StringController, [{
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      if (!dom.isActive(this.__input)) {
+	        this.__input.value = this.getValue();
+	      }
+
+	      return get(StringController.prototype.__proto__ || Object.getPrototypeOf(StringController.prototype), 'updateDisplay', this).call(this);
+	    }
+	  }]);
+	  return StringController;
+	}(Controller);
+
+	function numDecimals(x) {
+	  var _x = x.toString();
+
+	  if (_x.indexOf('.') > -1) {
+	    return _x.length - _x.indexOf('.') - 1;
+	  }
+
+	  return 0;
+	}
+
+	var NumberController = function (_Controller) {
+	  inherits(NumberController, _Controller);
+
+	  function NumberController(object, property, params) {
+	    classCallCheck(this, NumberController);
+
+	    var _this = possibleConstructorReturn(this, (NumberController.__proto__ || Object.getPrototypeOf(NumberController)).call(this, object, property));
+
+	    var _params = params || {};
+
+	    _this.__min = _params.min;
+	    _this.__max = _params.max;
+	    _this.__step = _params.step;
+
+	    if (Common.isUndefined(_this.__step)) {
+	      if (_this.initialValue === 0) {
+	        _this.__impliedStep = 1;
+	      } else {
+	        _this.__impliedStep = Math.pow(10, Math.floor(Math.log(Math.abs(_this.initialValue)) / Math.LN10)) / 10;
+	      }
+	    } else {
+	      _this.__impliedStep = _this.__step;
+	    }
+
+	    _this.__precision = numDecimals(_this.__impliedStep);
+	    return _this;
+	  }
+
+	  createClass(NumberController, [{
+	    key: 'setValue',
+	    value: function setValue(v) {
+	      var _v = v;
+
+	      if (this.__min !== undefined && _v < this.__min) {
+	        _v = this.__min;
+	      } else if (this.__max !== undefined && _v > this.__max) {
+	        _v = this.__max;
+	      }
+
+	      if (this.__step !== undefined && _v % this.__step !== 0) {
+	        _v = Math.round(_v / this.__step) * this.__step;
+	      }
+
+	      return get(NumberController.prototype.__proto__ || Object.getPrototypeOf(NumberController.prototype), 'setValue', this).call(this, _v);
+	    }
+	  }, {
+	    key: 'min',
+	    value: function min(minValue) {
+	      this.__min = minValue;
+	      return this;
+	    }
+	  }, {
+	    key: 'max',
+	    value: function max(maxValue) {
+	      this.__max = maxValue;
+	      return this;
+	    }
+	  }, {
+	    key: 'step',
+	    value: function step(stepValue) {
+	      this.__step = stepValue;
+	      this.__impliedStep = stepValue;
+	      this.__precision = numDecimals(stepValue);
+	      return this;
+	    }
+	  }]);
+	  return NumberController;
+	}(Controller);
+
+	function roundToDecimal(value, decimals) {
+	  var tenTo = Math.pow(10, decimals);
+	  return Math.round(value * tenTo) / tenTo;
+	}
+
+	var NumberControllerBox = function (_NumberController) {
+	  inherits(NumberControllerBox, _NumberController);
+
+	  function NumberControllerBox(object, property, params) {
+	    classCallCheck(this, NumberControllerBox);
+
+	    var _this2 = possibleConstructorReturn(this, (NumberControllerBox.__proto__ || Object.getPrototypeOf(NumberControllerBox)).call(this, object, property, params));
+
+	    _this2.__truncationSuspended = false;
+	    var _this = _this2;
+	    var prevY = void 0;
+
+	    function onChange() {
+	      var attempted = parseFloat(_this.__input.value);
+
+	      if (!Common.isNaN(attempted)) {
+	        _this.setValue(attempted);
+	      }
+	    }
+
+	    function onFinish() {
+	      if (_this.__onFinishChange) {
+	        _this.__onFinishChange.call(_this, _this.getValue());
+	      }
+	    }
+
+	    function onBlur() {
+	      onFinish();
+	    }
+
+	    function onMouseDrag(e) {
+	      var diff = prevY - e.clientY;
+
+	      _this.setValue(_this.getValue() + diff * _this.__impliedStep);
+
+	      prevY = e.clientY;
+	    }
+
+	    function onMouseUp() {
+	      dom.unbind(window, 'mousemove', onMouseDrag);
+	      dom.unbind(window, 'mouseup', onMouseUp);
+	      onFinish();
+	    }
+
+	    function onMouseDown(e) {
+	      dom.bind(window, 'mousemove', onMouseDrag);
+	      dom.bind(window, 'mouseup', onMouseUp);
+	      prevY = e.clientY;
+	    }
+
+	    _this2.__input = document.createElement('input');
+
+	    _this2.__input.setAttribute('type', 'text');
+
+	    dom.bind(_this2.__input, 'change', onChange);
+	    dom.bind(_this2.__input, 'blur', onBlur);
+	    dom.bind(_this2.__input, 'mousedown', onMouseDown);
+	    dom.bind(_this2.__input, 'keydown', function (e) {
+	      if (e.keyCode === 13) {
+	        _this.__truncationSuspended = true;
+	        this.blur();
+	        _this.__truncationSuspended = false;
+	        onFinish();
+	      }
+	    });
+
+	    _this2.updateDisplay();
+
+	    _this2.domElement.appendChild(_this2.__input);
+
+	    return _this2;
+	  }
+
+	  createClass(NumberControllerBox, [{
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      this.__input.value = this.__truncationSuspended ? this.getValue() : roundToDecimal(this.getValue(), this.__precision);
+	      return get(NumberControllerBox.prototype.__proto__ || Object.getPrototypeOf(NumberControllerBox.prototype), 'updateDisplay', this).call(this);
+	    }
+	  }]);
+	  return NumberControllerBox;
+	}(NumberController);
+
+	function map(v, i1, i2, o1, o2) {
+	  return o1 + (o2 - o1) * ((v - i1) / (i2 - i1));
+	}
+
+	var NumberControllerSlider = function (_NumberController) {
+	  inherits(NumberControllerSlider, _NumberController);
+
+	  function NumberControllerSlider(object, property, min, max, step) {
+	    classCallCheck(this, NumberControllerSlider);
+
+	    var _this2 = possibleConstructorReturn(this, (NumberControllerSlider.__proto__ || Object.getPrototypeOf(NumberControllerSlider)).call(this, object, property, {
+	      min: min,
+	      max: max,
+	      step: step
+	    }));
+
+	    var _this = _this2;
+	    _this2.__background = document.createElement('div');
+	    _this2.__foreground = document.createElement('div');
+	    dom.bind(_this2.__background, 'mousedown', onMouseDown);
+	    dom.bind(_this2.__background, 'touchstart', onTouchStart);
+	    dom.addClass(_this2.__background, 'slider');
+	    dom.addClass(_this2.__foreground, 'slider-fg');
+
+	    function onMouseDown(e) {
+	      document.activeElement.blur();
+	      dom.bind(window, 'mousemove', onMouseDrag);
+	      dom.bind(window, 'mouseup', onMouseUp);
+	      onMouseDrag(e);
+	    }
+
+	    function onMouseDrag(e) {
+	      e.preventDefault();
+
+	      var bgRect = _this.__background.getBoundingClientRect();
+
+	      _this.setValue(map(e.clientX, bgRect.left, bgRect.right, _this.__min, _this.__max));
+
+	      return false;
+	    }
+
+	    function onMouseUp() {
+	      dom.unbind(window, 'mousemove', onMouseDrag);
+	      dom.unbind(window, 'mouseup', onMouseUp);
+
+	      if (_this.__onFinishChange) {
+	        _this.__onFinishChange.call(_this, _this.getValue());
+	      }
+	    }
+
+	    function onTouchStart(e) {
+	      if (e.touches.length !== 1) {
+	        return;
+	      }
+
+	      dom.bind(window, 'touchmove', onTouchMove);
+	      dom.bind(window, 'touchend', onTouchEnd);
+	      onTouchMove(e);
+	    }
+
+	    function onTouchMove(e) {
+	      var clientX = e.touches[0].clientX;
+
+	      var bgRect = _this.__background.getBoundingClientRect();
+
+	      _this.setValue(map(clientX, bgRect.left, bgRect.right, _this.__min, _this.__max));
+	    }
+
+	    function onTouchEnd() {
+	      dom.unbind(window, 'touchmove', onTouchMove);
+	      dom.unbind(window, 'touchend', onTouchEnd);
+
+	      if (_this.__onFinishChange) {
+	        _this.__onFinishChange.call(_this, _this.getValue());
+	      }
+	    }
+
+	    _this2.updateDisplay();
+
+	    _this2.__background.appendChild(_this2.__foreground);
+
+	    _this2.domElement.appendChild(_this2.__background);
+
+	    return _this2;
+	  }
+
+	  createClass(NumberControllerSlider, [{
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      var pct = (this.getValue() - this.__min) / (this.__max - this.__min);
+
+	      this.__foreground.style.width = pct * 100 + '%';
+	      return get(NumberControllerSlider.prototype.__proto__ || Object.getPrototypeOf(NumberControllerSlider.prototype), 'updateDisplay', this).call(this);
+	    }
+	  }]);
+	  return NumberControllerSlider;
+	}(NumberController);
+
+	var FunctionController = function (_Controller) {
+	  inherits(FunctionController, _Controller);
+
+	  function FunctionController(object, property, text) {
+	    classCallCheck(this, FunctionController);
+
+	    var _this2 = possibleConstructorReturn(this, (FunctionController.__proto__ || Object.getPrototypeOf(FunctionController)).call(this, object, property));
+
+	    var _this = _this2;
+	    _this2.__button = document.createElement('div');
+	    _this2.__button.innerHTML = text === undefined ? 'Fire' : text;
+	    dom.bind(_this2.__button, 'click', function (e) {
+	      e.preventDefault();
+
+	      _this.fire();
+
+	      return false;
+	    });
+	    dom.addClass(_this2.__button, 'button');
+
+	    _this2.domElement.appendChild(_this2.__button);
+
+	    return _this2;
+	  }
+
+	  createClass(FunctionController, [{
+	    key: 'fire',
+	    value: function fire() {
+	      if (this.__onChange) {
+	        this.__onChange.call(this);
+	      }
+
+	      this.getValue().call(this.object);
+
+	      if (this.__onFinishChange) {
+	        this.__onFinishChange.call(this, this.getValue());
+	      }
+	    }
+	  }]);
+	  return FunctionController;
+	}(Controller);
+
+	var ColorController = function (_Controller) {
+	  inherits(ColorController, _Controller);
+
+	  function ColorController(object, property) {
+	    classCallCheck(this, ColorController);
+
+	    var _this2 = possibleConstructorReturn(this, (ColorController.__proto__ || Object.getPrototypeOf(ColorController)).call(this, object, property));
+
+	    _this2.__color = new Color$1(_this2.getValue());
+	    _this2.__temp = new Color$1(0);
+	    var _this = _this2;
+	    _this2.domElement = document.createElement('div');
+	    dom.makeSelectable(_this2.domElement, false);
+	    _this2.__selector = document.createElement('div');
+	    _this2.__selector.className = 'selector';
+	    _this2.__saturation_field = document.createElement('div');
+	    _this2.__saturation_field.className = 'saturation-field';
+	    _this2.__field_knob = document.createElement('div');
+	    _this2.__field_knob.className = 'field-knob';
+	    _this2.__field_knob_border = '2px solid ';
+	    _this2.__hue_knob = document.createElement('div');
+	    _this2.__hue_knob.className = 'hue-knob';
+	    _this2.__hue_field = document.createElement('div');
+	    _this2.__hue_field.className = 'hue-field';
+	    _this2.__input = document.createElement('input');
+	    _this2.__input.type = 'text';
+	    _this2.__input_textShadow = '0 1px 1px ';
+	    dom.bind(_this2.__input, 'keydown', function (e) {
+	      if (e.keyCode === 13) {
+	        onBlur.call(this);
+	      }
+	    });
+	    dom.bind(_this2.__input, 'blur', onBlur);
+	    dom.bind(_this2.__selector, 'mousedown', function () {
+	      dom.addClass(this, 'drag').bind(window, 'mouseup', function () {
+	        dom.removeClass(_this.__selector, 'drag');
+	      });
+	    });
+	    dom.bind(_this2.__selector, 'touchstart', function () {
+	      dom.addClass(this, 'drag').bind(window, 'touchend', function () {
+	        dom.removeClass(_this.__selector, 'drag');
+	      });
+	    });
+	    var valueField = document.createElement('div');
+	    Common.extend(_this2.__selector.style, {
+	      width: '122px',
+	      height: '102px',
+	      padding: '3px',
+	      backgroundColor: '#222',
+	      boxShadow: '0px 1px 3px rgba(0,0,0,0.3)'
+	    });
+	    Common.extend(_this2.__field_knob.style, {
+	      position: 'absolute',
+	      width: '12px',
+	      height: '12px',
+	      border: _this2.__field_knob_border + (_this2.__color.v < 0.5 ? '#fff' : '#000'),
+	      boxShadow: '0px 1px 3px rgba(0,0,0,0.5)',
+	      borderRadius: '12px',
+	      zIndex: 1
+	    });
+	    Common.extend(_this2.__hue_knob.style, {
+	      position: 'absolute',
+	      width: '15px',
+	      height: '2px',
+	      borderRight: '4px solid #fff',
+	      zIndex: 1
+	    });
+	    Common.extend(_this2.__saturation_field.style, {
+	      width: '100px',
+	      height: '100px',
+	      border: '1px solid #555',
+	      marginRight: '3px',
+	      display: 'inline-block',
+	      cursor: 'pointer'
+	    });
+	    Common.extend(valueField.style, {
+	      width: '100%',
+	      height: '100%',
+	      background: 'none'
+	    });
+	    linearGradient(valueField, 'top', 'rgba(0,0,0,0)', '#000');
+	    Common.extend(_this2.__hue_field.style, {
+	      width: '15px',
+	      height: '100px',
+	      border: '1px solid #555',
+	      cursor: 'ns-resize',
+	      position: 'absolute',
+	      top: '3px',
+	      right: '3px'
+	    });
+	    hueGradient(_this2.__hue_field);
+	    Common.extend(_this2.__input.style, {
+	      outline: 'none',
+	      textAlign: 'center',
+	      color: '#fff',
+	      border: 0,
+	      fontWeight: 'bold',
+	      textShadow: _this2.__input_textShadow + 'rgba(0,0,0,0.7)'
+	    });
+	    dom.bind(_this2.__saturation_field, 'mousedown', fieldDown);
+	    dom.bind(_this2.__saturation_field, 'touchstart', fieldDown);
+	    dom.bind(_this2.__field_knob, 'mousedown', fieldDown);
+	    dom.bind(_this2.__field_knob, 'touchstart', fieldDown);
+	    dom.bind(_this2.__hue_field, 'mousedown', fieldDownH);
+	    dom.bind(_this2.__hue_field, 'touchstart', fieldDownH);
+
+	    function fieldDown(e) {
+	      setSV(e);
+	      dom.bind(window, 'mousemove', setSV);
+	      dom.bind(window, 'touchmove', setSV);
+	      dom.bind(window, 'mouseup', fieldUpSV);
+	      dom.bind(window, 'touchend', fieldUpSV);
+	    }
+
+	    function fieldDownH(e) {
+	      setH(e);
+	      dom.bind(window, 'mousemove', setH);
+	      dom.bind(window, 'touchmove', setH);
+	      dom.bind(window, 'mouseup', fieldUpH);
+	      dom.bind(window, 'touchend', fieldUpH);
+	    }
+
+	    function fieldUpSV() {
+	      dom.unbind(window, 'mousemove', setSV);
+	      dom.unbind(window, 'touchmove', setSV);
+	      dom.unbind(window, 'mouseup', fieldUpSV);
+	      dom.unbind(window, 'touchend', fieldUpSV);
+	      onFinish();
+	    }
+
+	    function fieldUpH() {
+	      dom.unbind(window, 'mousemove', setH);
+	      dom.unbind(window, 'touchmove', setH);
+	      dom.unbind(window, 'mouseup', fieldUpH);
+	      dom.unbind(window, 'touchend', fieldUpH);
+	      onFinish();
+	    }
+
+	    function onBlur() {
+	      var i = interpret(this.value);
+
+	      if (i !== false) {
+	        _this.__color.__state = i;
+
+	        _this.setValue(_this.__color.toOriginal());
+	      } else {
+	        this.value = _this.__color.toString();
+	      }
+	    }
+
+	    function onFinish() {
+	      if (_this.__onFinishChange) {
+	        _this.__onFinishChange.call(_this, _this.__color.toOriginal());
+	      }
+	    }
+
+	    _this2.__saturation_field.appendChild(valueField);
+
+	    _this2.__selector.appendChild(_this2.__field_knob);
+
+	    _this2.__selector.appendChild(_this2.__saturation_field);
+
+	    _this2.__selector.appendChild(_this2.__hue_field);
+
+	    _this2.__hue_field.appendChild(_this2.__hue_knob);
+
+	    _this2.domElement.appendChild(_this2.__input);
+
+	    _this2.domElement.appendChild(_this2.__selector);
+
+	    _this2.updateDisplay();
+
+	    function setSV(e) {
+	      if (e.type.indexOf('touch') === -1) {
+	        e.preventDefault();
+	      }
+
+	      var fieldRect = _this.__saturation_field.getBoundingClientRect();
+
+	      var _ref = e.touches && e.touches[0] || e,
+	          clientX = _ref.clientX,
+	          clientY = _ref.clientY;
+
+	      var s = (clientX - fieldRect.left) / (fieldRect.right - fieldRect.left);
+	      var v = 1 - (clientY - fieldRect.top) / (fieldRect.bottom - fieldRect.top);
+
+	      if (v > 1) {
+	        v = 1;
+	      } else if (v < 0) {
+	        v = 0;
+	      }
+
+	      if (s > 1) {
+	        s = 1;
+	      } else if (s < 0) {
+	        s = 0;
+	      }
+
+	      _this.__color.v = v;
+	      _this.__color.s = s;
+
+	      _this.setValue(_this.__color.toOriginal());
+
+	      return false;
+	    }
+
+	    function setH(e) {
+	      if (e.type.indexOf('touch') === -1) {
+	        e.preventDefault();
+	      }
+
+	      var fieldRect = _this.__hue_field.getBoundingClientRect();
+
+	      var _ref2 = e.touches && e.touches[0] || e,
+	          clientY = _ref2.clientY;
+
+	      var h = 1 - (clientY - fieldRect.top) / (fieldRect.bottom - fieldRect.top);
+
+	      if (h > 1) {
+	        h = 1;
+	      } else if (h < 0) {
+	        h = 0;
+	      }
+
+	      _this.__color.h = h * 360;
+
+	      _this.setValue(_this.__color.toOriginal());
+
+	      return false;
+	    }
+
+	    return _this2;
+	  }
+
+	  createClass(ColorController, [{
+	    key: 'updateDisplay',
+	    value: function updateDisplay() {
+	      var i = interpret(this.getValue());
+
+	      if (i !== false) {
+	        var mismatch = false;
+	        Common.each(Color$1.COMPONENTS, function (component) {
+	          if (!Common.isUndefined(i[component]) && !Common.isUndefined(this.__color.__state[component]) && i[component] !== this.__color.__state[component]) {
+	            mismatch = true;
+	            return {};
+	          }
+	        }, this);
+
+	        if (mismatch) {
+	          Common.extend(this.__color.__state, i);
+	        }
+	      }
+
+	      Common.extend(this.__temp.__state, this.__color.__state);
+	      this.__temp.a = 1;
+	      var flip = this.__color.v < 0.5 || this.__color.s > 0.5 ? 255 : 0;
+
+	      var _flip = 255 - flip;
+
+	      Common.extend(this.__field_knob.style, {
+	        marginLeft: 100 * this.__color.s - 7 + 'px',
+	        marginTop: 100 * (1 - this.__color.v) - 7 + 'px',
+	        backgroundColor: this.__temp.toHexString(),
+	        border: this.__field_knob_border + 'rgb(' + flip + ',' + flip + ',' + flip + ')'
+	      });
+	      this.__hue_knob.style.marginTop = (1 - this.__color.h / 360) * 100 + 'px';
+	      this.__temp.s = 1;
+	      this.__temp.v = 1;
+	      linearGradient(this.__saturation_field, 'left', '#fff', this.__temp.toHexString());
+	      this.__input.value = this.__color.toString();
+	      Common.extend(this.__input.style, {
+	        backgroundColor: this.__color.toHexString(),
+	        color: 'rgb(' + flip + ',' + flip + ',' + flip + ')',
+	        textShadow: this.__input_textShadow + 'rgba(' + _flip + ',' + _flip + ',' + _flip + ',.7)'
+	      });
+	    }
+	  }]);
+	  return ColorController;
+	}(Controller);
+
+	var vendors = ['-moz-', '-o-', '-webkit-', '-ms-', ''];
+
+	function linearGradient(elem, x, a, b) {
+	  elem.style.background = '';
+	  Common.each(vendors, function (vendor) {
+	    elem.style.cssText += 'background: ' + vendor + 'linear-gradient(' + x + ', ' + a + ' 0%, ' + b + ' 100%); ';
+	  });
+	}
+
+	function hueGradient(elem) {
+	  elem.style.background = '';
+	  elem.style.cssText += 'background: -moz-linear-gradient(top,  #ff0000 0%, #ff00ff 17%, #0000ff 34%, #00ffff 50%, #00ff00 67%, #ffff00 84%, #ff0000 100%);';
+	  elem.style.cssText += 'background: -webkit-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);';
+	  elem.style.cssText += 'background: -o-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);';
+	  elem.style.cssText += 'background: -ms-linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);';
+	  elem.style.cssText += 'background: linear-gradient(top,  #ff0000 0%,#ff00ff 17%,#0000ff 34%,#00ffff 50%,#00ff00 67%,#ffff00 84%,#ff0000 100%);';
+	}
+
+	var css = {
+	  load: function load(url, indoc) {
+	    var doc = indoc || document;
+	    var link = doc.createElement('link');
+	    link.type = 'text/css';
+	    link.rel = 'stylesheet';
+	    link.href = url;
+	    doc.getElementsByTagName('head')[0].appendChild(link);
+	  },
+	  inject: function inject(cssContent, indoc) {
+	    var doc = indoc || document;
+	    var injected = document.createElement('style');
+	    injected.type = 'text/css';
+	    injected.innerHTML = cssContent;
+	    var head = doc.getElementsByTagName('head')[0];
+
+	    try {
+	      head.appendChild(injected);
+	    } catch (e) {}
+	  }
+	};
+	var saveDialogContents = "<div id=\"dg-save\" class=\"dg dialogue\">\n\n  Here's the new load parameter for your <code>GUI</code>'s constructor:\n\n  <textarea id=\"dg-new-constructor\"></textarea>\n\n  <div id=\"dg-save-locally\">\n\n    <input id=\"dg-local-storage\" type=\"checkbox\"/> Automatically save\n    values to <code>localStorage</code> on exit.\n\n    <div id=\"dg-local-explain\">The values saved to <code>localStorage</code> will\n      override those passed to <code>dat.GUI</code>'s constructor. This makes it\n      easier to work incrementally, but <code>localStorage</code> is fragile,\n      and your friends may not see the same values you do.\n\n    </div>\n\n  </div>\n\n</div>";
+
+	var ControllerFactory = function ControllerFactory(object, property) {
+	  var initialValue = object[property];
+
+	  if (Common.isArray(arguments[2]) || Common.isObject(arguments[2])) {
+	    return new OptionController(object, property, arguments[2]);
+	  }
+
+	  if (Common.isNumber(initialValue)) {
+	    if (Common.isNumber(arguments[2]) && Common.isNumber(arguments[3])) {
+	      if (Common.isNumber(arguments[4])) {
+	        return new NumberControllerSlider(object, property, arguments[2], arguments[3], arguments[4]);
+	      }
+
+	      return new NumberControllerSlider(object, property, arguments[2], arguments[3]);
+	    }
+
+	    if (Common.isNumber(arguments[4])) {
+	      return new NumberControllerBox(object, property, {
+	        min: arguments[2],
+	        max: arguments[3],
+	        step: arguments[4]
+	      });
+	    }
+
+	    return new NumberControllerBox(object, property, {
+	      min: arguments[2],
+	      max: arguments[3]
+	    });
+	  }
+
+	  if (Common.isString(initialValue)) {
+	    return new StringController(object, property);
+	  }
+
+	  if (Common.isFunction(initialValue)) {
+	    return new FunctionController(object, property, '');
+	  }
+
+	  if (Common.isBoolean(initialValue)) {
+	    return new BooleanController(object, property);
+	  }
+
+	  return null;
+	};
+
+	function requestAnimationFrame$1(callback) {
+	  setTimeout(callback, 1000 / 60);
+	}
+
+	var requestAnimationFrame$1$1 = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || requestAnimationFrame$1;
+
+	var CenteredDiv = function () {
+	  function CenteredDiv() {
+	    classCallCheck(this, CenteredDiv);
+	    this.backgroundElement = document.createElement('div');
+	    Common.extend(this.backgroundElement.style, {
+	      backgroundColor: 'rgba(0,0,0,0.8)',
+	      top: 0,
+	      left: 0,
+	      display: 'none',
+	      zIndex: '1000',
+	      opacity: 0,
+	      WebkitTransition: 'opacity 0.2s linear',
+	      transition: 'opacity 0.2s linear'
+	    });
+	    dom.makeFullscreen(this.backgroundElement);
+	    this.backgroundElement.style.position = 'fixed';
+	    this.domElement = document.createElement('div');
+	    Common.extend(this.domElement.style, {
+	      position: 'fixed',
+	      display: 'none',
+	      zIndex: '1001',
+	      opacity: 0,
+	      WebkitTransition: '-webkit-transform 0.2s ease-out, opacity 0.2s linear',
+	      transition: 'transform 0.2s ease-out, opacity 0.2s linear'
+	    });
+	    document.body.appendChild(this.backgroundElement);
+	    document.body.appendChild(this.domElement);
+
+	    var _this = this;
+
+	    dom.bind(this.backgroundElement, 'click', function () {
+	      _this.hide();
+	    });
+	  }
+
+	  createClass(CenteredDiv, [{
+	    key: 'show',
+	    value: function show() {
+	      var _this = this;
+
+	      this.backgroundElement.style.display = 'block';
+	      this.domElement.style.display = 'block';
+	      this.domElement.style.opacity = 0;
+	      this.domElement.style.webkitTransform = 'scale(1.1)';
+	      this.layout();
+	      Common.defer(function () {
+	        _this.backgroundElement.style.opacity = 1;
+	        _this.domElement.style.opacity = 1;
+	        _this.domElement.style.webkitTransform = 'scale(1)';
+	      });
+	    }
+	  }, {
+	    key: 'hide',
+	    value: function hide() {
+	      var _this = this;
+
+	      var hide = function hide() {
+	        _this.domElement.style.display = 'none';
+	        _this.backgroundElement.style.display = 'none';
+	        dom.unbind(_this.domElement, 'webkitTransitionEnd', hide);
+	        dom.unbind(_this.domElement, 'transitionend', hide);
+	        dom.unbind(_this.domElement, 'oTransitionEnd', hide);
+	      };
+
+	      dom.bind(this.domElement, 'webkitTransitionEnd', hide);
+	      dom.bind(this.domElement, 'transitionend', hide);
+	      dom.bind(this.domElement, 'oTransitionEnd', hide);
+	      this.backgroundElement.style.opacity = 0;
+	      this.domElement.style.opacity = 0;
+	      this.domElement.style.webkitTransform = 'scale(1.1)';
+	    }
+	  }, {
+	    key: 'layout',
+	    value: function layout() {
+	      this.domElement.style.left = window.innerWidth / 2 - dom.getWidth(this.domElement) / 2 + 'px';
+	      this.domElement.style.top = window.innerHeight / 2 - dom.getHeight(this.domElement) / 2 + 'px';
+	    }
+	  }]);
+	  return CenteredDiv;
+	}();
+
+	var styleSheet = ___$insertStyle(".dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}.dg.ac{position:fixed;top:0;left:0;right:0;height:0;z-index:0}.dg:not(.ac) .main{overflow:hidden}.dg.main{-webkit-transition:opacity .1s linear;-o-transition:opacity .1s linear;-moz-transition:opacity .1s linear;transition:opacity .1s linear}.dg.main.taller-than-window{overflow-y:auto}.dg.main.taller-than-window .close-button{opacity:1;margin-top:-1px;border-top:1px solid #2c2c2c}.dg.main ul.closed .close-button{opacity:1 !important}.dg.main:hover .close-button,.dg.main .close-button.drag{opacity:1}.dg.main .close-button{-webkit-transition:opacity .1s linear;-o-transition:opacity .1s linear;-moz-transition:opacity .1s linear;transition:opacity .1s linear;border:0;line-height:19px;height:20px;cursor:pointer;text-align:center;background-color:#000}.dg.main .close-button.close-top{position:relative}.dg.main .close-button.close-bottom{position:absolute}.dg.main .close-button:hover{background-color:#111}.dg.a{float:right;margin-right:15px;overflow-y:visible}.dg.a.has-save>ul.close-top{margin-top:0}.dg.a.has-save>ul.close-bottom{margin-top:27px}.dg.a.has-save>ul.closed{margin-top:0}.dg.a .save-row{top:0;z-index:1002}.dg.a .save-row.close-top{position:relative}.dg.a .save-row.close-bottom{position:fixed}.dg li{-webkit-transition:height .1s ease-out;-o-transition:height .1s ease-out;-moz-transition:height .1s ease-out;transition:height .1s ease-out;-webkit-transition:overflow .1s linear;-o-transition:overflow .1s linear;-moz-transition:overflow .1s linear;transition:overflow .1s linear}.dg li:not(.folder){cursor:auto;height:27px;line-height:27px;padding:0 4px 0 5px}.dg li.folder{padding:0;border-left:4px solid rgba(0,0,0,0)}.dg li.title{cursor:pointer;margin-left:-4px}.dg .closed li:not(.title),.dg .closed ul li,.dg .closed ul li>*{height:0;overflow:hidden;border:0}.dg .cr{clear:both;padding-left:3px;height:27px;overflow:hidden}.dg .property-name{cursor:default;float:left;clear:left;width:40%;overflow:hidden;text-overflow:ellipsis}.dg .c{float:left;width:60%;position:relative}.dg .c input[type=text]{border:0;margin-top:4px;padding:3px;width:100%;float:right}.dg .has-slider input[type=text]{width:30%;margin-left:0}.dg .slider{float:left;width:66%;margin-left:-5px;margin-right:0;height:19px;margin-top:4px}.dg .slider-fg{height:100%}.dg .c input[type=checkbox]{margin-top:7px}.dg .c select{margin-top:5px}.dg .cr.function,.dg .cr.function .property-name,.dg .cr.function *,.dg .cr.boolean,.dg .cr.boolean *{cursor:pointer}.dg .cr.color{overflow:visible}.dg .selector{display:none;position:absolute;margin-left:-9px;margin-top:23px;z-index:10}.dg .c:hover .selector,.dg .selector.drag{display:block}.dg li.save-row{padding:0}.dg li.save-row .button{display:inline-block;padding:0px 6px}.dg.dialogue{background-color:#222;width:460px;padding:15px;font-size:13px;line-height:15px}#dg-new-constructor{padding:10px;color:#222;font-family:Monaco, monospace;font-size:10px;border:0;resize:none;box-shadow:inset 1px 1px 1px #888;word-wrap:break-word;margin:12px 0;display:block;width:440px;overflow-y:scroll;height:100px;position:relative}#dg-local-explain{display:none;font-size:11px;line-height:17px;border-radius:3px;background-color:#333;padding:8px;margin-top:10px}#dg-local-explain code{font-size:10px}#dat-gui-save-locally{display:none}.dg{color:#eee;font:11px 'Lucida Grande', sans-serif;text-shadow:0 -1px 0 #111}.dg.main::-webkit-scrollbar{width:5px;background:#1a1a1a}.dg.main::-webkit-scrollbar-corner{height:0;display:none}.dg.main::-webkit-scrollbar-thumb{border-radius:5px;background:#676767}.dg li:not(.folder){background:#1a1a1a;border-bottom:1px solid #2c2c2c}.dg li.save-row{line-height:25px;background:#dad5cb;border:0}.dg li.save-row select{margin-left:5px;width:108px}.dg li.save-row .button{margin-left:5px;margin-top:1px;border-radius:2px;font-size:9px;line-height:7px;padding:4px 4px 5px 4px;background:#c5bdad;color:#fff;text-shadow:0 1px 0 #b0a58f;box-shadow:0 -1px 0 #b0a58f;cursor:pointer}.dg li.save-row .button.gears{background:#c5bdad url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANCAYAAAB/9ZQ7AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQJJREFUeNpiYKAU/P//PwGIC/ApCABiBSAW+I8AClAcgKxQ4T9hoMAEUrxx2QSGN6+egDX+/vWT4e7N82AMYoPAx/evwWoYoSYbACX2s7KxCxzcsezDh3evFoDEBYTEEqycggWAzA9AuUSQQgeYPa9fPv6/YWm/Acx5IPb7ty/fw+QZblw67vDs8R0YHyQhgObx+yAJkBqmG5dPPDh1aPOGR/eugW0G4vlIoTIfyFcA+QekhhHJhPdQxbiAIguMBTQZrPD7108M6roWYDFQiIAAv6Aow/1bFwXgis+f2LUAynwoIaNcz8XNx3Dl7MEJUDGQpx9gtQ8YCueB+D26OECAAQDadt7e46D42QAAAABJRU5ErkJggg==) 2px 1px no-repeat;height:7px;width:8px}.dg li.save-row .button:hover{background-color:#bab19e;box-shadow:0 -1px 0 #b0a58f}.dg li.folder{border-bottom:0}.dg li.title{padding-left:16px;background:#000 url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlI+hKgFxoCgAOw==) 6px 10px no-repeat;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.2)}.dg .closed li.title{background-image:url(data:image/gif;base64,R0lGODlhBQAFAJEAAP////Pz8////////yH5BAEAAAIALAAAAAAFAAUAAAIIlGIWqMCbWAEAOw==)}.dg .cr.boolean{border-left:3px solid #806787}.dg .cr.color{border-left:3px solid}.dg .cr.function{border-left:3px solid #e61d5f}.dg .cr.number{border-left:3px solid #2FA1D6}.dg .cr.number input[type=text]{color:#2FA1D6}.dg .cr.string{border-left:3px solid #1ed36f}.dg .cr.string input[type=text]{color:#1ed36f}.dg .cr.function:hover,.dg .cr.boolean:hover{background:#111}.dg .c input[type=text]{background:#303030;outline:none}.dg .c input[type=text]:hover{background:#3c3c3c}.dg .c input[type=text]:focus{background:#494949;color:#fff}.dg .c .slider{background:#303030;cursor:ew-resize}.dg .c .slider-fg{background:#2FA1D6;max-width:100%}.dg .c .slider:hover{background:#3c3c3c}.dg .c .slider:hover .slider-fg{background:#44abda}\n");
+
+	css.inject(styleSheet);
+	var CSS_NAMESPACE = 'dg';
+	var HIDE_KEY_CODE = 72;
+	var CLOSE_BUTTON_HEIGHT = 20;
+	var DEFAULT_DEFAULT_PRESET_NAME = 'Default';
+
+	var SUPPORTS_LOCAL_STORAGE = function () {
+	  try {
+	    return !!window.localStorage;
+	  } catch (e) {
+	    return false;
+	  }
+	}();
+
+	var SAVE_DIALOGUE = void 0;
+	var autoPlaceVirgin = true;
+	var autoPlaceContainer = void 0;
+	var hide = false;
+	var hideableGuis = [];
+
+	var GUI = function GUI(pars) {
+	  var _this = this;
+
+	  var params = pars || {};
+	  this.domElement = document.createElement('div');
+	  this.__ul = document.createElement('ul');
+	  this.domElement.appendChild(this.__ul);
+	  dom.addClass(this.domElement, CSS_NAMESPACE);
+	  this.__folders = {};
+	  this.__controllers = [];
+	  this.__rememberedObjects = [];
+	  this.__rememberedObjectIndecesToControllers = [];
+	  this.__listening = [];
+	  params = Common.defaults(params, {
+	    closeOnTop: false,
+	    autoPlace: true,
+	    width: GUI.DEFAULT_WIDTH
+	  });
+	  params = Common.defaults(params, {
+	    resizable: params.autoPlace,
+	    hideable: params.autoPlace
+	  });
+
+	  if (!Common.isUndefined(params.load)) {
+	    if (params.preset) {
+	      params.load.preset = params.preset;
+	    }
+	  } else {
+	    params.load = {
+	      preset: DEFAULT_DEFAULT_PRESET_NAME
+	    };
+	  }
+
+	  if (Common.isUndefined(params.parent) && params.hideable) {
+	    hideableGuis.push(this);
+	  }
+
+	  params.resizable = Common.isUndefined(params.parent) && params.resizable;
+
+	  if (params.autoPlace && Common.isUndefined(params.scrollable)) {
+	    params.scrollable = true;
+	  }
+
+	  var useLocalStorage = SUPPORTS_LOCAL_STORAGE && localStorage.getItem(getLocalStorageHash(this, 'isLocal')) === 'true';
+	  var saveToLocalStorage = void 0;
+	  var titleRow = void 0;
+	  Object.defineProperties(this, {
+	    parent: {
+	      get: function get$$1() {
+	        return params.parent;
+	      }
+	    },
+	    scrollable: {
+	      get: function get$$1() {
+	        return params.scrollable;
+	      }
+	    },
+	    autoPlace: {
+	      get: function get$$1() {
+	        return params.autoPlace;
+	      }
+	    },
+	    closeOnTop: {
+	      get: function get$$1() {
+	        return params.closeOnTop;
+	      }
+	    },
+	    preset: {
+	      get: function get$$1() {
+	        if (_this.parent) {
+	          return _this.getRoot().preset;
+	        }
+
+	        return params.load.preset;
+	      },
+	      set: function set$$1(v) {
+	        if (_this.parent) {
+	          _this.getRoot().preset = v;
+	        } else {
+	          params.load.preset = v;
+	        }
+
+	        setPresetSelectIndex(this);
+
+	        _this.revert();
+	      }
+	    },
+	    width: {
+	      get: function get$$1() {
+	        return params.width;
+	      },
+	      set: function set$$1(v) {
+	        params.width = v;
+	        setWidth(_this, v);
+	      }
+	    },
+	    name: {
+	      get: function get$$1() {
+	        return params.name;
+	      },
+	      set: function set$$1(v) {
+	        params.name = v;
+
+	        if (titleRow) {
+	          titleRow.innerHTML = params.name;
+	        }
+	      }
+	    },
+	    closed: {
+	      get: function get$$1() {
+	        return params.closed;
+	      },
+	      set: function set$$1(v) {
+	        params.closed = v;
+
+	        if (params.closed) {
+	          dom.addClass(_this.__ul, GUI.CLASS_CLOSED);
+	        } else {
+	          dom.removeClass(_this.__ul, GUI.CLASS_CLOSED);
+	        }
+
+	        this.onResize();
+
+	        if (_this.__closeButton) {
+	          _this.__closeButton.innerHTML = v ? GUI.TEXT_OPEN : GUI.TEXT_CLOSED;
+	        }
+	      }
+	    },
+	    load: {
+	      get: function get$$1() {
+	        return params.load;
+	      }
+	    },
+	    useLocalStorage: {
+	      get: function get$$1() {
+	        return useLocalStorage;
+	      },
+	      set: function set$$1(bool) {
+	        if (SUPPORTS_LOCAL_STORAGE) {
+	          useLocalStorage = bool;
+
+	          if (bool) {
+	            dom.bind(window, 'unload', saveToLocalStorage);
+	          } else {
+	            dom.unbind(window, 'unload', saveToLocalStorage);
+	          }
+
+	          localStorage.setItem(getLocalStorageHash(_this, 'isLocal'), bool);
+	        }
+	      }
+	    }
+	  });
+
+	  if (Common.isUndefined(params.parent)) {
+	    this.closed = params.closed || false;
+	    dom.addClass(this.domElement, GUI.CLASS_MAIN);
+	    dom.makeSelectable(this.domElement, false);
+
+	    if (SUPPORTS_LOCAL_STORAGE) {
+	      if (useLocalStorage) {
+	        _this.useLocalStorage = true;
+	        var savedGui = localStorage.getItem(getLocalStorageHash(this, 'gui'));
+
+	        if (savedGui) {
+	          params.load = JSON.parse(savedGui);
+	        }
+	      }
+	    }
+
+	    this.__closeButton = document.createElement('div');
+	    this.__closeButton.innerHTML = GUI.TEXT_CLOSED;
+	    dom.addClass(this.__closeButton, GUI.CLASS_CLOSE_BUTTON);
+
+	    if (params.closeOnTop) {
+	      dom.addClass(this.__closeButton, GUI.CLASS_CLOSE_TOP);
+	      this.domElement.insertBefore(this.__closeButton, this.domElement.childNodes[0]);
+	    } else {
+	      dom.addClass(this.__closeButton, GUI.CLASS_CLOSE_BOTTOM);
+	      this.domElement.appendChild(this.__closeButton);
+	    }
+
+	    dom.bind(this.__closeButton, 'click', function () {
+	      _this.closed = !_this.closed;
+	    });
+	  } else {
+	    if (params.closed === undefined) {
+	      params.closed = true;
+	    }
+
+	    var titleRowName = document.createTextNode(params.name);
+	    dom.addClass(titleRowName, 'controller-name');
+	    titleRow = addRow(_this, titleRowName);
+
+	    var onClickTitle = function onClickTitle(e) {
+	      e.preventDefault();
+	      _this.closed = !_this.closed;
+	      return false;
+	    };
+
+	    dom.addClass(this.__ul, GUI.CLASS_CLOSED);
+	    dom.addClass(titleRow, 'title');
+	    dom.bind(titleRow, 'click', onClickTitle);
+
+	    if (!params.closed) {
+	      this.closed = false;
+	    }
+	  }
+
+	  if (params.autoPlace) {
+	    if (Common.isUndefined(params.parent)) {
+	      if (autoPlaceVirgin) {
+	        autoPlaceContainer = document.createElement('div');
+	        dom.addClass(autoPlaceContainer, CSS_NAMESPACE);
+	        dom.addClass(autoPlaceContainer, GUI.CLASS_AUTO_PLACE_CONTAINER);
+	        document.body.appendChild(autoPlaceContainer);
+	        autoPlaceVirgin = false;
+	      }
+
+	      autoPlaceContainer.appendChild(this.domElement);
+	      dom.addClass(this.domElement, GUI.CLASS_AUTO_PLACE);
+	    }
+
+	    if (!this.parent) {
+	      setWidth(_this, params.width);
+	    }
+	  }
+
+	  this.__resizeHandler = function () {
+	    _this.onResizeDebounced();
+	  };
+
+	  dom.bind(window, 'resize', this.__resizeHandler);
+	  dom.bind(this.__ul, 'webkitTransitionEnd', this.__resizeHandler);
+	  dom.bind(this.__ul, 'transitionend', this.__resizeHandler);
+	  dom.bind(this.__ul, 'oTransitionEnd', this.__resizeHandler);
+	  this.onResize();
+
+	  if (params.resizable) {
+	    addResizeHandle(this);
+	  }
+
+	  saveToLocalStorage = function saveToLocalStorage() {
+	    if (SUPPORTS_LOCAL_STORAGE && localStorage.getItem(getLocalStorageHash(_this, 'isLocal')) === 'true') {
+	      localStorage.setItem(getLocalStorageHash(_this, 'gui'), JSON.stringify(_this.getSaveObject()));
+	    }
+	  };
+
+	  this.saveToLocalStorageIfPossible = saveToLocalStorage;
+
+	  function resetWidth() {
+	    var root = _this.getRoot();
+
+	    root.width += 1;
+	    Common.defer(function () {
+	      root.width -= 1;
+	    });
+	  }
+
+	  if (!params.parent) {
+	    resetWidth();
+	  }
+	};
+
+	GUI.toggleHide = function () {
+	  hide = !hide;
+	  Common.each(hideableGuis, function (gui) {
+	    gui.domElement.style.display = hide ? 'none' : '';
+	  });
+	};
+
+	GUI.CLASS_AUTO_PLACE = 'a';
+	GUI.CLASS_AUTO_PLACE_CONTAINER = 'ac';
+	GUI.CLASS_MAIN = 'main';
+	GUI.CLASS_CONTROLLER_ROW = 'cr';
+	GUI.CLASS_TOO_TALL = 'taller-than-window';
+	GUI.CLASS_CLOSED = 'closed';
+	GUI.CLASS_CLOSE_BUTTON = 'close-button';
+	GUI.CLASS_CLOSE_TOP = 'close-top';
+	GUI.CLASS_CLOSE_BOTTOM = 'close-bottom';
+	GUI.CLASS_DRAG = 'drag';
+	GUI.DEFAULT_WIDTH = 245;
+	GUI.TEXT_CLOSED = 'Close Controls';
+	GUI.TEXT_OPEN = 'Open Controls';
+
+	GUI._keydownHandler = function (e) {
+	  if (document.activeElement.type !== 'text' && (e.which === HIDE_KEY_CODE || e.keyCode === HIDE_KEY_CODE)) {
+	    GUI.toggleHide();
+	  }
+	};
+
+	dom.bind(window, 'keydown', GUI._keydownHandler, false);
+	Common.extend(GUI.prototype, {
+	  add: function add(object, property) {
+	    return _add(this, object, property, {
+	      factoryArgs: Array.prototype.slice.call(arguments, 2)
+	    });
+	  },
+	  addColor: function addColor(object, property) {
+	    return _add(this, object, property, {
+	      color: true
+	    });
+	  },
+	  remove: function remove(controller) {
+	    this.__ul.removeChild(controller.__li);
+
+	    this.__controllers.splice(this.__controllers.indexOf(controller), 1);
+
+	    var _this = this;
+
+	    Common.defer(function () {
+	      _this.onResize();
+	    });
+	  },
+	  destroy: function destroy() {
+	    if (this.parent) {
+	      throw new Error('Only the root GUI should be removed with .destroy(). ' + 'For subfolders, use gui.removeFolder(folder) instead.');
+	    }
+
+	    if (this.autoPlace) {
+	      autoPlaceContainer.removeChild(this.domElement);
+	    }
+
+	    var _this = this;
+
+	    Common.each(this.__folders, function (subfolder) {
+	      _this.removeFolder(subfolder);
+	    });
+	    dom.unbind(window, 'keydown', GUI._keydownHandler, false);
+	    removeListeners(this);
+	  },
+	  addFolder: function addFolder(name) {
+	    if (this.__folders[name] !== undefined) {
+	      throw new Error('You already have a folder in this GUI by the' + ' name "' + name + '"');
+	    }
+
+	    var newGuiParams = {
+	      name: name,
+	      parent: this
+	    };
+	    newGuiParams.autoPlace = this.autoPlace;
+
+	    if (this.load && this.load.folders && this.load.folders[name]) {
+	      newGuiParams.closed = this.load.folders[name].closed;
+	      newGuiParams.load = this.load.folders[name];
+	    }
+
+	    var gui = new GUI(newGuiParams);
+	    this.__folders[name] = gui;
+	    var li = addRow(this, gui.domElement);
+	    dom.addClass(li, 'folder');
+	    return gui;
+	  },
+	  removeFolder: function removeFolder(folder) {
+	    this.__ul.removeChild(folder.domElement.parentElement);
+
+	    delete this.__folders[folder.name];
+
+	    if (this.load && this.load.folders && this.load.folders[folder.name]) {
+	      delete this.load.folders[folder.name];
+	    }
+
+	    removeListeners(folder);
+
+	    var _this = this;
+
+	    Common.each(folder.__folders, function (subfolder) {
+	      folder.removeFolder(subfolder);
+	    });
+	    Common.defer(function () {
+	      _this.onResize();
+	    });
+	  },
+	  open: function open() {
+	    this.closed = false;
+	  },
+	  close: function close() {
+	    this.closed = true;
+	  },
+	  hide: function hide() {
+	    this.domElement.style.display = 'none';
+	  },
+	  show: function show() {
+	    this.domElement.style.display = '';
+	  },
+	  onResize: function onResize() {
+	    var root = this.getRoot();
+
+	    if (root.scrollable) {
+	      var top = dom.getOffset(root.__ul).top;
+	      var h = 0;
+	      Common.each(root.__ul.childNodes, function (node) {
+	        if (!(root.autoPlace && node === root.__save_row)) {
+	          h += dom.getHeight(node);
+	        }
+	      });
+
+	      if (window.innerHeight - top - CLOSE_BUTTON_HEIGHT < h) {
+	        dom.addClass(root.domElement, GUI.CLASS_TOO_TALL);
+	        root.__ul.style.height = window.innerHeight - top - CLOSE_BUTTON_HEIGHT + 'px';
+	      } else {
+	        dom.removeClass(root.domElement, GUI.CLASS_TOO_TALL);
+	        root.__ul.style.height = 'auto';
+	      }
+	    }
+
+	    if (root.__resize_handle) {
+	      Common.defer(function () {
+	        root.__resize_handle.style.height = root.__ul.offsetHeight + 'px';
+	      });
+	    }
+
+	    if (root.__closeButton) {
+	      root.__closeButton.style.width = root.width + 'px';
+	    }
+	  },
+	  onResizeDebounced: Common.debounce(function () {
+	    this.onResize();
+	  }, 50),
+	  remember: function remember() {
+	    if (Common.isUndefined(SAVE_DIALOGUE)) {
+	      SAVE_DIALOGUE = new CenteredDiv();
+	      SAVE_DIALOGUE.domElement.innerHTML = saveDialogContents;
+	    }
+
+	    if (this.parent) {
+	      throw new Error('You can only call remember on a top level GUI.');
+	    }
+
+	    var _this = this;
+
+	    Common.each(Array.prototype.slice.call(arguments), function (object) {
+	      if (_this.__rememberedObjects.length === 0) {
+	        addSaveMenu(_this);
+	      }
+
+	      if (_this.__rememberedObjects.indexOf(object) === -1) {
+	        _this.__rememberedObjects.push(object);
+	      }
+	    });
+
+	    if (this.autoPlace) {
+	      setWidth(this, this.width);
+	    }
+	  },
+	  getRoot: function getRoot() {
+	    var gui = this;
+
+	    while (gui.parent) {
+	      gui = gui.parent;
+	    }
+
+	    return gui;
+	  },
+	  getSaveObject: function getSaveObject() {
+	    var toReturn = this.load;
+	    toReturn.closed = this.closed;
+
+	    if (this.__rememberedObjects.length > 0) {
+	      toReturn.preset = this.preset;
+
+	      if (!toReturn.remembered) {
+	        toReturn.remembered = {};
+	      }
+
+	      toReturn.remembered[this.preset] = getCurrentPreset(this);
+	    }
+
+	    toReturn.folders = {};
+	    Common.each(this.__folders, function (element, key) {
+	      toReturn.folders[key] = element.getSaveObject();
+	    });
+	    return toReturn;
+	  },
+	  save: function save() {
+	    if (!this.load.remembered) {
+	      this.load.remembered = {};
+	    }
+
+	    this.load.remembered[this.preset] = getCurrentPreset(this);
+	    markPresetModified(this, false);
+	    this.saveToLocalStorageIfPossible();
+	  },
+	  saveAs: function saveAs(presetName) {
+	    if (!this.load.remembered) {
+	      this.load.remembered = {};
+	      this.load.remembered[DEFAULT_DEFAULT_PRESET_NAME] = getCurrentPreset(this, true);
+	    }
+
+	    this.load.remembered[presetName] = getCurrentPreset(this);
+	    this.preset = presetName;
+	    addPresetOption(this, presetName, true);
+	    this.saveToLocalStorageIfPossible();
+	  },
+	  revert: function revert(gui) {
+	    Common.each(this.__controllers, function (controller) {
+	      if (!this.getRoot().load.remembered) {
+	        controller.setValue(controller.initialValue);
+	      } else {
+	        recallSavedValue(gui || this.getRoot(), controller);
+	      }
+
+	      if (controller.__onFinishChange) {
+	        controller.__onFinishChange.call(controller, controller.getValue());
+	      }
+	    }, this);
+	    Common.each(this.__folders, function (folder) {
+	      folder.revert(folder);
+	    });
+
+	    if (!gui) {
+	      markPresetModified(this.getRoot(), false);
+	    }
+	  },
+	  listen: function listen(controller) {
+	    var init = this.__listening.length === 0;
+
+	    this.__listening.push(controller);
+
+	    if (init) {
+	      updateDisplays(this.__listening);
+	    }
+	  },
+	  updateDisplay: function updateDisplay() {
+	    Common.each(this.__controllers, function (controller) {
+	      controller.updateDisplay();
+	    });
+	    Common.each(this.__folders, function (folder) {
+	      folder.updateDisplay();
+	    });
+	  }
+	});
+
+	function addRow(gui, newDom, liBefore) {
+	  var li = document.createElement('li');
+
+	  if (newDom) {
+	    li.appendChild(newDom);
+	  }
+
+	  if (liBefore) {
+	    gui.__ul.insertBefore(li, liBefore);
+	  } else {
+	    gui.__ul.appendChild(li);
+	  }
+
+	  gui.onResize();
+	  return li;
+	}
+
+	function removeListeners(gui) {
+	  dom.unbind(window, 'resize', gui.__resizeHandler);
+
+	  if (gui.saveToLocalStorageIfPossible) {
+	    dom.unbind(window, 'unload', gui.saveToLocalStorageIfPossible);
+	  }
+	}
+
+	function markPresetModified(gui, modified) {
+	  var opt = gui.__preset_select[gui.__preset_select.selectedIndex];
+
+	  if (modified) {
+	    opt.innerHTML = opt.value + '*';
+	  } else {
+	    opt.innerHTML = opt.value;
+	  }
+	}
+
+	function augmentController(gui, li, controller) {
+	  controller.__li = li;
+	  controller.__gui = gui;
+	  Common.extend(controller, {
+	    options: function options(_options) {
+	      if (arguments.length > 1) {
+	        var nextSibling = controller.__li.nextElementSibling;
+	        controller.remove();
+	        return _add(gui, controller.object, controller.property, {
+	          before: nextSibling,
+	          factoryArgs: [Common.toArray(arguments)]
+	        });
+	      }
+
+	      if (Common.isArray(_options) || Common.isObject(_options)) {
+	        var _nextSibling = controller.__li.nextElementSibling;
+	        controller.remove();
+	        return _add(gui, controller.object, controller.property, {
+	          before: _nextSibling,
+	          factoryArgs: [_options]
+	        });
+	      }
+	    },
+	    name: function name(_name) {
+	      controller.__li.firstElementChild.firstElementChild.innerHTML = _name;
+	      return controller;
+	    },
+	    listen: function listen() {
+	      controller.__gui.listen(controller);
+
+	      return controller;
+	    },
+	    remove: function remove() {
+	      controller.__gui.remove(controller);
+
+	      return controller;
+	    }
+	  });
+
+	  if (controller instanceof NumberControllerSlider) {
+	    var box = new NumberControllerBox(controller.object, controller.property, {
+	      min: controller.__min,
+	      max: controller.__max,
+	      step: controller.__step
+	    });
+	    Common.each(['updateDisplay', 'onChange', 'onFinishChange', 'step', 'min', 'max'], function (method) {
+	      var pc = controller[method];
+	      var pb = box[method];
+
+	      controller[method] = box[method] = function () {
+	        var args = Array.prototype.slice.call(arguments);
+	        pb.apply(box, args);
+	        return pc.apply(controller, args);
+	      };
+	    });
+	    dom.addClass(li, 'has-slider');
+	    controller.domElement.insertBefore(box.domElement, controller.domElement.firstElementChild);
+	  } else if (controller instanceof NumberControllerBox) {
+	    var r = function r(returned) {
+	      if (Common.isNumber(controller.__min) && Common.isNumber(controller.__max)) {
+	        var oldName = controller.__li.firstElementChild.firstElementChild.innerHTML;
+	        var wasListening = controller.__gui.__listening.indexOf(controller) > -1;
+	        controller.remove();
+
+	        var newController = _add(gui, controller.object, controller.property, {
+	          before: controller.__li.nextElementSibling,
+	          factoryArgs: [controller.__min, controller.__max, controller.__step]
+	        });
+
+	        newController.name(oldName);
+	        if (wasListening) newController.listen();
+	        return newController;
+	      }
+
+	      return returned;
+	    };
+
+	    controller.min = Common.compose(r, controller.min);
+	    controller.max = Common.compose(r, controller.max);
+	  } else if (controller instanceof BooleanController) {
+	    dom.bind(li, 'click', function () {
+	      dom.fakeEvent(controller.__checkbox, 'click');
+	    });
+	    dom.bind(controller.__checkbox, 'click', function (e) {
+	      e.stopPropagation();
+	    });
+	  } else if (controller instanceof FunctionController) {
+	    dom.bind(li, 'click', function () {
+	      dom.fakeEvent(controller.__button, 'click');
+	    });
+	    dom.bind(li, 'mouseover', function () {
+	      dom.addClass(controller.__button, 'hover');
+	    });
+	    dom.bind(li, 'mouseout', function () {
+	      dom.removeClass(controller.__button, 'hover');
+	    });
+	  } else if (controller instanceof ColorController) {
+	    dom.addClass(li, 'color');
+	    controller.updateDisplay = Common.compose(function (val) {
+	      li.style.borderLeftColor = controller.__color.toString();
+	      return val;
+	    }, controller.updateDisplay);
+	    controller.updateDisplay();
+	  }
+
+	  controller.setValue = Common.compose(function (val) {
+	    if (gui.getRoot().__preset_select && controller.isModified()) {
+	      markPresetModified(gui.getRoot(), true);
+	    }
+
+	    return val;
+	  }, controller.setValue);
+	}
+
+	function recallSavedValue(gui, controller) {
+	  var root = gui.getRoot();
+
+	  var matchedIndex = root.__rememberedObjects.indexOf(controller.object);
+
+	  if (matchedIndex !== -1) {
+	    var controllerMap = root.__rememberedObjectIndecesToControllers[matchedIndex];
+
+	    if (controllerMap === undefined) {
+	      controllerMap = {};
+	      root.__rememberedObjectIndecesToControllers[matchedIndex] = controllerMap;
+	    }
+
+	    controllerMap[controller.property] = controller;
+
+	    if (root.load && root.load.remembered) {
+	      var presetMap = root.load.remembered;
+	      var preset = void 0;
+
+	      if (presetMap[gui.preset]) {
+	        preset = presetMap[gui.preset];
+	      } else if (presetMap[DEFAULT_DEFAULT_PRESET_NAME]) {
+	        preset = presetMap[DEFAULT_DEFAULT_PRESET_NAME];
+	      } else {
+	        return;
+	      }
+
+	      if (preset[matchedIndex] && preset[matchedIndex][controller.property] !== undefined) {
+	        var value = preset[matchedIndex][controller.property];
+	        controller.initialValue = value;
+	        controller.setValue(value);
+	      }
+	    }
+	  }
+	}
+
+	function _add(gui, object, property, params) {
+	  if (object[property] === undefined) {
+	    throw new Error('Object "' + object + '" has no property "' + property + '"');
+	  }
+
+	  var controller = void 0;
+
+	  if (params.color) {
+	    controller = new ColorController(object, property);
+	  } else {
+	    var factoryArgs = [object, property].concat(params.factoryArgs);
+	    controller = ControllerFactory.apply(gui, factoryArgs);
+	  }
+
+	  if (params.before instanceof Controller) {
+	    params.before = params.before.__li;
+	  }
+
+	  recallSavedValue(gui, controller);
+	  dom.addClass(controller.domElement, 'c');
+	  var name = document.createElement('span');
+	  dom.addClass(name, 'property-name');
+	  name.innerHTML = controller.property;
+	  var container = document.createElement('div');
+	  container.appendChild(name);
+	  container.appendChild(controller.domElement);
+	  var li = addRow(gui, container, params.before);
+	  dom.addClass(li, GUI.CLASS_CONTROLLER_ROW);
+
+	  if (controller instanceof ColorController) {
+	    dom.addClass(li, 'color');
+	  } else {
+	    dom.addClass(li, _typeof(controller.getValue()));
+	  }
+
+	  augmentController(gui, li, controller);
+
+	  gui.__controllers.push(controller);
+
+	  return controller;
+	}
+
+	function getLocalStorageHash(gui, key) {
+	  return document.location.href + '.' + key;
+	}
+
+	function addPresetOption(gui, name, setSelected) {
+	  var opt = document.createElement('option');
+	  opt.innerHTML = name;
+	  opt.value = name;
+
+	  gui.__preset_select.appendChild(opt);
+
+	  if (setSelected) {
+	    gui.__preset_select.selectedIndex = gui.__preset_select.length - 1;
+	  }
+	}
+
+	function showHideExplain(gui, explain) {
+	  explain.style.display = gui.useLocalStorage ? 'block' : 'none';
+	}
+
+	function addSaveMenu(gui) {
+	  var div = gui.__save_row = document.createElement('li');
+	  dom.addClass(gui.domElement, 'has-save');
+
+	  gui.__ul.insertBefore(div, gui.__ul.firstChild);
+
+	  dom.addClass(div, 'save-row');
+	  var gears = document.createElement('span');
+	  gears.innerHTML = '&nbsp;';
+	  dom.addClass(gears, 'button gears');
+	  var button = document.createElement('span');
+	  button.innerHTML = 'Save';
+	  dom.addClass(button, 'button');
+	  dom.addClass(button, 'save');
+	  var button2 = document.createElement('span');
+	  button2.innerHTML = 'New';
+	  dom.addClass(button2, 'button');
+	  dom.addClass(button2, 'save-as');
+	  var button3 = document.createElement('span');
+	  button3.innerHTML = 'Revert';
+	  dom.addClass(button3, 'button');
+	  dom.addClass(button3, 'revert');
+	  var select = gui.__preset_select = document.createElement('select');
+
+	  if (gui.load && gui.load.remembered) {
+	    Common.each(gui.load.remembered, function (value, key) {
+	      addPresetOption(gui, key, key === gui.preset);
+	    });
+	  } else {
+	    addPresetOption(gui, DEFAULT_DEFAULT_PRESET_NAME, false);
+	  }
+
+	  dom.bind(select, 'change', function () {
+	    for (var index = 0; index < gui.__preset_select.length; index++) {
+	      gui.__preset_select[index].innerHTML = gui.__preset_select[index].value;
+	    }
+
+	    gui.preset = this.value;
+	  });
+	  div.appendChild(select);
+	  div.appendChild(gears);
+	  div.appendChild(button);
+	  div.appendChild(button2);
+	  div.appendChild(button3);
+
+	  if (SUPPORTS_LOCAL_STORAGE) {
+	    var explain = document.getElementById('dg-local-explain');
+	    var localStorageCheckBox = document.getElementById('dg-local-storage');
+	    var saveLocally = document.getElementById('dg-save-locally');
+	    saveLocally.style.display = 'block';
+
+	    if (localStorage.getItem(getLocalStorageHash(gui, 'isLocal')) === 'true') {
+	      localStorageCheckBox.setAttribute('checked', 'checked');
+	    }
+
+	    showHideExplain(gui, explain);
+	    dom.bind(localStorageCheckBox, 'change', function () {
+	      gui.useLocalStorage = !gui.useLocalStorage;
+	      showHideExplain(gui, explain);
+	    });
+	  }
+
+	  var newConstructorTextArea = document.getElementById('dg-new-constructor');
+	  dom.bind(newConstructorTextArea, 'keydown', function (e) {
+	    if (e.metaKey && (e.which === 67 || e.keyCode === 67)) {
+	      SAVE_DIALOGUE.hide();
+	    }
+	  });
+	  dom.bind(gears, 'click', function () {
+	    newConstructorTextArea.innerHTML = JSON.stringify(gui.getSaveObject(), undefined, 2);
+	    SAVE_DIALOGUE.show();
+	    newConstructorTextArea.focus();
+	    newConstructorTextArea.select();
+	  });
+	  dom.bind(button, 'click', function () {
+	    gui.save();
+	  });
+	  dom.bind(button2, 'click', function () {
+	    var presetName = prompt('Enter a new preset name.');
+
+	    if (presetName) {
+	      gui.saveAs(presetName);
+	    }
+	  });
+	  dom.bind(button3, 'click', function () {
+	    gui.revert();
+	  });
+	}
+
+	function addResizeHandle(gui) {
+	  var pmouseX = void 0;
+	  gui.__resize_handle = document.createElement('div');
+	  Common.extend(gui.__resize_handle.style, {
+	    width: '6px',
+	    marginLeft: '-3px',
+	    height: '200px',
+	    cursor: 'ew-resize',
+	    position: 'absolute'
+	  });
+
+	  function drag(e) {
+	    e.preventDefault();
+	    gui.width += pmouseX - e.clientX;
+	    gui.onResize();
+	    pmouseX = e.clientX;
+	    return false;
+	  }
+
+	  function dragStop() {
+	    dom.removeClass(gui.__closeButton, GUI.CLASS_DRAG);
+	    dom.unbind(window, 'mousemove', drag);
+	    dom.unbind(window, 'mouseup', dragStop);
+	  }
+
+	  function dragStart(e) {
+	    e.preventDefault();
+	    pmouseX = e.clientX;
+	    dom.addClass(gui.__closeButton, GUI.CLASS_DRAG);
+	    dom.bind(window, 'mousemove', drag);
+	    dom.bind(window, 'mouseup', dragStop);
+	    return false;
+	  }
+
+	  dom.bind(gui.__resize_handle, 'mousedown', dragStart);
+	  dom.bind(gui.__closeButton, 'mousedown', dragStart);
+	  gui.domElement.insertBefore(gui.__resize_handle, gui.domElement.firstElementChild);
+	}
+
+	function setWidth(gui, w) {
+	  gui.domElement.style.width = w + 'px';
+
+	  if (gui.__save_row && gui.autoPlace) {
+	    gui.__save_row.style.width = w + 'px';
+	  }
+
+	  if (gui.__closeButton) {
+	    gui.__closeButton.style.width = w + 'px';
+	  }
+	}
+
+	function getCurrentPreset(gui, useInitialValues) {
+	  var toReturn = {};
+	  Common.each(gui.__rememberedObjects, function (val, index) {
+	    var savedValues = {};
+	    var controllerMap = gui.__rememberedObjectIndecesToControllers[index];
+	    Common.each(controllerMap, function (controller, property) {
+	      savedValues[property] = useInitialValues ? controller.initialValue : controller.getValue();
+	    });
+	    toReturn[index] = savedValues;
+	  });
+	  return toReturn;
+	}
+
+	function setPresetSelectIndex(gui) {
+	  for (var index = 0; index < gui.__preset_select.length; index++) {
+	    if (gui.__preset_select[index].value === gui.preset) {
+	      gui.__preset_select.selectedIndex = index;
+	    }
+	  }
+	}
+
+	function updateDisplays(controllerArray) {
+	  if (controllerArray.length !== 0) {
+	    requestAnimationFrame$1$1.call(window, function () {
+	      updateDisplays(controllerArray);
+	    });
+	  }
+
+	  Common.each(controllerArray, function (c) {
+	    c.updateDisplay();
+	  });
+	}
+	var GUI$1 = GUI;
+
+	var auraCanvas = document.getElementById('aura_canvas');
+	var layer1 = {
+	  color1: [255.0, 0.0, 0.0],
+	  color2: [0., 255., 0.],
+	  brightness: .2,
+	  blobbyness: 1.,
+	  blur: .4,
+	  enabled: true
+	};
+	var layer2 = {
+	  brightness: 1,
+	  cycleSpeed: .2,
+	  enabled: false
+	};
+	var globalParams = {
+	  time: 0.,
+	  speed: .1,
+	  seed: 100,
+	  autoSave: true,
+	  fullscreen: false,
+	  noise: 1.
+	};
+
+	var setFullscreen = function setFullscreen(isFullscreen) {
+	  console.log("set fullscreen: ".concat(isFullscreen));
+	  auraCanvas.style = isFullscreen ? fullscreenStyle : null;
+
+	  if (!isFullscreen) {
+	    console.log('set width height');
+	    auraCanvas.width = width;
+	    auraCanvas.height = height;
+	  }
+	};
+
+	var initGui = function initGui() {
+	  var gui = new GUI$1({
+	    name: 'params'
+	  }); // Global
+
+	  gui.remember(globalParams);
+	  gui.add(globalParams, 'time');
+	  gui.add(globalParams, 'autoSave');
+	  gui.add(globalParams, 'fullscreen').listen().onChange(setFullscreen);
+	  var folder = gui.addFolder('Global');
+	  folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
+	  folder.add(globalParams, 'speed').min(0.01).max(1).step(.01).listen();
+	  folder.add(globalParams, 'noise').min(0.).max(.1).step(.001).listen();
+	  folder.open(); // Layer 1
+
+	  gui.remember(layer1);
+	  var layer1Folder = gui.addFolder('Layer 1');
+	  layer1Folder.addColor(layer1, 'color1').listen();
+	  layer1Folder.addColor(layer1, 'color2').listen();
+	  layer1Folder.add(layer1, 'brightness').min(0).max(1).step(.01).listen();
+	  layer1Folder.add(layer1, 'blobbyness').min(0).max(4).step(.1).listen();
+	  layer1Folder.add(layer1, 'blur').min(0).max(3).step(.01).listen();
+	  layer1Folder.add(layer1, 'enabled').listen();
+	  layer1Folder.open(); // Layer 2
+
+	  gui.remember(layer2);
+	  var layer2Folder = gui.addFolder('Layer 2');
+	  layer2Folder.add(layer2, 'brightness').min(0).max(1).step(.01).listen();
+	  layer2Folder.add(layer2, 'enabled').listen();
+	  layer2Folder.add(layer2, 'cycleSpeed').min(0).max(2).step(.01).listen();
+	  layer2Folder.open();
+	  setInterval(function () {
+	    if (globalParams.autoSave) gui.save();
+	  }, 1000);
+	};
+
 	var rgbVals = [[14, 39, 35], [8, 69, 62], [118, 81, 121], [223, 179, 109], [217, 229, 199]];
 	rgbVals = rgbVals.map(function (e) {
-	  return new Color$1('sRGB', e.map(function (f) {
+	  return new Color$1$1('sRGB', e.map(function (f) {
 	    return f / 255;
 	  }));
 	});
+	var glGrad = document.getElementById('gradient_canvas').getContext('webgl2');
 	var grad = CreateGradientTexture(glGrad, {
 	  steps: 16,
 	  colors: rgbVals
@@ -5736,7 +8679,6 @@
 	var bufferInfoGrad = createBufferInfoFromArrays(glGrad, FullScreenQuad);
 	resizeCanvasToDisplaySize(glGrad.canvas);
 	glGrad.viewport(0, 0, glGrad.canvas.width, glGrad.canvas.height);
-	var auraCanvas = document.getElementById('aura_canvas');
 	var gl = auraCanvas.getContext('webgl2');
 	var programInfo = createProgramInfo(gl, [VertDefault, FragAura]);
 	var pauseButton = document.getElementById('pause_btn');
@@ -5747,15 +8689,16 @@
 	var grad2 = CreateGradientTexture(gl, {
 	  steps: 16,
 	  colors: rgbVals
-	}); // let ramp = twgl.createTexture(gl, { src: 'ramp.png', wrap: gl.MIRRORED_REPEAT });
-
+	});
 	var playing = true;
 	var startTime, prevTimestamp, deltaTime, now;
 	var fps = 60;
 	var fixedDeltaTime = 1000 / fps;
 	var animTime = 0;
 	var frameCount = 0;
-	var speed = .1;
+	var width = 600;
+	var height = 400;
+	var fullscreenStyle = "position: fixed;    width: 100vw;    height: 100vh;    z-index: 0;";
 	window.addEventListener('blur', function () {
 	  return console.log('blur');
 	}, false);
@@ -5785,7 +8728,8 @@
 	  deltaTime = now - prevTimestamp;
 
 	  if (deltaTime > fixedDeltaTime) {
-	    if (playing) animTime += deltaTime * speed;
+	    if (playing) animTime += deltaTime * globalParams.speed;
+	    globalParams.time = animTime * .001;
 	    prevTimestamp = now - deltaTime % fixedDeltaTime;
 	    var sinceStart = now - startTime;
 	    var currFps = Math.round(1000 / (sinceStart / ++frameCount) * 100) / 100;
@@ -5794,9 +8738,12 @@
 	    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	    timer.textContent = "Time: ".concat((animTime / 1000).toFixed(2));
 	    var uniforms = {
-	      time: animTime * 0.001,
+	      time: [globalParams.time, globalParams.time / 2, globalParams.time * 2, globalParams.time / 10],
 	      resolution: [gl.canvas.width, gl.canvas.height],
-	      ramp: grad2
+	      ramp: grad2,
+	      layer1: layer1,
+	      layer2: layer2,
+	      noiseDither: globalParams.noise
 	    };
 	    gl.useProgram(programInfo.program);
 	    setBuffersAndAttributes(gl, programInfo, bufferInfo);
@@ -5814,5 +8761,8 @@
 	playButton.onclick = function () {
 	  return playing = true;
 	};
+
+	initGui();
+	setFullscreen(globalParams.fullscreen);
 
 })();

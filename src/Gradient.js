@@ -46,22 +46,21 @@ let CreateGradientTexture = (gl, options) => {
 
     let from = colors[0]
     let to = colors[1]
-    let gradData = from.steps(to, { space: 'lab', outputSpace: 'sRGB', steps: steps });
+    let gradData = from.steps(to, { space: 'sRGB', outputSpace: 'sRGB', steps: steps });
 
     for (let i = 2; i < colors.length; i++) {
         from = to;
         to = colors[i];
-        gradData = gradData.concat(from.steps(to, { space: 'lab', outputSpace: 'sRGB', steps: steps }));
+        gradData = gradData.concat(from.steps(to, { space: 'sRGB', outputSpace: 'sRGB', steps: steps }));
     }
 
     // Extract coordinates, add alpha
     gradData = gradData.map(e => e.coords.concat(1));
 
     let pixelData = gradData.flat();
-
-    return createTextureFromPixelArray(gl, {width: gradData.length, height:1, data:pixelData});
-
     console.log(gradData);
+    return createTextureFromPixelArray(gl, { width: gradData.length, height: 1, data: pixelData });
+
 
 
 

@@ -20,6 +20,7 @@
   "homepage": "https://github.com/lightward/aura#readme",
   "dependencies": {
     "colorjs.io": "0.0.4",
+    "dat.gui": "^0.7.7",
     "twgl.js": "^4.21.2"
   },
   "devDependencies": {

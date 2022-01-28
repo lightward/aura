@@ -1,4 +1,5 @@
-let Noise3DGrad = `//
+let Noise3D = `
+//
 // Description : Array and textureless GLSL 2D/3D/4D simplex 
 //               noise functions.
 //      Author : Ian McEwan, Ashima Arts.
@@ -39,8 +40,8 @@ vec4 taylorInvSqrt(vec4 r)
 }
 #endif
 
-float snoise(vec3 v, out vec3 gradient)
-{
+float snoise(vec3 v)
+  { 
   const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;
   const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);
 
@@ -109,18 +110,10 @@ float snoise(vec3 v, out vec3 gradient)
 
 // Mix final noise value
   vec4 m = max(0.5 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
-  vec4 m2 = m * m;
-  vec4 m4 = m2 * m2;
-  vec4 pdotx = vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3));
+  m = m * m;
+  return 105.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), 
+                                dot(p2,x2), dot(p3,x3) ) );
+  }
+  `
 
-// Determine noise gradient
-  vec4 temp = m2 * m * pdotx;
-  gradient = -8.0 * (temp.x * x0 + temp.y * x1 + temp.z * x2 + temp.w * x3);
-  gradient += m4.x * p0 + m4.y * p1 + m4.z * p2 + m4.w * p3;
-  gradient *= 105.0;
-
-  return 105.0 * dot(m4, pdotx);
-}
-`
-
-export { Noise3DGrad }
+export { Noise3D }
