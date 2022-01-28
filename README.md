@@ -2,6 +2,9 @@
 
 Aura generative visual system for Lightward
 
+## Live Demo
+[Hosted on github pages](https://lightward.github.io/aura/)
+
 ## To Build
 
 This project uses [rollup.js](https://rollupjs.org/guide/en/) as a bundle system. 
