@@ -18,8 +18,8 @@ vec3 mod289(vec3 x) {
 }
 #endif
 
-#ifndef MOD289_4
-#define MOD289_4
+#ifndef MOD289_2
+#define MOD289_2
 vec2 mod289(vec2 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }

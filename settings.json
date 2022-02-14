@@ -1,54 +1,67 @@
 {
-    "preset": "Default",
-    "closed": false,
-    "remembered": {
-      "Default": {
-        "0": {
-          "time": 229.69792694640034,
-          "autoSave": true,
-          "fullscreen": false,
-          "seed": 100,
-          "speed": 0.13,
-          "noise": 0.005
-        },
-        "1": {
-          "color1": [
-            79.4577205882353,
-            210,
-            79.4577205882353
-          ],
-          "color2": [
-            13.639705882352938,
-            43.74167591564929,
-            120
-          ],
-          "brightness": 0.38,
-          "blobbyness": 3.8000000000000003,
-          "blur": 1.1400000000000001,
-          "enabled": true
-        },
-        "2": {
-          "brightness": 0.77,
-          "enabled": true,
-          "cycleSpeed": 0.8
-        }
-      }
-    },
-    "folders": {
-      "Global": {
-        "preset": "Default",
-        "closed": false,
-        "folders": {}
+  "preset": "Default",
+  "remembered": {
+    "Default": {
+      "0": {
+        "autoSave": true,
+        "fullscreen": false
       },
-      "Layer 1": {
-        "preset": "Default",
-        "closed": false,
-        "folders": {}
+      "1": {
+        "speed": 0.21,
+        "noise": 0.003,
+        "feedback": 1
       },
-      "Layer 2": {
-        "preset": "Default",
-        "closed": false,
-        "folders": {}
+      "2": {
+        "amount": 0.42,
+        "scaleX": 0.74,
+        "scaleY": 0.76,
+        "centerX": 0.5,
+        "centerY": 0.51
+      },
+      "3": {
+        "color1": [
+          150.74536663980655,
+          50.183823529411775,
+          200
+        ],
+        "color2": [
+          0,
+          0,
+          0
+        ],
+        "brightness": 1,
+        "blobbyness": 1.2000000000000002,
+        "blur": 1.47,
+        "enabled": true
+      },
+      "4": {
+        "brightness": 1,
+        "enabled": true,
+        "cycleSpeed": 0.2
       }
     }
+  },
+  "closed": false,
+  "folders": {
+    "Global": {
+      "preset": "Default",
+      "closed": false,
+      "folders": {}
+    },
+    "Feedback": {
+      "preset": "Default",
+      "closed": false,
+      "folders": {}
+    },
+    "Layer 1": {
+      "preset": "Default",
+      "closed": false,
+      "folders": {}
+    },
+    "Layer 2": {
+      "preset": "Default",
+      "closed": false,
+      "folders": {}
+    }
   }
+}

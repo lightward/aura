@@ -1,4 +1,4 @@
-#version 120
+// #version 120
 
 // Cellular noise ("Worley noise") in 3D in GLSL.
 // Copyright (c) Stefan Gustavson 2011-04-19. All rights reserved.
@@ -6,20 +6,29 @@
 // See LICENSE file for details.
 // https://github.com/stegu/webgl-noise
 
+#ifndef MOD289_3
+#define MOD289_3
 // Modulo 289 without a division (only multiplications)
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
+#endif
 
+#ifndef MOD7_4
+#define MOD7_4
 // Modulo 7 without a division
 vec3 mod7(vec3 x) {
   return x - floor(x * (1.0 / 7.0)) * 7.0;
 }
+#endif
 
+#ifndef PERMUTE_3
+#define PERMUTE_3
 // Permutation polynomial: (34x^2 + 6x) mod 289
 vec3 permute(vec3 x) {
   return mod289((34.0 * x + 10.0) * x);
 }
+#endif
 
 // Cellular noise, returning F1 and F2 in a vec2.
 // 3x3x3 search region for good F2 everywhere, but a lot

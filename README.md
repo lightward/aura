@@ -13,6 +13,6 @@ There is no dev server included, you will need your own. I use [Live Server for 
 
 To build and watch for changes
 
-(note: if you don't see your changes when saving, try extending the refresh time of live server, which is also watching or changes)
+(note: if you don't see your changes when saving, try extending the refresh time of live server, which is also watching for changes)
 
     npm install && npm run watch

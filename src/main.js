@@ -1,14 +1,22 @@
 import color from 'colorjs.io';
 import * as twgl from 'twgl.js'
-import { CreateGradientTexture } from './Gradient';
-import { FragAura, FragTexture, VertDefault } from './shaders/Shaders';
+import {  CreateGradientTexture2 } from './Gradient';
+import { FragAura,  VertDefault, FragComp } from './shaders/Shaders';
 import { FullScreenQuad } from './Geometry';
 import { GUI } from 'dat.gui';
 import * as Settings from '../settings.json'
+import PingPongBuffer from './PingPongBuffer'
 
 
 let auraCanvas = document.getElementById('aura_canvas');
+let gl = auraCanvas.getContext('webgl2');
 
+let programInfo = twgl.createProgramInfo(gl, [VertDefault, FragAura]);
+let programFinal = twgl.createProgramInfo(gl, [VertDefault, FragComp]);
+let pauseButton = document.getElementById('pause_btn');
+let playButton = document.getElementById('play_btn');
+let timer = document.getElementById('timer')
+let fpsDisp = document.getElementById('fps')
 
 let layer1 = {
   color1: [255.0, 0.0, 0.0],
@@ -32,23 +40,30 @@ let appParams = {
   fullscreen: false,
 }
 
+let feedbackSettings =
+{
+  amount: .4,
+  scaleX: 1.01,
+  scaleY: 1.01,
+  centerX: 0.5,
+  centerY: 0.5
+}
+
 let globalParams =
 {
   time: 0.,
   speed: .1,
   seed: 100,
-
-  noise: 1.
+  noise: .003,
+  feedback: .99
 }
 
 console.log(`Settings: `, Settings)
 
-let setFullscreen = (isFullscreen) =>
-{
+let setFullscreen = (isFullscreen) => {
   console.log(`set fullscreen: ${isFullscreen}`)
-  auraCanvas.style = isFullscreen ? fullscreenStyle : null 
-  if(!isFullscreen)
-  {
+  auraCanvas.style = isFullscreen ? fullscreenStyle : null
+  if (!isFullscreen) {
     console.log('set width height');
     auraCanvas.width = width;
     auraCanvas.height = height;
@@ -58,16 +73,28 @@ let setFullscreen = (isFullscreen) =>
 let initGui = () => {
   let gui = new GUI({ name: 'params', load: Settings })
 
-  // Global
-  gui.remember(globalParams);
+  // App
+  gui.remember(appParams)
   gui.add(appParams, 'autoSave');
   gui.add(appParams, 'fullscreen').listen().onChange(setFullscreen)
 
+  // Global
+  gui.remember(globalParams);
   let folder = gui.addFolder('Global')
-  // folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
   folder.add(globalParams, 'speed').min(0.01).max(1).step(.01).listen();
   folder.add(globalParams, 'noise').min(0.).max(.1).step(.001).listen();
   folder.open();
+
+  // Feedback settings
+  gui.remember(feedbackSettings)
+  let feedbackFolder = gui.addFolder('Feedback');
+  feedbackFolder.add(feedbackSettings, 'amount').min(0).max(1).step(.01).listen();
+  // feedbackFolder.add(feedbackSettings, 'scaleX').min(0.1).max(2.0).step(.01).listen();
+  // feedbackFolder.add(feedbackSettings, 'scaleY').min(0.1).max(2.0).step(.01).listen();
+  // feedbackFolder.add(feedbackSettings, 'centerX').min(0).max(1).step(.01).listen();
+  // feedbackFolder.add(feedbackSettings, 'centerY').min(0).max(1).step(0.01).listen();
+  feedbackFolder.open();
+
 
   // Layer 1
   gui.remember(layer1)
@@ -98,6 +125,7 @@ let initGui = () => {
 
 
 let rgbVals = [
+  // [0, 0, 0],
   [14, 39, 35],
   [8, 69, 62],
   [118, 81, 121],
@@ -105,39 +133,12 @@ let rgbVals = [
   [217, 229, 199],
 ]
 
+let rgbArray = rgbVals;
+
 rgbVals = rgbVals.map(e => new color('sRGB', e.map(f => f / 255)))
 
-let glGrad = document.getElementById('gradient_canvas').getContext('webgl2')
-var grad = CreateGradientTexture(glGrad, {
-  steps: 16,
-  colors: rgbVals
-});
 
 
-let gradShader = twgl.createProgramInfo(glGrad, [VertDefault, FragTexture])
-var linear = glGrad.getExtension("OES_texture_float_linear");
-if (!linear) {
-  alert("this machine or browser does not support  OES_texture_float_linear");
-}
-
-const bufferInfoGrad = twgl.createBufferInfoFromArrays(glGrad, FullScreenQuad);
-twgl.resizeCanvasToDisplaySize(glGrad.canvas);
-glGrad.viewport(0, 0, glGrad.canvas.width, glGrad.canvas.height);
-
-
-let gl = auraCanvas.getContext('webgl2');
-let programInfo = twgl.createProgramInfo(gl, [VertDefault, FragAura]);
-let pauseButton = document.getElementById('pause_btn');
-let playButton = document.getElementById('play_btn');
-let timer = document.getElementById('timer')
-let fpsDisp = document.getElementById('fps')
-
-gl.getExtension("OES_texture_float_linear");
-
-var grad2 = CreateGradientTexture(gl, {
-  steps: 16,
-  colors: rgbVals
-});
 
 
 
@@ -160,6 +161,27 @@ window.addEventListener('focus', () => console.log('focus'), false)
 
 const bufferInfo = twgl.createBufferInfoFromArrays(gl, FullScreenQuad);
 
+const backBufferTex = gl.createTexture();
+// const backBufferTex = twgl.createTexture(gl, { width: targetTexWidth, height: targetTexHeight, color: [255, 0, 0], format: gl.RGBA, internalFormat:gl.RGBA });
+const targetTexWidth = 256;
+const targetTexHeight = 256;
+
+gl.bindTexture(gl.TEXTURE_2D, backBufferTex);
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+  targetTexWidth, targetTexHeight, 0,
+  gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+const fb = gl.createFramebuffer();
+gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+
+const attachmentPoint = gl.COLOR_ATTACHMENT0;
+gl.framebufferTexture2D(
+  gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, backBufferTex, 0);
+
 
 let start = (fps) => {
   fixedDeltaTime = 1000 / fps;
@@ -168,25 +190,16 @@ let start = (fps) => {
   render();
 }
 
+let ramp = CreateGradientTexture2(gl, { colors: rgbArray, resolution: 256 });
+
+let ppb = new PingPongBuffer(gl, { width: targetTexWidth, height: targetTexHeight });
 
 let render = (time) => {
 
-  const uniformsGrad = {
-    resolution: [glGrad.canvas.width, glGrad.canvas.height],
-    tex: grad
-  };
-
-  glGrad.useProgram(gradShader.program);
-  twgl.setBuffersAndAttributes(glGrad, gradShader, bufferInfoGrad);
-  twgl.setUniforms(gradShader, uniformsGrad);
-  twgl.drawBufferInfo(glGrad, bufferInfoGrad);
-
   requestAnimationFrame(render)
-
 
   now = time;
   deltaTime = now - prevTimestamp;
-
 
   if (deltaTime > fixedDeltaTime) {
 
@@ -202,24 +215,52 @@ let render = (time) => {
     fpsDisp.textContent = `FPS: ${currFps.toFixed(2)}`
 
     twgl.resizeCanvasToDisplaySize(gl.canvas);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     timer.textContent = `Time: ${(animTime / 1000).toFixed(2)}`
-
     const uniforms = {
       time: [globalParams.time, globalParams.time / 2, globalParams.time * 2, globalParams.time / 10],
-      resolution: [gl.canvas.width, gl.canvas.height],
-      ramp: grad2,
+      resolution: [targetTexWidth, targetTexHeight],
+      ramp: ramp,
       layer1: layer1,
       layer2: layer2,
-      noiseDither: globalParams.noise
+      feedback: feedbackSettings,
+      noiseDither: globalParams.noise,
+      backBufferTex: ppb.lastTexture(),
     };
 
+    const compUniforms = {
+      resolution: [gl.canvas.width, gl.canvas.height],
+      backBuffer: ppb.currentTexture(),
+      noiseDither: globalParams.noise,
+      ramp: ramp
+    }
 
-    gl.useProgram(programInfo.program);
-    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
-    twgl.setUniforms(programInfo, uniforms);
-    twgl.drawBufferInfo(gl, bufferInfo);
+    {
+      // Render new frame 
+      ppb.bind();
+
+      gl.useProgram(programInfo.program);
+
+      twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo);
+      twgl.setUniforms(programInfo, uniforms);
+      twgl.drawBufferInfo(gl, bufferInfo);
+    }
+
+    {
+
+      compUniforms.backBuffer = ppb.currentTexture();
+
+      //   // Set dst buffer back to screen
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      gl.useProgram(programFinal.program);
+      twgl.setBuffersAndAttributes(gl, programFinal, bufferInfo);
+      twgl.setUniforms(programFinal, compUniforms)
+      twgl.drawBufferInfo(gl, bufferInfo);
+
+      ppb.swap();
+    }
+
   }
 
 }
@@ -233,4 +274,4 @@ pauseButton.onclick = () => playing = false;
 playButton.onclick = () => playing = true;
 
 initGui(globalParams);
-setFullscreen(globalParams.fullscreen)
+setFullscreen(appParams.fullscreen)

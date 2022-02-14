@@ -5628,100 +5628,76 @@
 	  return false;
 	}
 
-	var createTextureFromPixelArray = function createTextureFromPixelArray(gl, options) {
-	  var _options$type, _options$width, _options$height;
-
-	  // return createSolidTexture(gl, 1, 0, 0)
-	  var texture = gl.createTexture();
-	  (_options$type = options.type) !== null && _options$type !== void 0 ? _options$type : gl.RGB;
-	  var textureData = options.data;
-	  var width = (_options$width = options.width) !== null && _options$width !== void 0 ? _options$width : 1;
-	  var height = (_options$height = options.height) !== null && _options$height !== void 0 ? _options$height : 1;
-
-	  if (textureData == null) {
-	    console.log('Must supply texture data');
-	    return null;
-	  }
-
-	  var dataTypedArray = new Float32Array(textureData);
-	  console.log("Create Texture. Width: ".concat(width, ", Height: ").concat(height, " dataLength: ").concat(dataTypedArray.length));
-	  gl.bindTexture(gl.TEXTURE_2D, texture);
-	  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, width, height, 0, gl.RGBA, gl.FLOAT, dataTypedArray);
-	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
-	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
-	  gl.bindTexture(gl.TEXTURE_2D, null);
-	  return texture;
+	var FullScreenQuad = {
+	  position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0]
 	};
 
-	var CreateGradientTexture = function CreateGradientTexture(gl, options) {
-	  var _options$steps;
+	var Random = "\n#ifndef RAND\n#define RAND\nfloat rand(vec2 co){\n    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);\n}\n#endif\n\n#ifndef HASH_3\n#define HASH_3\n\n// vec3 hash( vec3 x, int k )\n// {\n//     x = ((x>>8U)^x.yzx)*k;\n//     x = ((x>>8U)^x.yzx)*k;\n//     x = ((x>>8U)^x.yzx)*k;\n    \n//     return vec3(x)*(1.0/float(0xffffffffU));\n// }\n\n#endif\n\n";
 
-	  var steps = (_options$steps = options.steps) !== null && _options$steps !== void 0 ? _options$steps : 16;
-	  var colors = options.colors;
+	var LabColorSpace = "\n#ifndef LAB_COLORSPACE\n#define LAB_COLORSPACE\n\n#ifndef saturate\n#define saturate(v) clamp(v, 0.,1.)\n#endif\n\n".concat(Random, "\n\n//Lifted from https://code.google.com/p/flowabs/source/browse/glsl/?r=f36cbdcf7790a28d90f09e2cf89ec9a64911f138\nvec3 lab2xyz( vec3 c ) {\n    float fy = ( c.x + 16.0 ) / 116.0;\n    float fx = c.y / 500.0 + fy;\n    float fz = fy - c.z / 200.0;\n    return vec3(\n         95.047 * (( fx > 0.206897 ) ? fx * fx * fx : ( fx - 16.0 / 116.0 ) / 7.787),\n        100.000 * (( fy > 0.206897 ) ? fy * fy * fy : ( fy - 16.0 / 116.0 ) / 7.787),\n        108.883 * (( fz > 0.206897 ) ? fz * fz * fz : ( fz - 16.0 / 116.0 ) / 7.787)\n    );\n}\n\nvec3 xyz2rgb( vec3 c ) {\n    vec3 v =  c / 100.0 * mat3( \n        3.2406, -1.5372, -0.4986,\n        -0.9689, 1.8758, 0.0415,\n        0.0557, -0.2040, 1.0570\n    );\n    vec3 r;\n    r.x = ( v.r > 0.0031308 ) ? (( 1.055 * pow( v.r, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.r;\n    r.y = ( v.g > 0.0031308 ) ? (( 1.055 * pow( v.g, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.g;\n    r.z = ( v.b > 0.0031308 ) ? (( 1.055 * pow( v.b, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.b;\n    return r;\n}\n\nvec3 rgb2xyz( vec3 c ) {\n    vec3 tmp;\n    tmp.x = ( c.r > 0.04045 ) ? pow( ( c.r + 0.055 ) / 1.055, 2.4 ) : c.r / 12.92;\n    tmp.y = ( c.g > 0.04045 ) ? pow( ( c.g + 0.055 ) / 1.055, 2.4 ) : c.g / 12.92,\n    tmp.z = ( c.b > 0.04045 ) ? pow( ( c.b + 0.055 ) / 1.055, 2.4 ) : c.b / 12.92;\n    return 100.0 * tmp *\n        mat3( 0.4124, 0.3576, 0.1805,\n              0.2126, 0.7152, 0.0722,\n              0.0193, 0.1192, 0.9505 );\n}\n\nvec3 xyz2lab( vec3 c ) {\n    vec3 n = c / vec3( 95.047, 100, 108.883 );\n    vec3 v;\n    v.x = ( n.x > 0.008856 ) ? pow( n.x, 1.0 / 3.0 ) : ( 7.787 * n.x ) + ( 16.0 / 116.0 );\n    v.y = ( n.y > 0.008856 ) ? pow( n.y, 1.0 / 3.0 ) : ( 7.787 * n.y ) + ( 16.0 / 116.0 );\n    v.z = ( n.z > 0.008856 ) ? pow( n.z, 1.0 / 3.0 ) : ( 7.787 * n.z ) + ( 16.0 / 116.0 );\n    return vec3(( 116.0 * v.y ) - 16.0, 500.0 * ( v.x - v.y ), 200.0 * ( v.y - v.z ));\n}\n\nvec3 rgb2lab(vec3 c) {\n    vec3 lab = xyz2lab( rgb2xyz( c ) );\n    return vec3( lab.x / 100.0, 0.5 + 0.5 * ( lab.y / 127.0 ), 0.5 + 0.5 * ( lab.z / 127.0 ));\n}\n\nvec3 lab2rgb(vec3 c) {\n    return xyz2rgb( lab2xyz( vec3(100.0 * c.x, 2.0 * 127.0 * (c.y - 0.5), 2.0 * 127.0 * (c.z - 0.5)) ) );\n}\n\nvec3 lab2rgb2(vec3 c)\n{\n    float l = c.r;\n    float a = c.g;\n    float b = c.b;\n\n    vec3 rgb = vec3(0.);\n\n    float y = (l+16.)/116.;\n    float x = a/500. + y;\n    float z = y - b/200.;\n\n    y = pow(y, 3.) > 0.008856 ? pow(y,3.) : (y-16./116.)/7.787;\n    x = pow(x, 3.) > 0.008856 ? pow(x,3.) : (x-16./116.)/7.787;\n    z = pow(z, 3.) > 0.008856 ? pow(z,3.) : (z-16./116.)/7.787;\n\n    x *= 95.047;\n    y *= 100.;\n    z *= 108.883;\n\n    x /= 100.;\n    y /= 100.;\n    z /= 100.;\n\n    float R = x *  3.2406 + y * -1.5372 + z * -0.4986;\n    float G = x * -0.9689 + y *  1.8758 + z *  0.0415;\n    float B = x *  0.0557 + y * -0.2040 + z *  1.0570;\n\n    R = R > 0.0031308 ? 1.055 * pow(R , ( 1. / 2.4 ))  - 0.055 : 12.92 * R;\n    G = G > 0.0031308 ? 1.055 * pow(G , ( 1. / 2.4 ))  - 0.055 : 12.92 * G;\n    B = B > 0.0031308 ? 1.055 * pow(B , ( 1. / 2.4 ))  - 0.055 : 12.92 * B;\n\n    return vec3(R, G, B);\n\n}\n\nvec3 oklab_mix_2(vec3 colA, vec3 colB, float h)\n{\n    return lab2rgb(mix(rgb2lab(colA), rgb2lab(colB), h));\n}\n\n// See here: https://www.shadertoy.com/view/ttcyRS\nvec3 oklab_mix( vec3 colA, vec3 colB, float h )\n{\n    // https://bottosson.github.io/posts/oklab\n    const mat3 kCONEtoLMS = mat3(                \n         0.4121656120,  0.2118591070,  0.0883097947,\n         0.5362752080,  0.6807189584,  0.2818474174,\n         0.0514575653,  0.1074065790,  0.6302613616);\n    const mat3 kLMStoCONE = mat3(\n         4.0767245293, -1.2681437731, -0.0041119885,\n        -3.3072168827,  2.6093323231, -0.7034763098,\n         0.2307590544, -0.3411344290,  1.7068625689);\n                    \n    // rgb to cone (arg of pow can't be negative)\n    vec3 lmsA = pow( kCONEtoLMS*colA, vec3(1.0/3.0) );\n    vec3 lmsB = pow( kCONEtoLMS*colB, vec3(1.0/3.0) );\n    // lerp\n    vec3 lms = mix( lmsA, lmsB, h );\n    // gain in the middle (no oaklab anymore, but looks better?)\n lms *= 1.0+0.2*h*(1.0-h);\n    // cone to rgb\n    return kLMStoCONE*(lms*lms*lms);\n}\n#endif\n");
 
-	  if (colors == null || colors.length == 0) {
-	    console.log("options.colors can't be null or empty");
-	    return null;
-	  }
+	var FragGradientLab = "\n#version 300 es\nprecision highp float;\n\n#define linearstep(edge0, edge1, x) min(max((x - edge0)/(edge1 - edge0), 0.0), 1.0)\n\n".concat(Random, "\n").concat(LabColorSpace, "\nconst int MAX_COLORS = 10;\n\nuniform vec2 resolution;\nuniform vec3 color1;\nuniform vec3 color2;\nuniform vec3 color3;\nuniform vec3 color4;\nuniform vec3 color5;\n\nuniform vec3 colors[MAX_COLORS];\n\nuniform int numColors;\n\nin vec4 fragUV;\nout vec4 FragColor;\n\nvoid main() {\n    vec2 uv = gl_FragCoord.xy / resolution;\n    uv.x += .001*rand(uv);\n\n    vec3 c1 = color1 / vec3(255.0);\n    vec3 c2 = color2 / vec3(255.0);\n    vec3 c3 = color3 / vec3(255.);\n    vec3 c4 = color4 / vec3(255.);\n    vec3 c5 = color5 / vec3(255.);\n\n    vec3 lab1 = rgb2lab(colors[0]/255.);\n    vec3 lab2 = rgb2lab(colors[1]/255.);\n    vec3 lab3 = rgb2lab(c3);\n    vec3 lab4 = rgb2lab(c4);\n    vec3 lab5 = rgb2lab(c5);\n\n    float nCol= float(numColors);\n    float step = 1./(nCol-1.);\n\n\n\n    // vec3 labOut = oklab_mix(lab1, lab2, linearstep(0.*step, 1.*step, uv.x));\n    float dither = rand(uv)*.001;\n    vec3 col = mix(rgb2lab(colors[0]/255.), rgb2lab(colors[1]/255.), linearstep(0.*step, 1.*step, uv.x + dither));\n    \n    for(int i = 2; i < MAX_COLORS; i++)\n    {\n        // break early when done\n        if(i >= numColors) break;\n\n        vec3 nextLab = rgb2lab(colors[i]/255.);\n\n        col = mix(col, nextLab, linearstep(float(i-1)*step, float(i)*step, uv.x)+ dither);\n    }\n    \n    col = lab2rgb(col);\n    // linear to gamma\n    col = pow( col, vec3(0.4545) );\n\n\n    FragColor.rgb = (col);\n}\n");
 
-	  if (colors.length < 2) {
-	    // console.log(colors[0].coords.concat(1))
-	    return createTextureFromPixelArray(gl, {
-	      data: [colors[0].coords.concat(1).flat()]
-	    });
-	  }
+	var VertDefault = "\n#version 300 es\n\nin vec4 position;\nin vec2 texCoord;\n\n\nout vec4 fragUV;\n\nvoid main() {\n  gl_Position =  position;\n  \n  vec2 uv = position.xy;\n  uv = position.xy * 0.5 + 0.5;\n//   uv = vec2(position.x ,0.);\n// uv = position.xy;\n// uv = texCoord;\nuv = vec2(1.,0.);\n  fragUV = vec4(uv, 0., 0.);\n}\n";
 
-	  var from = colors[0];
-	  var to = colors[1];
-	  var gradData = from.steps(to, {
-	    space: 'sRGB',
-	    outputSpace: 'sRGB',
-	    steps: steps
-	  });
+	var Cellular2x2x2 = "\n// #version 120\n\n// Cellular noise (\"Worley noise\") in 3D in GLSL.\n// Copyright (c) Stefan Gustavson 2011-04-19. All rights reserved.\n// This code is released under the conditions of the MIT license.\n// See LICENSE file for details.\n// https://github.com/stegu/webgl-noise\n\n#ifndef MOD289_3\n#define MOD289_3\n// Modulo 289 without a division (only multiplications)\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD289_4\n#define MOD289_4\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD7_4\n#define MOD7_4\n// Modulo 7 without a division\nvec4 mod7(vec4 x) {\n  return x - floor(x * (1.0 / 7.0)) * 7.0;\n}\n#endif\n\n#ifndef PERMUTE_3\n#define PERMUTE_3\n// Permutation polynomial: (34x^2 + 6x) mod 289\nvec3 permute(vec3 x) {\n  return mod289((34.0 * x + 10.0) * x);\n}\n#endif\n\n#ifndef PERMUTE_4\n#define PERMUTE_4\nvec4 permute(vec4 x) {\n  return mod289((34.0 * x + 10.0) * x);\n}\n#endif\n\n// Cellular noise, returning F1 and F2 in a vec2.\n// Speeded up by using 2x2x2 search window instead of 3x3x3,\n// at the expense of some pattern artifacts.\n// F2 is often wrong and has sharp discontinuities.\n// If you need a good F2, use the slower 3x3x3 version.\nvec2 cellular2x2x2(vec3 P) {\n#define K 0.142857142857 // 1/7\n#define Ko 0.428571428571 // 1/2-K/2\n#define K2 0.020408163265306 // 1/(7*7)\n#define Kz 0.166666666667 // 1/6\n#define Kzo 0.416666666667 // 1/2-1/6*2\n#define jitter 0.8 // smaller jitter gives less errors in F2\n\tvec3 Pi = mod289(floor(P));\n \tvec3 Pf = fract(P);\n\tvec4 Pfx = Pf.x + vec4(0.0, -1.0, 0.0, -1.0);\n\tvec4 Pfy = Pf.y + vec4(0.0, 0.0, -1.0, -1.0);\n\tvec4 p = permute(Pi.x + vec4(0.0, 1.0, 0.0, 1.0));\n\tp = permute(p + Pi.y + vec4(0.0, 0.0, 1.0, 1.0));\n\tvec4 p1 = permute(p + Pi.z); // z+0\n\tvec4 p2 = permute(p + Pi.z + vec4(1.0)); // z+1\n\tvec4 ox1 = fract(p1*K) - Ko;\n\tvec4 oy1 = mod7(floor(p1*K))*K - Ko;\n\tvec4 oz1 = floor(p1*K2)*Kz - Kzo; // p1 < 289 guaranteed\n\tvec4 ox2 = fract(p2*K) - Ko;\n\tvec4 oy2 = mod7(floor(p2*K))*K - Ko;\n\tvec4 oz2 = floor(p2*K2)*Kz - Kzo;\n\tvec4 dx1 = Pfx + jitter*ox1;\n\tvec4 dy1 = Pfy + jitter*oy1;\n\tvec4 dz1 = Pf.z + jitter*oz1;\n\tvec4 dx2 = Pfx + jitter*ox2;\n\tvec4 dy2 = Pfy + jitter*oy2;\n\tvec4 dz2 = Pf.z - 1.0 + jitter*oz2;\n\tvec4 d1 = dx1 * dx1 + dy1 * dy1 + dz1 * dz1; // z+0\n\tvec4 d2 = dx2 * dx2 + dy2 * dy2 + dz2 * dz2; // z+1\n\n\t// Sort out the two smallest distances (F1, F2)\n#if 0\n\t// Cheat and sort out only F1\n\td1 = min(d1, d2);\n\td1.xy = min(d1.xy, d1.wz);\n\td1.x = min(d1.x, d1.y);\n\treturn vec2(sqrt(d1.x));\n#else\n\t// Do it right and sort out both F1 and F2\n\tvec4 d = min(d1,d2); // F1 is now in d\n\td2 = max(d1,d2); // Make sure we keep all candidates for F2\n\td.xy = (d.x < d.y) ? d.xy : d.yx; // Swap smallest to d.x\n\td.xz = (d.x < d.z) ? d.xz : d.zx;\n\td.xw = (d.x < d.w) ? d.xw : d.wx; // F1 is now in d.x\n\td.yzw = min(d.yzw, d2.yzw); // F2 now not in d2.yzw\n\td.y = min(d.y, d.z); // nor in d.z\n\td.y = min(d.y, d.w); // nor in d.w\n\td.y = min(d.y, d2.x); // F2 is now in d.y\n\treturn sqrt(d.xy); // F1 and F2\n#endif\n}\n";
 
-	  for (var i = 2; i < colors.length; i++) {
-	    from = to;
-	    to = colors[i];
-	    gradData = gradData.concat(from.steps(to, {
-	      space: 'sRGB',
-	      outputSpace: 'sRGB',
-	      steps: steps
-	    }));
-	  } // Extract coordinates, add alpha
-
-
-	  gradData = gradData.map(function (e) {
-	    return e.coords.concat(1);
-	  });
-	  var pixelData = gradData.flat();
-	  console.log(gradData);
-	  return createTextureFromPixelArray(gl, {
-	    width: gradData.length,
-	    height: 1,
-	    data: pixelData
-	  });
-	};
-
-	var LabColorSpace = "\n#ifndef __LAB_COLORSPACE__\n#define __LAB_COLORSPACE__\n\n#ifndef saturate\n#define saturate(v) clamp(v, 0.,1.)\n#endif\n\n//Lifted from https://code.google.com/p/flowabs/source/browse/glsl/?r=f36cbdcf7790a28d90f09e2cf89ec9a64911f138\n\nvec3 lab2xyz( vec3 c ) {\n    float fy = ( c.x + 16.0 ) / 116.0;\n    float fx = c.y / 500.0 + fy;\n    float fz = fy - c.z / 200.0;\n    return vec3(\n         95.047 * (( fx > 0.206897 ) ? fx * fx * fx : ( fx - 16.0 / 116.0 ) / 7.787),\n        100.000 * (( fy > 0.206897 ) ? fy * fy * fy : ( fy - 16.0 / 116.0 ) / 7.787),\n        108.883 * (( fz > 0.206897 ) ? fz * fz * fz : ( fz - 16.0 / 116.0 ) / 7.787)\n    );\n}\n\nvec3 xyz2rgb( vec3 c ) {\n    vec3 v =  c / 100.0 * mat3( \n        3.2406, -1.5372, -0.4986,\n        -0.9689, 1.8758, 0.0415,\n        0.0557, -0.2040, 1.0570\n    );\n    vec3 r;\n    r.x = ( v.r > 0.0031308 ) ? (( 1.055 * pow( v.r, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.r;\n    r.y = ( v.g > 0.0031308 ) ? (( 1.055 * pow( v.g, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.g;\n    r.z = ( v.b > 0.0031308 ) ? (( 1.055 * pow( v.b, ( 1.0 / 2.4 ))) - 0.055 ) : 12.92 * v.b;\n    return r;\n}\n\nvec3 lab2rgb(vec3 c) {\n    return xyz2rgb( lab2xyz( vec3(100.0 * c.x, 2.0 * 127.0 * (c.y - 0.5), 2.0 * 127.0 * (c.z - 0.5)) ) );\n}\n\nvec3 lab2rgb2(vec3 c)\n{\n    float l = c.r;\n    float a = c.g;\n    float b = c.b;\n\n    vec3 rgb = vec3(0.);\n\n    float y = (l+16.)/116.;\n    float x = a/500. + y;\n    float z = y - b/200.;\n\n    y = pow(y, 3.) > 0.008856 ? pow(y,3.) : (y-16./116.)/7.787;\n    x = pow(x, 3.) > 0.008856 ? pow(x,3.) : (x-16./116.)/7.787;\n    z = pow(z, 3.) > 0.008856 ? pow(z,3.) : (z-16./116.)/7.787;\n\n    x *= 95.047;\n    y *= 100.;\n    z *= 108.883;\n\n    x /= 100.;\n    y /= 100.;\n    z /= 100.;\n\n    float R = x *  3.2406 + y * -1.5372 + z * -0.4986;\n    float G = x * -0.9689 + y *  1.8758 + z *  0.0415;\n    float B = x *  0.0557 + y * -0.2040 + z *  1.0570;\n\n    R = R > 0.0031308 ? 1.055 * pow(R , ( 1. / 2.4 ))  - 0.055 : 12.92 * R;\n    G = G > 0.0031308 ? 1.055 * pow(G , ( 1. / 2.4 ))  - 0.055 : 12.92 * G;\n    B = B > 0.0031308 ? 1.055 * pow(B , ( 1. / 2.4 ))  - 0.055 : 12.92 * B;\n\n    return vec3(R, G, B);\n\n}\n#endif\n";
+	var Cellular3D = "\n// #version 120\n\n// Cellular noise (\"Worley noise\") in 3D in GLSL.\n// Copyright (c) Stefan Gustavson 2011-04-19. All rights reserved.\n// This code is released under the conditions of the MIT license.\n// See LICENSE file for details.\n// https://github.com/stegu/webgl-noise\n\n#ifndef MOD289_3\n#define MOD289_3\n// Modulo 289 without a division (only multiplications)\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD7_3\n#define MOD7_3\n// Modulo 7 without a division\nvec3 mod7(vec3 x) {\n  return x - floor(x * (1.0 / 7.0)) * 7.0;\n}\n#endif\n\n#ifndef PERMUTE_3\n#define PERMUTE_3\n// Permutation polynomial: (34x^2 + 6x) mod 289\nvec3 permute(vec3 x) {\n  return mod289((34.0 * x + 10.0) * x);\n}\n#endif\n\n// Cellular noise, returning F1 and F2 in a vec2.\n// 3x3x3 search region for good F2 everywhere, but a lot\n// slower than the 2x2x2 version.\n// The code below is a bit scary even to its author,\n// but it has at least half decent performance on a\n// modern GPU. In any case, it beats any software\n// implementation of Worley noise hands down.\n\nvec2 cellular(vec3 P) {\n#define K 0.142857142857 // 1/7\n#define Ko 0.428571428571 // 1/2-K/2\n#define K2 0.020408163265306 // 1/(7*7)\n#define Kz 0.166666666667 // 1/6\n#define Kzo 0.416666666667 // 1/2-1/6*2\n#define jitter_cell_noise 1.0 // smaller jitter_cell_noise gives more regular pattern\n\n\tvec3 Pi = mod289(floor(P));\n \tvec3 Pf = fract(P) - 0.5;\n\n\tvec3 Pfx = Pf.x + vec3(1.0, 0.0, -1.0);\n\tvec3 Pfy = Pf.y + vec3(1.0, 0.0, -1.0);\n\tvec3 Pfz = Pf.z + vec3(1.0, 0.0, -1.0);\n\n\tvec3 p = permute(Pi.x + vec3(-1.0, 0.0, 1.0));\n\tvec3 p1 = permute(p + Pi.y - 1.0);\n\tvec3 p2 = permute(p + Pi.y);\n\tvec3 p3 = permute(p + Pi.y + 1.0);\n\n\tvec3 p11 = permute(p1 + Pi.z - 1.0);\n\tvec3 p12 = permute(p1 + Pi.z);\n\tvec3 p13 = permute(p1 + Pi.z + 1.0);\n\n\tvec3 p21 = permute(p2 + Pi.z - 1.0);\n\tvec3 p22 = permute(p2 + Pi.z);\n\tvec3 p23 = permute(p2 + Pi.z + 1.0);\n\n\tvec3 p31 = permute(p3 + Pi.z - 1.0);\n\tvec3 p32 = permute(p3 + Pi.z);\n\tvec3 p33 = permute(p3 + Pi.z + 1.0);\n\n\tvec3 ox11 = fract(p11*K) - Ko;\n\tvec3 oy11 = mod7(floor(p11*K))*K - Ko;\n\tvec3 oz11 = floor(p11*K2)*Kz - Kzo; // p11 < 289 guaranteed\n\n\tvec3 ox12 = fract(p12*K) - Ko;\n\tvec3 oy12 = mod7(floor(p12*K))*K - Ko;\n\tvec3 oz12 = floor(p12*K2)*Kz - Kzo;\n\n\tvec3 ox13 = fract(p13*K) - Ko;\n\tvec3 oy13 = mod7(floor(p13*K))*K - Ko;\n\tvec3 oz13 = floor(p13*K2)*Kz - Kzo;\n\n\tvec3 ox21 = fract(p21*K) - Ko;\n\tvec3 oy21 = mod7(floor(p21*K))*K - Ko;\n\tvec3 oz21 = floor(p21*K2)*Kz - Kzo;\n\n\tvec3 ox22 = fract(p22*K) - Ko;\n\tvec3 oy22 = mod7(floor(p22*K))*K - Ko;\n\tvec3 oz22 = floor(p22*K2)*Kz - Kzo;\n\n\tvec3 ox23 = fract(p23*K) - Ko;\n\tvec3 oy23 = mod7(floor(p23*K))*K - Ko;\n\tvec3 oz23 = floor(p23*K2)*Kz - Kzo;\n\n\tvec3 ox31 = fract(p31*K) - Ko;\n\tvec3 oy31 = mod7(floor(p31*K))*K - Ko;\n\tvec3 oz31 = floor(p31*K2)*Kz - Kzo;\n\n\tvec3 ox32 = fract(p32*K) - Ko;\n\tvec3 oy32 = mod7(floor(p32*K))*K - Ko;\n\tvec3 oz32 = floor(p32*K2)*Kz - Kzo;\n\n\tvec3 ox33 = fract(p33*K) - Ko;\n\tvec3 oy33 = mod7(floor(p33*K))*K - Ko;\n\tvec3 oz33 = floor(p33*K2)*Kz - Kzo;\n\n\tvec3 dx11 = Pfx + jitter_cell_noise*ox11;\n\tvec3 dy11 = Pfy.x + jitter_cell_noise*oy11;\n\tvec3 dz11 = Pfz.x + jitter_cell_noise*oz11;\n\n\tvec3 dx12 = Pfx + jitter_cell_noise*ox12;\n\tvec3 dy12 = Pfy.x + jitter_cell_noise*oy12;\n\tvec3 dz12 = Pfz.y + jitter_cell_noise*oz12;\n\n\tvec3 dx13 = Pfx + jitter_cell_noise*ox13;\n\tvec3 dy13 = Pfy.x + jitter_cell_noise*oy13;\n\tvec3 dz13 = Pfz.z + jitter_cell_noise*oz13;\n\n\tvec3 dx21 = Pfx + jitter_cell_noise*ox21;\n\tvec3 dy21 = Pfy.y + jitter_cell_noise*oy21;\n\tvec3 dz21 = Pfz.x + jitter_cell_noise*oz21;\n\n\tvec3 dx22 = Pfx + jitter_cell_noise*ox22;\n\tvec3 dy22 = Pfy.y + jitter_cell_noise*oy22;\n\tvec3 dz22 = Pfz.y + jitter_cell_noise*oz22;\n\n\tvec3 dx23 = Pfx + jitter_cell_noise*ox23;\n\tvec3 dy23 = Pfy.y + jitter_cell_noise*oy23;\n\tvec3 dz23 = Pfz.z + jitter_cell_noise*oz23;\n\n\tvec3 dx31 = Pfx + jitter_cell_noise*ox31;\n\tvec3 dy31 = Pfy.z + jitter_cell_noise*oy31;\n\tvec3 dz31 = Pfz.x + jitter_cell_noise*oz31;\n\n\tvec3 dx32 = Pfx + jitter_cell_noise*ox32;\n\tvec3 dy32 = Pfy.z + jitter_cell_noise*oy32;\n\tvec3 dz32 = Pfz.y + jitter_cell_noise*oz32;\n\n\tvec3 dx33 = Pfx + jitter_cell_noise*ox33;\n\tvec3 dy33 = Pfy.z + jitter_cell_noise*oy33;\n\tvec3 dz33 = Pfz.z + jitter_cell_noise*oz33;\n\n\tvec3 d11 = dx11 * dx11 + dy11 * dy11 + dz11 * dz11;\n\tvec3 d12 = dx12 * dx12 + dy12 * dy12 + dz12 * dz12;\n\tvec3 d13 = dx13 * dx13 + dy13 * dy13 + dz13 * dz13;\n\tvec3 d21 = dx21 * dx21 + dy21 * dy21 + dz21 * dz21;\n\tvec3 d22 = dx22 * dx22 + dy22 * dy22 + dz22 * dz22;\n\tvec3 d23 = dx23 * dx23 + dy23 * dy23 + dz23 * dz23;\n\tvec3 d31 = dx31 * dx31 + dy31 * dy31 + dz31 * dz31;\n\tvec3 d32 = dx32 * dx32 + dy32 * dy32 + dz32 * dz32;\n\tvec3 d33 = dx33 * dx33 + dy33 * dy33 + dz33 * dz33;\n\n\t// Sort out the two smallest distances (F1, F2)\n#if 0\n\t// Cheat and sort out only F1\n\tvec3 d1 = min(min(d11,d12), d13);\n\tvec3 d2 = min(min(d21,d22), d23);\n\tvec3 d3 = min(min(d31,d32), d33);\n\tvec3 d = min(min(d1,d2), d3);\n\td.x = min(min(d.x,d.y),d.z);\n\treturn vec2(sqrt(d.x)); // F1 duplicated, no F2 computed\n#else\n\t// Do it right and sort out both F1 and F2\n\tvec3 d1a = min(d11, d12);\n\td12 = max(d11, d12);\n\td11 = min(d1a, d13); // Smallest now not in d12 or d13\n\td13 = max(d1a, d13);\n\td12 = min(d12, d13); // 2nd smallest now not in d13\n\tvec3 d2a = min(d21, d22);\n\td22 = max(d21, d22);\n\td21 = min(d2a, d23); // Smallest now not in d22 or d23\n\td23 = max(d2a, d23);\n\td22 = min(d22, d23); // 2nd smallest now not in d23\n\tvec3 d3a = min(d31, d32);\n\td32 = max(d31, d32);\n\td31 = min(d3a, d33); // Smallest now not in d32 or d33\n\td33 = max(d3a, d33);\n\td32 = min(d32, d33); // 2nd smallest now not in d33\n\tvec3 da = min(d11, d21);\n\td21 = max(d11, d21);\n\td11 = min(da, d31); // Smallest now in d11\n\td31 = max(da, d31); // 2nd smallest now not in d31\n\td11.xy = (d11.x < d11.y) ? d11.xy : d11.yx;\n\td11.xz = (d11.x < d11.z) ? d11.xz : d11.zx; // d11.x now smallest\n\td12 = min(d12, d21); // 2nd smallest now not in d21\n\td12 = min(d12, d22); // nor in d22\n\td12 = min(d12, d31); // nor in d31\n\td12 = min(d12, d32); // nor in d32\n\td11.yz = min(d11.yz,d12.xy); // nor in d12.yz\n\td11.y = min(d11.y,d12.z); // Only two more to go\n\td11.y = min(d11.y,d11.z); // Done! (Phew!)\n\treturn sqrt(d11.xy); // F1, F2\n#endif\n}\n\n";
 
 	var Noise3D = "\n//\n// Description : Array and textureless GLSL 2D/3D/4D simplex \n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : stegu\n//     Lastmod : 20201014 (stegu)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//               https://github.com/stegu/webgl-noise\n// \n\n#ifndef MOD289_3\n#define MOD289_3\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD289_4\n#define MOD289_4\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef PERMUTE_4\n#define PERMUTE_4\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+10.0)*x);\n}\n#endif\n\n#ifndef TAYLORINVSQRT\n#define TAYLORINVSQRT\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n#endif\n\nfloat snoise(vec3 v)\n  { \n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i); \n  vec4 p = permute( permute( permute( \n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) \n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.5 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  m = m * m;\n  return 105.0 * dot( m*m, vec4( dot(p0,x0), dot(p1,x1), \n                                dot(p2,x2), dot(p3,x3) ) );\n  }\n  ";
 
 	var Noise3DGrad = "//\n// Description : Array and textureless GLSL 2D/3D/4D simplex \n//               noise functions.\n//      Author : Ian McEwan, Ashima Arts.\n//  Maintainer : stegu\n//     Lastmod : 20201014 (stegu)\n//     License : Copyright (C) 2011 Ashima Arts. All rights reserved.\n//               Distributed under the MIT License. See LICENSE file.\n//               https://github.com/ashima/webgl-noise\n//               https://github.com/stegu/webgl-noise\n// \n\n#ifndef MOD289_3\n#define MOD289_3\nvec3 mod289(vec3 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef MOD289_4\n#define MOD289_4\nvec4 mod289(vec4 x) {\n  return x - floor(x * (1.0 / 289.0)) * 289.0;\n}\n#endif\n\n#ifndef PERMUTE_4\n#define PERMUTE_4\nvec4 permute(vec4 x) {\n     return mod289(((x*34.0)+10.0)*x);\n}\n#endif\n\n#ifndef TAYLORINVSQRT\n#define TAYLORINVSQRT\nvec4 taylorInvSqrt(vec4 r)\n{\n  return 1.79284291400159 - 0.85373472095314 * r;\n}\n#endif\n\nfloat snoise(vec3 v, out vec3 gradient)\n{\n  const vec2  C = vec2(1.0/6.0, 1.0/3.0) ;\n  const vec4  D = vec4(0.0, 0.5, 1.0, 2.0);\n\n// First corner\n  vec3 i  = floor(v + dot(v, C.yyy) );\n  vec3 x0 =   v - i + dot(i, C.xxx) ;\n\n// Other corners\n  vec3 g = step(x0.yzx, x0.xyz);\n  vec3 l = 1.0 - g;\n  vec3 i1 = min( g.xyz, l.zxy );\n  vec3 i2 = max( g.xyz, l.zxy );\n\n  //   x0 = x0 - 0.0 + 0.0 * C.xxx;\n  //   x1 = x0 - i1  + 1.0 * C.xxx;\n  //   x2 = x0 - i2  + 2.0 * C.xxx;\n  //   x3 = x0 - 1.0 + 3.0 * C.xxx;\n  vec3 x1 = x0 - i1 + C.xxx;\n  vec3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y\n  vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y\n\n// Permutations\n  i = mod289(i); \n  vec4 p = permute( permute( permute( \n             i.z + vec4(0.0, i1.z, i2.z, 1.0 ))\n           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) \n           + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));\n\n// Gradients: 7x7 points over a square, mapped onto an octahedron.\n// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)\n  float n_ = 0.142857142857; // 1.0/7.0\n  vec3  ns = n_ * D.wyz - D.xzx;\n\n  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)\n\n  vec4 x_ = floor(j * ns.z);\n  vec4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)\n\n  vec4 x = x_ *ns.x + ns.yyyy;\n  vec4 y = y_ *ns.x + ns.yyyy;\n  vec4 h = 1.0 - abs(x) - abs(y);\n\n  vec4 b0 = vec4( x.xy, y.xy );\n  vec4 b1 = vec4( x.zw, y.zw );\n\n  //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;\n  //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;\n  vec4 s0 = floor(b0)*2.0 + 1.0;\n  vec4 s1 = floor(b1)*2.0 + 1.0;\n  vec4 sh = -step(h, vec4(0.0));\n\n  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;\n  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;\n\n  vec3 p0 = vec3(a0.xy,h.x);\n  vec3 p1 = vec3(a0.zw,h.y);\n  vec3 p2 = vec3(a1.xy,h.z);\n  vec3 p3 = vec3(a1.zw,h.w);\n\n//Normalise gradients\n  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));\n  p0 *= norm.x;\n  p1 *= norm.y;\n  p2 *= norm.z;\n  p3 *= norm.w;\n\n// Mix final noise value\n  vec4 m = max(0.5 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);\n  vec4 m2 = m * m;\n  vec4 m4 = m2 * m2;\n  vec4 pdotx = vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3));\n\n// Determine noise gradient\n  vec4 temp = m2 * m * pdotx;\n  gradient = -8.0 * (temp.x * x0 + temp.y * x1 + temp.z * x2 + temp.w * x3);\n  gradient += m4.x * p0 + m4.y * p1 + m4.z * p2 + m4.w * p3;\n  gradient *= 105.0;\n\n  return 105.0 * dot(m4, pdotx);\n}\n";
 
-	var Random = "\nfloat rand(vec2 co){\n    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);\n}\n\n";
-
 	var Saturate = "\n#ifndef saturate\n#define saturate(v) clamp(v, 0., 1.)\n#endif\n";
 
 	var Shapes = "\n#ifndef SHAPES_GLSL\n#define SHAPES_GLSL\n\nfloat dot2( in vec2 v ) { return dot(v,v); }\nfloat ndot(vec2 a, vec2 b ) { return a.x*b.x - a.y*b.y; }\n\nfloat sminCubic( float a, float b, float k )\n{\n    float h = max( k-abs(a-b), 0.0 )/k;\n    return min( a, b ) - h*h*h*k*(1.0/6.0);\n}\n\nfloat sdCircle( vec2 p, float r )\n{\n    return length(p) - r;\n}\n\nfloat sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )\n{\n    r.xy = (p.x>0.0)?r.xy : r.zw;\n    r.x  = (p.y>0.0)?r.x  : r.y;\n    vec2 q = abs(p)-b+r.x;\n    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r.x;\n}\n\nfloat sdBox( in vec2 p, in vec2 b )\n{\n    vec2 d = abs(p)-b;\n    return length(max(d,0.0)) + min(max(d.x,d.y),0.0);\n}\n\nfloat sdOrientedBox( in vec2 p, in vec2 a, in vec2 b, float th )\n{\n    float l = length(b-a);\n    vec2  d = (b-a)/l;\n    vec2  q = (p-(a+b)*0.5);\n          q = mat2(d.x,-d.y,d.y,d.x)*q;\n          q = abs(q)-vec2(l,th)*0.5;\n    return length(max(q,0.0)) + min(max(q.x,q.y),0.0);    \n}\n\nfloat sdRhombus( in vec2 p, in vec2 b ) \n{\n    p = abs(p);\n    float h = clamp( ndot(b-2.0*p,b)/dot(b,b), -1.0, 1.0 );\n    float d = length( p-0.5*b*vec2(1.0-h,1.0+h) );\n    return d * sign( p.x*b.y + p.y*b.x - b.x*b.y );\n}\n\nfloat sdTrapezoid( in vec2 p, in float r1, float r2, float he )\n{\n    vec2 k1 = vec2(r2,he);\n    vec2 k2 = vec2(r2-r1,2.0*he);\n    p.x = abs(p.x);\n    vec2 ca = vec2(p.x-min(p.x,(p.y<0.0)?r1:r2), abs(p.y)-he);\n    vec2 cb = p - k1 + k2*clamp( dot(k1-p,k2)/dot2(k2), 0.0, 1.0 );\n    float s = (cb.x<0.0 && ca.y<0.0) ? -1.0 : 1.0;\n    return s*sqrt( min(dot2(ca),dot2(cb)) );\n}\n\nfloat sdParallelogram( in vec2 p, float wi, float he, float sk )\n{\n    vec2 e = vec2(sk,he);\n    p = (p.y<0.0)?-p:p;\n    vec2  w = p - e; w.x -= clamp(w.x,-wi,wi);\n    vec2  d = vec2(dot(w,w), -w.y);\n    float s = p.x*e.y - p.y*e.x; \n    p = (s<0.0)?-p:p;\n    vec2  v = p - vec2(wi,0); v -= e*clamp(dot(v,e)/dot(e,e),-1.0,1.0);\n    d = min( d, vec2(dot(v,v), wi*he-abs(s)));\n    return sqrt(d.x)*sign(-d.y);\n}\n\nvec2 translate(vec2 p, vec2 t)\n{\n\treturn p - t;\n}\n\nvec3 translate(vec3 p, vec3 t)\n{\n    return p - t;\n}\n\nvec2 scale(vec2 p, float zoom)\n{\n    p *= zoom;\n    return p;\n}\n\nvec2 scale(vec2 p, vec2 origin, float zoom)\n{\n    p -= origin;\n    p *= zoom;\n    p += origin;\n\n    return p;\n}\n\nvec2 rotate(vec2 p, float a)\n{\n    mat2 m = mat2(cos(a),sin(a),-sin(a),cos(a));\n    return p*m;\n}\n\nvec2 rotate(vec2 p, vec2 origin, float a)\n{\n    p -= origin;\n    mat2 m = mat2(cos(a),sin(a),-sin(a),cos(a));\n    return p*m + origin;\t\n}\n\n#endif\n";
 
-	var VertDefault = "\nattribute vec4 position;\n\nvarying vec4 uv;\n\nvoid main() {\n  gl_Position = position;\n}\n";
-	var FragTexture = "\nprecision mediump float;\n\n".concat(LabColorSpace, "\n\nuniform vec2 resolution;\nuniform sampler2D tex;\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec3 texCol = texture2D(tex, vec2(uv.x, .5)).rgb;\n\n  vec4 colOut;\n  colOut.a = 1.;\n  // colOut.rgb = saturate(xyz2rgb(texCol));\n  // colOut.rgb = lab2rgb2(texCol);\n\n  colOut.rgb = saturate(texCol);\n// colOut.rgb = vec3(1.,1.,0.);\n  gl_FragColor = colOut;\n\n  // gl_FragColor = texture2D(tex, vec2(uv.x, .5));\n  // gl_FragColor = vec4(uv.xy,0,1);\n}\n");
-	var FragAura = "\n// #version 300 es\nprecision mediump float;\n\n".concat(Shapes, "\n").concat(Random, "\n").concat(Noise3DGrad, "\n").concat(Noise3D, "\n").concat(Saturate, "\n\nstruct Layer1\n{\n  vec3 color1;\n  vec3 color2;\n  float brightness;\n  float blobbyness;\n  float blur;\n\n  bool enabled;\n};\n\nstruct Layer2\n{\n  float brightness;\n  float cycleSpeed;\n  bool enabled;\n};\n\nuniform vec2 resolution;\nuniform vec4 time; // [time, time/2, time*2, time/10]\nuniform sampler2D ramp;\nuniform Layer1 layer1;\nuniform Layer2 layer2;\n\nuniform float noiseDither;\n\n#define TO_FLOAT (1./255.0)\n\n#define sin01(x) (sin(x)*.5)+.5\n\n#define disabled vec3(0.0)\n\nvoid doLayer1(in vec4 uv, inout vec3 col)\n{\n  vec2 st = uv.zw;\n  // st = scale(st, 2.);\n  float sk = .1*sin(time.y);\n  float d = sdParallelogram(st, .4, .1, sk);\n  // d += snoise(vec3(uv.xy, time.x));\n  float d2 = sdRhombus(st, vec2(1.,1.));\n  \n  float noise = snoise(vec3(uv.xy, time.x));\n  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.z) ));\n\ndMix+=layer1.blobbyness*noise;\nd += noise*layer1.blobbyness;\n\n  vec3 layer1Col = layer1.brightness*(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, d))));\n\n  col += layer1.enabled ? layer1Col : disabled;\n}\n\nvoid doLayer2(in vec4 uv, inout vec3 col)\n{\n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x), grad);\n  noise *= 0.4;\n  noise = smoothstep(-1.,1., noise);\n  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed  , .5));\n  \n  vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;\n  col.rgb += layer2.enabled ? layer2Col : disabled;\n\n}\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;\n\n  uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));\n  uv *= .5;\n\n vec4 col = vec4(0.);\n col.a = 1.;\n\n doLayer1(vec4(uv, st), col.rgb);\n doLayer2(vec4(uv, st), col.rgb);\n\n  col.rgb = saturate(col.rgb);\n  gl_FragColor = col;\n\n}\n");
+	var Includes = "\n".concat(Shapes, "\n").concat(Random, "\n").concat(Noise3DGrad, "\n").concat(Noise3D, "\n").concat(Saturate, "\n").concat(Cellular2x2x2, "\n").concat(Cellular3D, "\n\n#define TO_FLOAT (1./255.0)\n\n#define sin01(x) (sin(x)*.5)+.5\n\n#define disabled vec3(0.0)\n\n");
+	var Types = "\n\nstruct Layer1\n{\n  vec3 color1;\n  vec3 color2;\n  float brightness;\n  float blobbyness;\n  float blur;\n\n  bool enabled;\n};\n\nstruct Layer2\n{\n  float brightness;\n  float cycleSpeed;\n  bool enabled;\n};\n\nstruct Feedback\n{\n  float amount;\n  float scaleX;\n  float scaleY;\n  float centerX;\n  float centerY;\n};\n\n";
+	var Uniforms = "\nuniform vec2 resolution;\nuniform vec4 time; // [time, time/2, time*2, time/10]\nuniform sampler2D ramp;\nuniform Layer1 layer1;\nuniform Layer2 layer2;\nuniform Feedback feedback;\n\nuniform sampler2D backBufferTex;\n\nuniform float noiseDither;\n\n// uniform float feedback;\n\nout vec4 FragColor;\nin vec4 fragUV;\n";
+	var Layer1 = "\nvec3 doLayer1(in vec4 uv, inout vec3 col)\n{\n  vec2 st = uv.zw;\n  st *= sin(time.x);\n\n  float sk = .1*sin(time.y*1.56);\n\n  float d = sdParallelogram(st + vec2(sin(time.z), sin(time.y*1.4)), .4, .1, sk);\n  float d2 = sdRhombus(st + vec2(sin(time.z*.85 + 12.23), sin(time.y)), vec2(1.,1.));\n  \n  float noise = snoise(vec3(uv.xy, time.x));\n  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.y) ));\n\n  dMix+=layer1.blobbyness*noise;\n  d += noise*layer1.blobbyness;\n\n  vec3 layer1Col = layer1.brightness*(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));\n\n  layer1Col = layer1.enabled ? layer1Col : disabled;\n  col += layer1Col;\n\n  return layer1Col;\n}\n";
+	var Layer2 = "\nvec3 doLayer2(in vec4 uv, inout vec3 col)\n{\n  \n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x), grad);\n  noise *= 0.4;\n  noise = smoothstep(-1.,1., noise);\n  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed + rand(uv.xy)*.01  , .5));\n  \n  vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;\n  vec3 color = layer2.enabled ? layer2Col : disabled;\n  col.rgb += color;\n\n  return color;\n\n}\n";
+	var ScaleUV = "\n\nvec2 scaleUV(vec2 uv, vec2 scaleFactor, vec2 center)\n{\n return ( uv - center)*scaleFactor  + center;\n}\n";
+	var FragAura = "\n#version 300 es\n\n#if __VERSION__ > 130\n#define texture2D texture\n#endif\n\nprecision mediump float;\n\n".concat(Includes, "\n").concat(Types, "\n").concat(Uniforms, "\n\n").concat(Layer1, "\n").concat(Layer2, "\n").concat(ScaleUV, "\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec2 uvOrig = uv;\n  vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;\n\n  // Init output\n  vec4 col = vec4(0.);\n  col.a = 1.;\n\n  // Calculate layers\n  vec3 l1 = doLayer1(vec4(uv, st), col.rgb);\n  vec3 l2 = doLayer2(vec4(uv, st), col.rgb);\n\n  // Comp Layers\n  col.rgb = l1 + l2;\n\n  // Feedback stage\n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x)*.5, grad);\n\n  vec4 lastFrame = texture2D(backBufferTex, uv+ grad.xy*.1);\n  col.rgb += lastFrame.rgb*feedback.amount;\n\n  // Clamp color values\n  col.rgb = saturate(col.rgb);\n\n  FragColor = col;\n}\n");
 
-	var FullScreenQuad = {
-	  position: [-1, -1, 0, 1, -1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 1, 0]
+	var FragComp = "\n#version 300 es\n\n\n#if __VERSION__ > 130\n#define texture2D texture\n#endif\n\n\nprecision mediump float;\n\nout vec4 FragColor;\n\n".concat(Saturate, "\n").concat(Random, "\n").concat(LabColorSpace, "\n\nuniform float noiseDither;\n\nuniform vec2 resolution;\nuniform sampler2D backBuffer;\n\n\nuniform sampler2D ramp;\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));\n\n  vec4 lastCol = texture2D(backBuffer, uv);\n  vec4 colOut;\n  colOut.a = 1.;\n\n  colOut.rgb = lastCol.rgb;\n\n  // linear to gamma\n  // colOut.rgb = pow( colOut.rgb, vec3(0.4545) );\n\n  FragColor = colOut;\n}\n\n");
+
+	var CreateGradientTexture2 = function CreateGradientTexture2(gl, options) {
+	  var _options$resolution, _options$height2, _options$colors;
+
+	  var width = (_options$resolution = options.resolution) !== null && _options$resolution !== void 0 ? _options$resolution : 256;
+	  var height = (_options$height2 = options.height) !== null && _options$height2 !== void 0 ? _options$height2 : 256;
+	  var colors = (_options$colors = options.colors) !== null && _options$colors !== void 0 ? _options$colors : [[255, 0, 0], [0, 0, 255], [0, 255, 0]];
+
+	  if (!colors || colors.length < 2) {
+	    console.log("Need at least 2 colors to make a gradient");
+	    return null;
+	  }
+
+	  var gradShader = createProgramInfo(gl, [VertDefault, FragGradientLab]);
+	  var bufferInfo = createBufferInfoFromArrays(gl, FullScreenQuad);
+	  gl.viewport(0, 0, width, height);
+	  var gradTex = gl.createTexture();
+	  gl.bindTexture(gl.TEXTURE_2D, gradTex);
+	  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, width, height, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.MIRRORED_REPEAT);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.MIRRORED_REPEAT);
+	  var fb = gl.createFramebuffer();
+	  gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+	  var attachmentPoint = gl.COLOR_ATTACHMENT0;
+	  gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, gradTex, 0);
+	  gl.useProgram(gradShader.program);
+	  gl.clearColor(0, 0, 0, 1);
+	  setBuffersAndAttributes(gl, gradShader, bufferInfo);
+	  setUniforms(gradShader, {
+	    colors: colors.flat(),
+	    numColors: colors.length,
+	    resolution: [width, height]
+	  });
+	  drawBufferInfo(gl, bufferInfo);
+	  return gradTex;
 	};
 
 	/**
@@ -8589,42 +8565,56 @@
 	var GUI$1 = GUI;
 
 	var preset = "Default";
-	var closed = false;
 	var remembered = {
 		Default: {
 			"0": {
-				time: 229.69792694640034,
 				autoSave: true,
-				fullscreen: false,
-				seed: 100,
-				speed: 0.13,
-				noise: 0.005
+				fullscreen: false
 			},
 			"1": {
-				color1: [
-					79.4577205882353,
-					210,
-					79.4577205882353
-				],
-				color2: [
-					13.639705882352938,
-					43.74167591564929,
-					120
-				],
-				brightness: 0.38,
-				blobbyness: 3.8000000000000003,
-				blur: 1.1400000000000001,
-				enabled: true
+				speed: 0.21,
+				noise: 0.003,
+				feedback: 1
 			},
 			"2": {
-				brightness: 0.77,
+				amount: 0.42,
+				scaleX: 0.74,
+				scaleY: 0.76,
+				centerX: 0.5,
+				centerY: 0.51
+			},
+			"3": {
+				color1: [
+					150.74536663980655,
+					50.183823529411775,
+					200
+				],
+				color2: [
+					0,
+					0,
+					0
+				],
+				brightness: 1,
+				blobbyness: 1.2000000000000002,
+				blur: 1.47,
+				enabled: true
+			},
+			"4": {
+				brightness: 1,
 				enabled: true,
-				cycleSpeed: 0.8
+				cycleSpeed: 0.2
 			}
 		}
 	};
+	var closed = false;
 	var folders = {
 		Global: {
+			preset: "Default",
+			closed: false,
+			folders: {
+			}
+		},
+		Feedback: {
 			preset: "Default",
 			closed: false,
 			folders: {
@@ -8645,21 +8635,129 @@
 	};
 	var settings = {
 		preset: preset,
-		closed: closed,
 		remembered: remembered,
+		closed: closed,
 		folders: folders
 	};
 
 	var Settings = /*#__PURE__*/Object.freeze({
 		__proto__: null,
 		preset: preset,
-		closed: closed,
 		remembered: remembered,
+		closed: closed,
 		folders: folders,
 		'default': settings
 	});
 
+	function _classCallCheck(instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	}
+
+	function _defineProperties(target, props) {
+	  for (var i = 0; i < props.length; i++) {
+	    var descriptor = props[i];
+	    descriptor.enumerable = descriptor.enumerable || false;
+	    descriptor.configurable = true;
+	    if ("value" in descriptor) descriptor.writable = true;
+	    Object.defineProperty(target, descriptor.key, descriptor);
+	  }
+	}
+
+	function _createClass(Constructor, protoProps, staticProps) {
+	  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+	  if (staticProps) _defineProperties(Constructor, staticProps);
+	  Object.defineProperty(Constructor, "prototype", {
+	    writable: false
+	  });
+	  return Constructor;
+	}
+
+	function _defineProperty(obj, key, value) {
+	  if (key in obj) {
+	    Object.defineProperty(obj, key, {
+	      value: value,
+	      enumerable: true,
+	      configurable: true,
+	      writable: true
+	    });
+	  } else {
+	    obj[key] = value;
+	  }
+
+	  return obj;
+	}
+
+	var initTexture = function initTexture(gl, params) {
+	  var _params$width, _params$height;
+
+	  var width = (_params$width = params.width) !== null && _params$width !== void 0 ? _params$width : 256;
+	  var height = (_params$height = params.height) !== null && _params$height !== void 0 ? _params$height : 256;
+	  var tex = gl.createTexture();
+	  gl.bindTexture(gl.TEXTURE_2D, tex);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	  return tex;
+	};
+
+	var initFrameBuffer = function initFrameBuffer(gl, texture) {
+	  var fbo = gl.createFramebuffer();
+	  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+	  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, texture, 0);
+	  return fbo;
+	};
+
+	var PingPongBuffer = /*#__PURE__*/_createClass(function PingPongBuffer(gl, params) {
+	  var _this = this,
+	      _params$width2,
+	      _params$height2;
+
+	  _classCallCheck(this, PingPongBuffer);
+
+	  _defineProperty(this, "currentTexture", function () {
+	    return _this.swp ? _this.texture2 : _this.texture1;
+	  });
+
+	  _defineProperty(this, "lastTexture", function () {
+	    return _this.swp ? _this.texture1 : _this.texture2;
+	  });
+
+	  _defineProperty(this, "currentFramebuffer", function () {
+	    return _this.swp ? _this.fb2 : _this.fb1;
+	  });
+
+	  _defineProperty(this, "swap", function () {
+	    return _this.swp = !_this.swp;
+	  });
+
+	  _defineProperty(this, "bind", function () {
+	    _this.gl.bindFramebuffer(_this.gl.FRAMEBUFFER, _this.currentFramebuffer());
+
+	    _this.gl.viewport(0, 0, _this.width, _this.height);
+	  });
+
+	  this.width = params.width = (_params$width2 = params.width) !== null && _params$width2 !== void 0 ? _params$width2 : 256;
+	  this.height = params.height = (_params$height2 = params.height) !== null && _params$height2 !== void 0 ? _params$height2 : 256;
+	  this.texture1 = initTexture(gl, params);
+	  this.texture2 = initTexture(gl, params);
+	  this.fb1 = initFrameBuffer(gl, this.texture1);
+	  this.fb2 = initFrameBuffer(gl, this.texture2);
+	  this.swp = false;
+	  this.gl = gl;
+	});
+
 	var auraCanvas = document.getElementById('aura_canvas');
+	var gl = auraCanvas.getContext('webgl2');
+	var programInfo = createProgramInfo(gl, [VertDefault, FragAura]);
+	var programFinal = createProgramInfo(gl, [VertDefault, FragComp]);
+	var pauseButton = document.getElementById('pause_btn');
+	var playButton = document.getElementById('play_btn');
+	var timer = document.getElementById('timer');
+	var fpsDisp = document.getElementById('fps');
 	var layer1 = {
 	  color1: [255.0, 0.0, 0.0],
 	  color2: [0., 255., 0.],
@@ -8677,11 +8775,19 @@
 	  autoSave: true,
 	  fullscreen: false
 	};
+	var feedbackSettings = {
+	  amount: .4,
+	  scaleX: 1.01,
+	  scaleY: 1.01,
+	  centerX: 0.5,
+	  centerY: 0.5
+	};
 	var globalParams = {
 	  time: 0.,
 	  speed: .1,
 	  seed: 100,
-	  noise: 1.
+	  noise: .003,
+	  feedback: .99
 	};
 	console.log("Settings: ", Settings);
 
@@ -8700,16 +8806,26 @@
 	  var gui = new GUI$1({
 	    name: 'params',
 	    load: Settings
-	  }); // Global
+	  }); // App
+
+	  gui.remember(appParams);
+	  gui.add(appParams, 'autoSave');
+	  gui.add(appParams, 'fullscreen').listen().onChange(setFullscreen); // Global
 
 	  gui.remember(globalParams);
-	  gui.add(appParams, 'autoSave');
-	  gui.add(appParams, 'fullscreen').listen().onChange(setFullscreen);
-	  var folder = gui.addFolder('Global'); // folder.add(globalParams, 'seed').min(0).max(5000).step(1).listen();
-
+	  var folder = gui.addFolder('Global');
 	  folder.add(globalParams, 'speed').min(0.01).max(1).step(.01).listen();
 	  folder.add(globalParams, 'noise').min(0.).max(.1).step(.001).listen();
-	  folder.open(); // Layer 1
+	  folder.open(); // Feedback settings
+
+	  gui.remember(feedbackSettings);
+	  var feedbackFolder = gui.addFolder('Feedback');
+	  feedbackFolder.add(feedbackSettings, 'amount').min(0).max(1).step(.01).listen(); // feedbackFolder.add(feedbackSettings, 'scaleX').min(0.1).max(2.0).step(.01).listen();
+	  // feedbackFolder.add(feedbackSettings, 'scaleY').min(0.1).max(2.0).step(.01).listen();
+	  // feedbackFolder.add(feedbackSettings, 'centerX').min(0).max(1).step(.01).listen();
+	  // feedbackFolder.add(feedbackSettings, 'centerY').min(0).max(1).step(0.01).listen();
+
+	  feedbackFolder.open(); // Layer 1
 
 	  gui.remember(layer1);
 	  var layer1Folder = gui.addFolder('Layer 1');
@@ -8733,37 +8849,13 @@
 	  }, 1000);
 	};
 
-	var rgbVals = [[14, 39, 35], [8, 69, 62], [118, 81, 121], [223, 179, 109], [217, 229, 199]];
+	var rgbVals = [// [0, 0, 0],
+	[14, 39, 35], [8, 69, 62], [118, 81, 121], [223, 179, 109], [217, 229, 199]];
+	var rgbArray = rgbVals;
 	rgbVals = rgbVals.map(function (e) {
 	  return new Color$1$1('sRGB', e.map(function (f) {
 	    return f / 255;
 	  }));
-	});
-	var glGrad = document.getElementById('gradient_canvas').getContext('webgl2');
-	var grad = CreateGradientTexture(glGrad, {
-	  steps: 16,
-	  colors: rgbVals
-	});
-	var gradShader = createProgramInfo(glGrad, [VertDefault, FragTexture]);
-	var linear = glGrad.getExtension("OES_texture_float_linear");
-
-	if (!linear) {
-	  alert("this machine or browser does not support  OES_texture_float_linear");
-	}
-
-	var bufferInfoGrad = createBufferInfoFromArrays(glGrad, FullScreenQuad);
-	resizeCanvasToDisplaySize(glGrad.canvas);
-	glGrad.viewport(0, 0, glGrad.canvas.width, glGrad.canvas.height);
-	var gl = auraCanvas.getContext('webgl2');
-	var programInfo = createProgramInfo(gl, [VertDefault, FragAura]);
-	var pauseButton = document.getElementById('pause_btn');
-	var playButton = document.getElementById('play_btn');
-	var timer = document.getElementById('timer');
-	var fpsDisp = document.getElementById('fps');
-	gl.getExtension("OES_texture_float_linear");
-	var grad2 = CreateGradientTexture(gl, {
-	  steps: 16,
-	  colors: rgbVals
 	});
 	var playing = true;
 	var startTime, prevTimestamp, deltaTime, now;
@@ -8781,6 +8873,19 @@
 	  return console.log('focus');
 	}, false);
 	var bufferInfo = createBufferInfoFromArrays(gl, FullScreenQuad);
+	var backBufferTex = gl.createTexture(); // const backBufferTex = twgl.createTexture(gl, { width: targetTexWidth, height: targetTexHeight, color: [255, 0, 0], format: gl.RGBA, internalFormat:gl.RGBA });
+
+	var targetTexWidth = 256;
+	var targetTexHeight = 256;
+	gl.bindTexture(gl.TEXTURE_2D, backBufferTex);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, targetTexWidth, targetTexHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	var fb = gl.createFramebuffer();
+	gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+	var attachmentPoint = gl.COLOR_ATTACHMENT0;
+	gl.framebufferTexture2D(gl.FRAMEBUFFER, attachmentPoint, gl.TEXTURE_2D, backBufferTex, 0);
 
 	var start = function start(fps) {
 	  fixedDeltaTime = 1000 / fps;
@@ -8789,15 +8894,16 @@
 	  render();
 	};
 
+	var ramp = CreateGradientTexture2(gl, {
+	  colors: rgbArray,
+	  resolution: 256
+	});
+	var ppb = new PingPongBuffer(gl, {
+	  width: targetTexWidth,
+	  height: targetTexHeight
+	});
+
 	var render = function render(time) {
-	  var uniformsGrad = {
-	    resolution: [glGrad.canvas.width, glGrad.canvas.height],
-	    tex: grad
-	  };
-	  glGrad.useProgram(gradShader.program);
-	  setBuffersAndAttributes(glGrad, gradShader, bufferInfoGrad);
-	  setUniforms(gradShader, uniformsGrad);
-	  drawBufferInfo(glGrad, bufferInfoGrad);
 	  requestAnimationFrame(render);
 	  now = time;
 	  deltaTime = now - prevTimestamp;
@@ -8810,20 +8916,42 @@
 	    var currFps = Math.round(1000 / (sinceStart / ++frameCount) * 100) / 100;
 	    fpsDisp.textContent = "FPS: ".concat(currFps.toFixed(2));
 	    resizeCanvasToDisplaySize(gl.canvas);
-	    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	    timer.textContent = "Time: ".concat((animTime / 1000).toFixed(2));
 	    var uniforms = {
 	      time: [globalParams.time, globalParams.time / 2, globalParams.time * 2, globalParams.time / 10],
-	      resolution: [gl.canvas.width, gl.canvas.height],
-	      ramp: grad2,
+	      resolution: [targetTexWidth, targetTexHeight],
+	      ramp: ramp,
 	      layer1: layer1,
 	      layer2: layer2,
-	      noiseDither: globalParams.noise
+	      feedback: feedbackSettings,
+	      noiseDither: globalParams.noise,
+	      backBufferTex: ppb.lastTexture()
 	    };
-	    gl.useProgram(programInfo.program);
-	    setBuffersAndAttributes(gl, programInfo, bufferInfo);
-	    setUniforms(programInfo, uniforms);
-	    drawBufferInfo(gl, bufferInfo);
+	    var compUniforms = {
+	      resolution: [gl.canvas.width, gl.canvas.height],
+	      backBuffer: ppb.currentTexture(),
+	      noiseDither: globalParams.noise,
+	      ramp: ramp
+	    };
+	    {
+	      // Render new frame 
+	      ppb.bind();
+	      gl.useProgram(programInfo.program);
+	      setBuffersAndAttributes(gl, programInfo, bufferInfo);
+	      setUniforms(programInfo, uniforms);
+	      drawBufferInfo(gl, bufferInfo);
+	    }
+	    {
+	      compUniforms.backBuffer = ppb.currentTexture(); //   // Set dst buffer back to screen
+
+	      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+	      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	      gl.useProgram(programFinal.program);
+	      setBuffersAndAttributes(gl, programFinal, bufferInfo);
+	      setUniforms(programFinal, compUniforms);
+	      drawBufferInfo(gl, bufferInfo);
+	      ppb.swap();
+	    }
 	  }
 	};
 
@@ -8838,6 +8966,6 @@
 	};
 
 	initGui();
-	setFullscreen(globalParams.fullscreen);
+	setFullscreen(appParams.fullscreen);
 
 })();
