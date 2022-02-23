@@ -5,12 +5,11 @@ import json from '@rollup/plugin-json'
 import { terser } from "rollup-plugin-terser";
 import dev from 'rollup-plugin-dev'
 
-export default {
+export default [
+{
   input: 'src/main.js',
   output: {
-    name: "bundle",
-    file: 'dist/bundle.js',
-    format: 'iife'
+    file: 'dist/bundle.js'
   },
-  plugins: [json(), resolve(), babel({ babelHelpers: 'bundled' })]
-};
+  plugins: [json(), terser(), resolve(), babel({ babelHelpers: 'bundled' })]
+}];

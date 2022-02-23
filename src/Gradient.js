@@ -1,4 +1,3 @@
-import color from 'colorjs.io';
 import * as twgl from 'twgl.js'
 import { FullScreenQuad } from './Geometry';
 import { FragGradientLab } from './shaders/Gradient';
