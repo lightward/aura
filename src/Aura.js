@@ -65,34 +65,7 @@ let fullscreenStyle = `position: fixed;    width: 100vw;    height: 100vh;    z-
 
 export default class Aura {
     constructor(gl, params = {}) {
-        // Merge defaults with supplied parameters
-        this.globalParams =
-        {
-            ...defaults.globalParams,
-            ...params.globalParams
-        }
-
-        this.layer1Params =
-        {
-            ...defaults.layer1,
-            ...params.layer1
-        }
-
-        this.layer2Params =
-        {
-            ...defaults.layer2,
-            ...params.layer2
-        }
-        this.feedback =
-        {
-            ...defaults.feedback,
-            ...params.feedback
-        }
-        this.blurSettings =
-        {
-            ...defaults.blurSettings,
-            ...params.blurSettings
-        }
+        this.setParams(params)
 
         this.colors = params.colors || defaults.colors;
 
@@ -112,32 +85,39 @@ export default class Aura {
     }
 
     setParams = (params) => {
+        // Merge defaults with supplied parameters
+
         this.layer1Params =
         {
+            ...defaults.layer1Params,
             ...this.layer1Params,
             ...params.layer1
         }
 
         this.globalParams =
         {
+            ...defaults.globalParams,
             ...this.globalParams,
             ...params.globalParams
         }
 
         this.layer2Params =
         {
+            ...defaults.layer2Params,
             ...this.layer2Params,
             ...params.layer2
         }
 
         this.feedback =
         {
+            ...defaults.feedbackSettings,
             ...this.feedbackSettings,
             ...params.feedbackSettings
         }
 
         this.blurSettings =
         {
+            ...defaults.blurSettings,
             ...this.blurSettings,
             ...params.blurSettings
         }

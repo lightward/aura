@@ -109,6 +109,8 @@ let auraParams = {
   globalParams: globalParams,
   layer1: layer1,
   layer2: layer2,
+  feedbackSettings: feedbackSettings,
+  blurSettings: blurSettings,
   colors: rgbArray
 }
 
