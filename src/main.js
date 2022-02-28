@@ -53,6 +53,12 @@ let globalParams =
   feedback: .99
 }
 
+let blurSettings =
+{
+  iterations: 8,
+  radius: 1
+}
+
 console.log(`Settings: `, Settings)
 
 let setParams = () => {
@@ -61,9 +67,10 @@ let setParams = () => {
     layer1: layer1,
     layer2: layer2,
     feedbackSettings: feedbackSettings,
+    blurSettings: blurSettings,
     colors: rgbArray
   }
-// console.log(auraParams.layer2);
+  // console.log(auraParams.layer2);
   aura.setParams(auraParams);
 }
 
@@ -83,17 +90,18 @@ let rgbVals = [
 let rgbArray = rgbVals;
 
 // load settings and init gui
-InitGui(Settings,{
+InitGui(Settings, {
   appParams: appParams,
   globalParams: globalParams,
   feedbackSettings: feedbackSettings,
   layer1: layer1,
-  layer2: layer2
+  layer2: layer2,
+  blurSettings: blurSettings
 },
-{
-  setFullscreen: setFullscreen,
-  setParams: setParams
-})
+  {
+    setFullscreen: setFullscreen,
+    setParams: setParams
+  })
 
 let auraParams = {
   globalParams: globalParams,
@@ -107,7 +115,7 @@ aura.start(appParams.autoPlay);
 
 pauseButton.onclick = () => aura.pause();
 playButton.onclick = () => aura.play();
-startOverButton.onclick = ()=>{
+startOverButton.onclick = () => {
   aura.pause();
   aura.setTime(0);
 }

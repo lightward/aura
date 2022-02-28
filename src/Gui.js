@@ -3,7 +3,7 @@ import { GUI } from 'dat.gui';
 let InitGui = (settings, params, callbacks) => {
     let gui = new GUI({ name: 'params', load: settings })
 
-    let { appParams, globalParams, feedbackSettings, layer1, layer2 } = params;
+    let { appParams, globalParams, feedbackSettings, layer1, layer2, blurSettings } = params;
     let { setFullscreen, setParams } = callbacks;
 
     gui.remember(appParams)
@@ -25,6 +25,12 @@ let InitGui = (settings, params, callbacks) => {
     feedbackFolder.add(feedbackSettings, 'amount').min(0).max(1).step(.01).listen().onChange(setParams);
     feedbackFolder.add(feedbackSettings, 'dist').min(0).max(1).step(.01).listen().onChange(setParams);
     feedbackFolder.open();
+
+    gui.remember(blurSettings)
+    let blurFolder = gui.addFolder('Blur');
+    blurFolder.add(blurSettings, 'iterations').min(0).max(16).step(1).listen().onChange(setParams);
+    blurFolder.add(blurSettings, 'radius').min(0).max(4).step(.01).listen().onChange(setParams);
+    blurFolder.open();
 
     // Layer 1
     gui.remember(layer1)

@@ -5,6 +5,7 @@ import VertDefault from "./shaders/VertDefault";
 import FragAura from "./shaders/FragAura";
 import { FullScreenQuad } from "./Geometry";
 import FragComp from "./shaders/FragComp";
+import { FragBlur } from "./shaders/include/FragBlur";
 
 const defaults =
 {
@@ -46,6 +47,11 @@ const defaults =
         centerX: 0.5,
         centerY: 0.5,
         dist: .05
+    },
+    blurSettings:
+    {
+        iterations: 8,
+        radius: 1
     }
 }
 
@@ -78,6 +84,11 @@ export default class Aura {
         {
             ...defaults.feedback,
             ...params.feedback
+        }
+        this.blurSettings =
+        {
+            ...defaults.blurSettings,
+            ...params.blurSettings
         }
 
         this.colors = params.colors || defaults.colors;
@@ -122,6 +133,11 @@ export default class Aura {
             ...params.feedbackSettings
         }
 
+        this.blurSettings =
+        {
+            ...this.blurSettings,
+            ...params.blurSettings
+        }
     }
 
 
@@ -130,6 +146,7 @@ export default class Aura {
 
         this.programAura = this.programAura ?? twgl.createProgramInfo(this.gl, [VertDefault, FragAura]);
         this.programFinal = this.programFinal ?? twgl.createProgramInfo(this.gl, [VertDefault, FragComp]);
+        this.programBlur = this.programBlur ?? twgl.createProgramInfo(this.gl, [VertDefault, FragBlur]);
         this.bufferInfo = this.bufferInfo ?? twgl.createBuffersFromArrays(gl, FullScreenQuad);
     }
 
@@ -161,22 +178,24 @@ export default class Aura {
             var sinceStart = now - this.startTime;
             this.currFps = Math.round(1000 / (sinceStart / ++this.frameCount) * 100) / 100;
             twgl.resizeCanvasToDisplaySize(this.gl.canvas);
-
-            const auraUniforms = {
-                time: [this.globalParams.time, this.globalParams.time / 2, this.globalParams.time * 2, this.globalParams.time * 10],
-                resolution: [targetTexWidth, targetTexHeight],
-                ramp: this.ramp,
-                layer1: this.layer1Params,
-                layer2: this.layer2Params,
-                feedback: this.feedback,
-                noiseDither: this.globalParams.noise,
-                backBufferTex: this.ppb.lastTexture(),
-                seed: this.globalParams.seed
-            }
-
+            
+            
             {
-                // Render new frame 
-                this.ppb.bind();
+
+                const auraUniforms = {
+                    time: [this.globalParams.time, this.globalParams.time / 2, this.globalParams.time * 2, this.globalParams.time * 10],
+                    resolution: [targetTexWidth, targetTexHeight],
+                    ramp: this.ramp,
+                    layer1: this.layer1Params,
+                    layer2: this.layer2Params,
+                    feedback: this.feedback,
+                    noiseDither: this.globalParams.noise,
+                    backBufferTex: this.ppb.lastTexture(),
+                    seed: this.globalParams.seed
+                }
+
+                // Render new Aura frame 
+                ppb.bind();
 
                 gl.useProgram(programAura.program);
 
@@ -184,16 +203,45 @@ export default class Aura {
                 twgl.setUniforms(programAura, auraUniforms);
                 twgl.drawBufferInfo(gl, bufferInfo);
 
+                // Swap buffers
+                ppb.swap();
+
             }
 
-            const compUniforms = {
-                resolution: [gl.canvas.width, gl.canvas.height],
-                backBuffer: ppb.currentTexture(),
-                noiseDither: globalParams.noise,
-                ramp: ramp
+            // Blur stages
+            let iterations = this.blurSettings.iterations;
+            for (var i = 0; i < iterations; i++) {
+                // var radius = (iterations - i - 1)
+                let radius = this.blurSettings.radius;
+                var dir = i % 2 === 0 ? [radius, 0] : [0, radius]
+
+                const blurUniforms = {
+                    resolution: [targetTexWidth, targetTexHeight],
+                    iChannel0: ppb.lastTexture(),
+                    direction: dir
+
+                }
+
+                ppb.bind();
+
+                gl.useProgram(this.programBlur.program);
+                twgl.setBuffersAndAttributes(gl, this.programBlur, bufferInfo);
+                twgl.setUniforms(this.programBlur, blurUniforms)
+                twgl.drawBufferInfo(gl, bufferInfo);
+
+                ppb.swap();
+
             }
 
+            // Render to screen
             {
+                const compUniforms = {
+                    resolution: [gl.canvas.width, gl.canvas.height],
+                    backBuffer: ppb.lastTexture(),
+                    noiseDither: globalParams.noise,
+                    ramp: ramp
+                }
+
                 // Set dst buffer back to screen
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);

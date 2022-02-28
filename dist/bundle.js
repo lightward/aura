@@ -3009,11 +3009,11 @@ var Shapes = "\n#ifndef SHAPES_GLSL\n#define SHAPES_GLSL\n\nfloat dot2( in vec2 
 
 var Includes = "\n".concat(Shapes, "\n").concat(Random, "\n").concat(Noise3DGrad, "\n").concat(Noise3D, "\n").concat(Saturate, "\n").concat(Cellular2x2x2, "\n").concat(Cellular3D, "\n").concat(Random, "\n").concat(OpenSimplex2f, "\n\n#define TO_FLOAT (1./255.0)\n\n#define sin01(x) (sin(x)*.5)+.5\n\n#define disabled vec3(0.0)\n\n");
 var Types = "\n\nstruct Layer1\n{\n  float brightness;\n  float blobbyness;\n  float blur;\n\n  bool enabled;\n};\n\nstruct Layer2\n{\n  float brightness;\n  float cycleSpeed;\n  bool enabled;\n};\n\nstruct Feedback\n{\n  float amount;\n  float scaleX;\n  float scaleY;\n  float centerX;\n  float centerY;\n  float dist;\n};\n\n";
-var Uniforms = "\nuniform vec2 resolution;\nuniform vec4 time; // [time, time/2, time*2, time/10]\nuniform sampler2D ramp;\nuniform Layer1 layer1;\nuniform Layer2 layer2;\nuniform Feedback feedback;\n\nuniform sampler2D backBufferTex;\n\nuniform float noiseDither;\n\nuniform uint seed;\n\n// uniform float feedback;\n\nout vec4 FragColor;\nin vec4 fragUV;\n";
-var Layer1 = "\nvec3 doLayer1(in vec4 uv, in vec2 n, inout vec3 col)\n{\n  vec2 st = uv.zw;\n  // st *= sin(time.x);\n  float p1 = hash(seed + uint(156));\n  float p2 = hash(seed + uint(12355));\n  float p3 = hash(seed + uint(62435));\n\n  float s1 = 2.*(p1-.5);\n  float s2 = 2.*(p2-.5);\n  float s3 = 2.*(p3 - .5);\n\n\nst = scale(st, 2.);\n  float sk = .1*sin(time.y*1.56 + p2);\n\n  float d = sdParallelogram(st + vec2(sin(time.z) + s1, sin(time.y*1.4) + s2), .4, .1, sk);\n  float d2 = sdRhombus(translate(rotate(scale( translate(st, vec2(s2, s3)*vec2(.5, .2)) , 4.*p1), p3*30.*DEG2RAD), vec2(0.,0.)), vec2(1.,1.));\n  float d3 = sdEquilateralTriangle(rotate(scale(st,4.*p1+sin(time.x)), 90.*p2*DEG2RAD + time.z/5.));\n  \n  float noise = snoise(vec3(uv.xy, time.x));\n  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.y  + p3*TWOPI ) ));\n\n  dMix = sminCubic(d,d2,.5);\n  dMix = sminCubic(sminCubic(d,d2, .5), d3, .5);\n\n  dMix+=layer1.blobbyness*noise;\n  d += noise*layer1.blobbyness;\n\n  vec4 r1 = texture2D(ramp, vec2(p1, .5))*.3;\n  vec4 r2 = texture2D(ramp, vec2(p2, .5))*.3;\n  vec4 r3 = texture2D(ramp, vec2(p3, .5))*.3;\n\n\n\n  vec4 rampSample = texture2D(ramp, vec2(time.z *layer2.cycleSpeed + p2 + length(st)*.2  , .5));\n  // vec4 rampSample = texture2D(ramp, vec2(saturate(smoothstep(-layer1.blur, layer1.blur, dMix)) , .5));\n\n\n  // vec3 layer1Col = layer1.brightness*rampSample.rgb*saturate(1.-smoothstep(-layer1.blur, layer1.blur, dMix));//(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));\n  vec3 layer1Col = layer1.brightness*rampSample.rgb*saturate(1.-smoothstep(-layer1.blur,layer1.blur, dMix));//(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));\n\n  layer1Col = layer1.enabled ? layer1Col : disabled;\n  col += layer1Col;\n\n  // layer1Col = d*vec3(1.,0.,0.) + d2*vec3(0.,1.,0.) + d3*vec3(0.,0.,1.);\n  // vec3(d);\n// return vec3(sminCubic(sminCubic(d,d2, .5), d3, .5));\n\n// return saturate(d*r1.rgb + d2*r2.rgb + d3*r3.rgb);\n\n// return r1.rgb;\n  // return vec3(dMix);\n\n  return layer1Col;\n}\n";
-var Layer2 = "\nvec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)\n{\n  \n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x), grad);\n  noise *= 0.4;\n  noise = smoothstep(-1.,1., noise);\n  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed + n.y  , .5));\n\n  // rampSample = texture2D(ramp, vec2(n.x, .5));\n  \n  vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;\n  vec3 color = layer2.enabled ? layer2Col : disabled;\n  col.rgb += color;\n\n  return color;\n\n}\n";
+var Uniforms = "\nuniform vec2 resolution;\nuniform vec4 time; // [time, time/2, time*2, time/10]\nuniform sampler2D ramp;\nuniform Layer1 layer1;\nuniform Layer2 layer2;\nuniform Feedback feedback;\n\nuniform sampler2D backBufferTex;\n\nuniform float noiseDither;\n\nuniform uint seed;\n\nout vec4 FragColor;\nin vec4 fragUV;\n";
+var Layer1 = "\nvec3 doLayer1(in vec4 uv, in vec2 n, inout vec3 col)\n{\n  vec2 st = uv.zw;\n  // st *= sin(time.x);\n  float p1 = hash(seed + uint(156));\n  float p2 = hash(seed + uint(12355));\n  float p3 = hash(seed + uint(62435));\n\n  float s1 = 2.*(p1-.5);\n  float s2 = 2.*(p2-.5);\n  float s3 = 2.*(p3 - .5);\n\n\nst = scale(st, 2.);\n  float sk = .1*sin(time.y*1.56 + p2);\n\n  float d = sdParallelogram(st + vec2(sin(time.z) + s1, sin(time.y*1.4) + s2), .4, .1, sk);\n  float d2 = sdRhombus(translate(rotate(scale( translate(st, vec2(s2, s3)*vec2(.5, .2)) , 4.*p1), p3*30.*DEG2RAD), vec2(0.,0.)), vec2(1.,1.));\n  float d3 = sdEquilateralTriangle(rotate(scale(st,4.*p1+sin(time.x)), 90.*p2*DEG2RAD + time.z/5.));\n  \n  float noise = snoise(vec3(uv.xy, time.x));\n  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.y  + p3*TWOPI ) ));\n\n  dMix = sminCubic(d,d2,.5);\n  dMix = sminCubic(sminCubic(d,d2, .5), d3, .5);\n\n  dMix+=layer1.blobbyness*noise;\n  d += noise*layer1.blobbyness;\n\n  vec4 rampSample = texture2D(ramp, vec2(time.z *layer2.cycleSpeed + p2 + length(st)*.2  , .5));\n\n\n  vec3 layer1Col = layer1.brightness*rampSample.rgb*saturate(1.-smoothstep(-layer1.blur,layer1.blur, dMix));//(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));\n\n  layer1Col = layer1.enabled ? layer1Col : disabled;\n  col += layer1Col;\n\n  return layer1Col;\n}\n";
+var Layer2 = "\nvec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)\n{\n  float p1 = hash(seed + uint(98765));\n\n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x), grad);\n  noise *= 0.4;\n  noise = smoothstep(-1.,1., noise);\n  vec4 rampSample = texture2D(ramp, vec2( time.z *layer2.cycleSpeed + p1 + rotate(uv.xy*.5, time.x*DEG2RAD).x  , .5));\n  \n  vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;\n  vec3 color = layer2.enabled ? layer2Col : disabled;\n  col.rgb += color;\n\n  return color;\n\n}\n";
 var ScaleUV = "\n\nvec2 scaleUV(vec2 uv, vec2 scaleFactor, vec2 center)\n{\n return ( uv - center)*scaleFactor  + center;\n}\n";
-var FragAura = "\n#version 300 es\n\n#if __VERSION__ > 130\n#define texture2D texture\n#endif\n\nprecision mediump float;\n\n".concat(Includes, "\n").concat(Types, "\n").concat(Uniforms, "\n\n").concat(Layer1, "\n").concat(Layer2, "\n").concat(ScaleUV, "\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec2 uvOrig = uv;\n  vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;\n\n  vec2 n = vec2(\n    opensimplex2f(vec4(uv*10., time.x, time.y), intToSeedVec(uint(seed))),\n    opensimplex2f(vec4(1.), intToSeedVec(uint(seed)))\n  ) ;\n\n  // Init output\n  vec4 col = vec4(0.);\n  col.a = 1.;\n\n  // Calculate layers\n  vec3 l1 = doLayer1(vec4(uv, st), n, col.rgb);\n  vec3 l2 = doLayer2(vec4(uv, st), n, col.rgb);\n\n  // Comp Layers\n  col.rgb = l1 + l2;\n\n  // Feedback stage\n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x)*.5, grad);\n\n  vec4 lastFrame = texture2D(backBufferTex, uv+ grad.xy*feedback.dist);\n  col.rgb += lastFrame.rgb*feedback.amount;\n\n  // Clamp color values\n  col.rgb = saturate(col.rgb);\n\n  // col.rgb = texture2D(ramp, uv.xy).rgb;\n  FragColor = col;\n\n}\n");
+var FragAura = "\n#version 300 es\n\n#if __VERSION__ > 130\n#define texture2D texture\n#endif\n\nprecision mediump float;\n\n".concat(Includes, "\n").concat(Types, "\n").concat(Uniforms, "\n\n").concat(Layer1, "\n").concat(Layer2, "\n").concat(ScaleUV, "\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  vec2 uvOrig = uv;\n  vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;\n\n  vec2 n = vec2(\n    opensimplex2f(vec4(uv*10., time.x, time.y), intToSeedVec(uint(seed))),\n    opensimplex2f(vec4(1.), intToSeedVec(uint(seed)))\n  ) ;\n\n  // Init output\n  vec4 col = vec4(0.);\n  col.a = 1.;\n\n  // Calculate layers\n  vec3 l1 = doLayer1(vec4(uv, st), n, col.rgb);\n  vec3 l2 = doLayer2(vec4(uv, st), n, col.rgb);\n\n  // Comp Layers\n  col.rgb = l1 + l2;\n\n  // Feedback stage\n  vec3 grad;\n  float noise = snoise(vec3(uv.xy, time.x)*.5, grad);\n\n  vec4 lastFrame = texture2D(backBufferTex, uv+ grad.xy*feedback.dist);\n  col.rgb += lastFrame.rgb*feedback.amount;\n\n  // Clamp color values\n  col.rgb = saturate(col.rgb);\n\n  FragColor = col;\n}\n");
 
 var FragComp = "\n#version 300 es\n\n\n#if __VERSION__ > 130\n#define texture2D texture\n#endif\n\n\nprecision mediump float;\n\nout vec4 FragColor;\n\n".concat(Saturate, "\n").concat(Random, "\n").concat(LabColorSpace, "\n\nuniform float noiseDither;\n\nuniform vec2 resolution;\nuniform sampler2D backBuffer;\n\n\nuniform sampler2D ramp;\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / resolution;\n  uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));\n\n  vec4 lastCol = texture2D(backBuffer, uv);\n  vec4 colOut;\n  colOut.a = 1.;\n\n  colOut.rgb = lastCol.rgb;\n\n  // linear to gamma\n  // colOut.rgb = pow( colOut.rgb, vec3(0.4545) );\n\n  FragColor = colOut;\n}\n\n");
 
@@ -3116,6 +3116,11 @@ var PingPongBuffer = /*#__PURE__*/_createClass(function PingPongBuffer(gl, param
   this.gl = gl;
 });
 
+// From: https://github.com/Jam3/glsl-fast-gaussian-blur
+var Kernel_9 = "\nvec4 blur(sampler2D image, vec2 uv, vec2 resolution, vec2 direction) {\n    vec4 color = vec4(0.0);\n    vec2 off1 = vec2(1.3846153846) * direction;\n    vec2 off2 = vec2(3.2307692308) * direction;\n    color += texture2D(image, uv) * 0.2270270270;\n    color += texture2D(image, uv + (off1 / resolution)) * 0.3162162162;\n    color += texture2D(image, uv - (off1 / resolution)) * 0.3162162162;\n    color += texture2D(image, uv + (off2 / resolution)) * 0.0702702703;\n    color += texture2D(image, uv - (off2 / resolution)) * 0.0702702703;\n    return color;\n  }\n  \n    ";
+
+var FragBlur = "\n#version 300 es\n#if __VERSION__ > 130\n#define texture2D texture\n#endif\n\nprecision mediump float;\n\n\nuniform vec2 resolution;\nuniform sampler2D iChannel0;\nuniform vec2 direction;\nout vec4 FragColor;\n\n".concat(Kernel_9, "\n\n\nvoid main(){\n    vec2 uv = gl_FragCoord.xy / resolution;\n\n    FragColor = blur(iChannel0, uv, resolution.xy, direction);\n}\n");
+
 var defaults = {
   globalParams: {
     time: 0.,
@@ -3143,6 +3148,10 @@ var defaults = {
     centerX: 0.5,
     centerY: 0.5,
     dist: .05
+  },
+  blurSettings: {
+    iterations: 8,
+    radius: 1
   }
 };
 var targetTexWidth = 256;
@@ -3161,14 +3170,16 @@ var Aura = /*#__PURE__*/_createClass(function Aura(_gl) {
     _this.globalParams = _objectSpread2(_objectSpread2({}, _this.globalParams), params.globalParams);
     _this.layer2Params = _objectSpread2(_objectSpread2({}, _this.layer2Params), params.layer2);
     _this.feedback = _objectSpread2(_objectSpread2({}, _this.feedbackSettings), params.feedbackSettings);
+    _this.blurSettings = _objectSpread2(_objectSpread2({}, _this.blurSettings), params.blurSettings);
   });
 
   _defineProperty(this, "createShadersAndBuffers", function () {
-    var _this$programAura, _this$programFinal, _this$bufferInfo;
+    var _this$programAura, _this$programFinal, _this$programBlur, _this$bufferInfo;
 
     var gl = _this.gl;
     _this.programAura = (_this$programAura = _this.programAura) !== null && _this$programAura !== void 0 ? _this$programAura : createProgramInfo(_this.gl, [VertDefault, FragAura]);
     _this.programFinal = (_this$programFinal = _this.programFinal) !== null && _this$programFinal !== void 0 ? _this$programFinal : createProgramInfo(_this.gl, [VertDefault, FragComp]);
+    _this.programBlur = (_this$programBlur = _this.programBlur) !== null && _this$programBlur !== void 0 ? _this$programBlur : createProgramInfo(_this.gl, [VertDefault, FragBlur]);
     _this.bufferInfo = (_this$bufferInfo = _this.bufferInfo) !== null && _this$bufferInfo !== void 0 ? _this$bufferInfo : createBuffersFromArrays(gl, FullScreenQuad);
   });
 
@@ -3195,35 +3206,56 @@ var Aura = /*#__PURE__*/_createClass(function Aura(_gl) {
       var sinceStart = now - _this.startTime;
       _this.currFps = Math.round(1000 / (sinceStart / ++_this.frameCount) * 100) / 100;
       resizeCanvasToDisplaySize(_this.gl.canvas);
-      console.log(_this.layer1Params);
-      var auraUniforms = {
-        time: [_this.globalParams.time, _this.globalParams.time / 2, _this.globalParams.time * 2, _this.globalParams.time * 10],
-        resolution: [targetTexWidth, targetTexHeight],
-        ramp: _this.ramp,
-        layer1: _this.layer1Params,
-        layer2: _this.layer2Params,
-        feedback: _this.feedback,
-        noiseDither: _this.globalParams.noise,
-        backBufferTex: _this.ppb.lastTexture(),
-        seed: _this.globalParams.seed
-      };
       {
-        // Render new frame 
-        _this.ppb.bind();
+        var auraUniforms = {
+          time: [_this.globalParams.time, _this.globalParams.time / 2, _this.globalParams.time * 2, _this.globalParams.time * 10],
+          resolution: [targetTexWidth, targetTexHeight],
+          ramp: _this.ramp,
+          layer1: _this.layer1Params,
+          layer2: _this.layer2Params,
+          feedback: _this.feedback,
+          noiseDither: _this.globalParams.noise,
+          backBufferTex: _this.ppb.lastTexture(),
+          seed: _this.globalParams.seed
+        }; // Render new Aura frame 
 
+        ppb.bind();
         gl.useProgram(programAura.program);
         setBuffersAndAttributes(gl, programAura, bufferInfo);
         setUniforms(programAura, auraUniforms);
+        drawBufferInfo(gl, bufferInfo); // Swap buffers
+
+        ppb.swap();
+      } // Blur stages
+
+      var iterations = _this.blurSettings.iterations;
+
+      for (var i = 0; i < iterations; i++) {
+        // var radius = (iterations - i - 1)
+        var radius = _this.blurSettings.radius;
+        var dir = i % 2 === 0 ? [radius, 0] : [0, radius];
+        var blurUniforms = {
+          resolution: [targetTexWidth, targetTexHeight],
+          iChannel0: ppb.lastTexture(),
+          direction: dir
+        };
+        ppb.bind();
+        gl.useProgram(_this.programBlur.program);
+        setBuffersAndAttributes(gl, _this.programBlur, bufferInfo);
+        setUniforms(_this.programBlur, blurUniforms);
         drawBufferInfo(gl, bufferInfo);
-      }
-      var compUniforms = {
-        resolution: [gl.canvas.width, gl.canvas.height],
-        backBuffer: ppb.currentTexture(),
-        noiseDither: globalParams.noise,
-        ramp: ramp
-      };
+        ppb.swap();
+      } // Render to screen
+
+
       {
-        // Set dst buffer back to screen
+        var compUniforms = {
+          resolution: [gl.canvas.width, gl.canvas.height],
+          backBuffer: ppb.lastTexture(),
+          noiseDither: globalParams.noise,
+          ramp: ramp
+        }; // Set dst buffer back to screen
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         gl.useProgram(programFinal.program);
@@ -3274,6 +3306,7 @@ var Aura = /*#__PURE__*/_createClass(function Aura(_gl) {
   this.layer1Params = _objectSpread2(_objectSpread2({}, defaults.layer1), _params.layer1);
   this.layer2Params = _objectSpread2(_objectSpread2({}, defaults.layer2), _params.layer2);
   this.feedback = _objectSpread2(_objectSpread2({}, defaults.feedback), _params.feedback);
+  this.blurSettings = _objectSpread2(_objectSpread2({}, defaults.blurSettings), _params.blurSettings);
   this.colors = _params.colors || defaults.colors;
   this.gl = _gl;
   this.canvas = this.gl.canvas;
@@ -6167,7 +6200,8 @@ var InitGui = function InitGui(settings, params, callbacks) {
       globalParams = params.globalParams,
       feedbackSettings = params.feedbackSettings,
       layer1 = params.layer1,
-      layer2 = params.layer2;
+      layer2 = params.layer2,
+      blurSettings = params.blurSettings;
   var setFullscreen = callbacks.setFullscreen,
       setParams = callbacks.setParams;
   gui.remember(appParams);
@@ -6186,7 +6220,12 @@ var InitGui = function InitGui(settings, params, callbacks) {
   var feedbackFolder = gui.addFolder('Feedback');
   feedbackFolder.add(feedbackSettings, 'amount').min(0).max(1).step(.01).listen().onChange(setParams);
   feedbackFolder.add(feedbackSettings, 'dist').min(0).max(1).step(.01).listen().onChange(setParams);
-  feedbackFolder.open(); // Layer 1
+  feedbackFolder.open();
+  gui.remember(blurSettings);
+  var blurFolder = gui.addFolder('Blur');
+  blurFolder.add(blurSettings, 'iterations').min(0).max(16).step(1).listen().onChange(setParams);
+  blurFolder.add(blurSettings, 'radius').min(0).max(4).step(.01).listen().onChange(setParams);
+  blurFolder.open(); // Layer 1
 
   gui.remember(layer1);
   var layer1Folder = gui.addFolder('Layer 1');
@@ -6248,6 +6287,10 @@ var globalParams = {
   noise: .003,
   feedback: .99
 };
+var blurSettings = {
+  iterations: 8,
+  radius: 1
+};
 console.log("Settings: ", Settings);
 
 var setParams = function setParams() {
@@ -6256,6 +6299,7 @@ var setParams = function setParams() {
     layer1: layer1,
     layer2: layer2,
     feedbackSettings: feedbackSettings,
+    blurSettings: blurSettings,
     colors: rgbArray
   }; // console.log(auraParams.layer2);
 
@@ -6276,7 +6320,8 @@ InitGui(Settings, {
   globalParams: globalParams,
   feedbackSettings: feedbackSettings,
   layer1: layer1,
-  layer2: layer2
+  layer2: layer2,
+  blurSettings: blurSettings
 }, {
   setFullscreen: setFullscreen,
   setParams: setParams
