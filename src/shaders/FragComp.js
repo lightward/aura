@@ -16,15 +16,58 @@ out vec4 FragColor;
 
 ${Saturate}
 ${Random}
-${LabColorSpace}
 
 uniform float noiseDither;
 
 uniform vec2 resolution;
 uniform sampler2D backBuffer;
 
+uniform float saturation;
+uniform float contrast;
+
 
 uniform sampler2D ramp;
+
+mat4 brightnessMatrix( float brightness )
+{
+    return mat4( 1, 0, 0, 0,
+                 0, 1, 0, 0,
+                 0, 0, 1, 0,
+                 brightness, brightness, brightness, 1 );
+}
+
+mat4 contrastMatrix( float c )
+{
+	float t = ( 1.0 - c ) / 2.0;
+    
+    return mat4( c, 0, 0, 0,
+                 0, c, 0, 0,
+                 0, 0, c, 0,
+                 t, t, t, 1 );
+
+}
+
+mat4 saturationMatrix( float s )
+{
+    vec3 luminance = vec3( 0.3086, 0.6094, 0.0820 );
+    
+    float oneMinusSat = 1.0 - s;
+    
+    vec3 red = vec3( luminance.x * oneMinusSat );
+    red+= vec3( s, 0, 0 );
+    
+    vec3 green = vec3( luminance.y * oneMinusSat );
+    green += vec3( 0, s, 0 );
+    
+    vec3 blue = vec3( luminance.z * oneMinusSat );
+    blue += vec3( 0, 0, s );
+    
+    return mat4( red,     0,
+                 green,   0,
+                 blue,    0,
+                 0, 0, 0, 1 );
+}
+
 
 void main() {
   vec2 uv = gl_FragCoord.xy / resolution;
@@ -34,7 +77,7 @@ void main() {
   vec4 colOut;
   colOut.a = 1.;
 
-  colOut.rgb = lastCol.rgb;
+  colOut = contrastMatrix(contrast)*saturationMatrix(saturation)*lastCol;
 
   // linear to gamma
   // colOut.rgb = pow( colOut.rgb, vec3(0.4545) );

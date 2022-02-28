@@ -17,6 +17,8 @@ let InitGui = (settings, params, callbacks) => {
     folder.add(globalParams, 'speed').min(0.01).max(1).step(.01).listen().onChange(setParams);
     folder.add(globalParams, 'noise').min(0.).max(.1).step(.001).listen().onChange(setParams);
     folder.add(globalParams, 'seed').min(0.).max(10000).step(1).listen().onChange(setParams);
+    folder.add(globalParams, 'saturation').min(0).max(4).step(.01).listen().onChange(setParams);
+    folder.add(globalParams, 'contrast').min(0).max(4).step(.01).listen().onChange(setParams);
     folder.open();
 
     // Feedback settings

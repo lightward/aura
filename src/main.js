@@ -50,7 +50,9 @@ let globalParams =
   speed: .1,
   seed: 100,
   noise: .003,
-  feedback: .99
+  feedback: .99,
+  saturation: 1,
+  contrast:1
 }
 
 let blurSettings =

@@ -196,6 +196,7 @@ void main() {
   col.rgb = saturate(col.rgb);
 
   FragColor = col;
+  // FragColor = lastFrame;
 }
 `
 

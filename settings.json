@@ -10,7 +10,9 @@
       "1": {
         "speed": 0.13,
         "noise": 0.006,
-        "seed": 3464
+        "seed": 3464,
+        "saturation": 1.33,
+        "contrast": 1.37
       },
       "2": {
         "amount": 0.21,
@@ -71,24 +73,30 @@
           "autoPlay": true
         },
         "1": {
-          "speed": 0.01,
-          "noise": 0,
-          "seed": 5669
+          "speed": 0.13,
+          "noise": 0.006,
+          "seed": 3464,
+          "saturation": 1.33,
+          "contrast": 1.37
         },
         "2": {
-          "amount": 0,
-          "dist": 0.05
+          "amount": 0.21,
+          "dist": 0.06
         },
         "3": {
-          "brightness": 1,
-          "blobbyness": 0,
-          "blur": 0,
-          "enabled": true
+          "iterations": 16,
+          "radius": 3.19
         },
         "4": {
-          "brightness": 1,
-          "enabled": false,
-          "cycleSpeed": 0.2
+          "brightness": 0.52,
+          "blobbyness": 0.7000000000000001,
+          "blur": 0.77,
+          "enabled": true
+        },
+        "5": {
+          "brightness": 0.39,
+          "enabled": true,
+          "cycleSpeed": 0.12
         }
       }
     },
@@ -104,6 +112,11 @@
         "closed": false,
         "folders": {}
       },
+      "Blur": {
+        "preset": "Default",
+        "closed": false,
+        "folders": {}
+      },
       "Layer 1": {
         "preset": "Default",
         "closed": false,
@@ -113,6 +126,61 @@
         "preset": "Default",
         "closed": false,
         "folders": {}
+      }
+    },
+    "default": {
+      "preset": "Default",
+      "remembered": {
+        "Default": {
+          "0": {
+            "autoSave": true,
+            "fullscreen": false,
+            "autoPlay": true
+          },
+          "1": {
+            "speed": 0.01,
+            "noise": 0,
+            "seed": 5669
+          },
+          "2": {
+            "amount": 0,
+            "dist": 0.05
+          },
+          "3": {
+            "brightness": 1,
+            "blobbyness": 0,
+            "blur": 0,
+            "enabled": true
+          },
+          "4": {
+            "brightness": 1,
+            "enabled": false,
+            "cycleSpeed": 0.2
+          }
+        }
+      },
+      "closed": false,
+      "folders": {
+        "Global": {
+          "preset": "Default",
+          "closed": false,
+          "folders": {}
+        },
+        "Feedback": {
+          "preset": "Default",
+          "closed": false,
+          "folders": {}
+        },
+        "Layer 1": {
+          "preset": "Default",
+          "closed": false,
+          "folders": {}
+        },
+        "Layer 2": {
+          "preset": "Default",
+          "closed": false,
+          "folders": {}
+        }
       }
     }
   }

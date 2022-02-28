@@ -15,7 +15,10 @@ const defaults =
         speed: .21,
         seed: 100,
         noise: .003,
-        targetFps: 60
+        targetFps: 60,
+        saturation: 1,
+        contrast: 1,
+        value: 1
     },
     layer1:
     {
@@ -239,7 +242,10 @@ export default class Aura {
                     resolution: [gl.canvas.width, gl.canvas.height],
                     backBuffer: ppb.lastTexture(),
                     noiseDither: globalParams.noise,
-                    ramp: ramp
+                    ramp: ramp,
+                    contrast: globalParams.contrast,
+                    saturation: globalParams.saturation,
+                    value: globalParams.value
                 }
 
                 // Set dst buffer back to screen
