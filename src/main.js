@@ -7,12 +7,12 @@ let gl = auraCanvas.getContext('webgl2');
 
 let pauseButton = document.getElementById('pause_btn');
 let playButton = document.getElementById('play_btn');
+let startOverButton = document.getElementById('start_over_btn');
+
 let timer = document.getElementById('timer')
 let fpsDisp = document.getElementById('fps')
 
 let layer1 = {
-  color1: [255.0, 0.0, 0.0],
-  color2: [0., 255., 0.],
   brightness: .2,
   blobbyness: 1.,
   blur: .4,
@@ -23,13 +23,15 @@ let layer1 = {
 let layer2 = {
   brightness: 1,
   cycleSpeed: .2,
-
+  blobbyness: 1.2,
+  blur: 1.47,
   enabled: false
 }
 
 let appParams = {
   autoSave: true,
   fullscreen: false,
+  autoPlay: true
 }
 
 let feedbackSettings =
@@ -38,7 +40,8 @@ let feedbackSettings =
   scaleX: 1.01,
   scaleY: 1.01,
   centerX: 0.5,
-  centerY: 0.5
+  centerY: 0.5,
+  dist: .05
 }
 
 let globalParams =
@@ -60,7 +63,7 @@ let setParams = () => {
     feedbackSettings: feedbackSettings,
     colors: rgbArray
   }
-
+// console.log(auraParams.layer2);
   aura.setParams(auraParams);
 }
 
@@ -69,11 +72,11 @@ let setFullscreen = (isFullscreen) => {
 }
 
 let rgbVals = [
-  [0, 0, 0],
+  // [0, 0, 0],
   [32, 70, 95],
-  [48, 64, 92],
-  [111, 200, 111],
   [220, 91, 172],
+  // [48, 64, 92],
+  [111, 200, 111],
   [253, 205, 0],
 ]
 
@@ -100,10 +103,14 @@ let auraParams = {
 }
 
 let aura = new Aura(gl, auraParams);
-aura.start();
+aura.start(appParams.autoPlay);
 
 pauseButton.onclick = () => aura.pause();
 playButton.onclick = () => aura.play();
+startOverButton.onclick = ()=>{
+  aura.pause();
+  aura.setTime(0);
+}
 
 setFullscreen(appParams.fullscreen)
 

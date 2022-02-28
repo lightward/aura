@@ -5,6 +5,11 @@ let Shapes = `
 float dot2( in vec2 v ) { return dot(v,v); }
 float ndot(vec2 a, vec2 b ) { return a.x*b.x - a.y*b.y; }
 
+#define PI 3.14159265358979323846
+#define TWOPI 2.*PI
+#define RAD2DEG (180.0/PI)
+#define DEG2RAD (PI/180.)
+
 float sminCubic( float a, float b, float k )
 {
     float h = max( k-abs(a-b), 0.0 )/k;
@@ -38,6 +43,16 @@ float sdOrientedBox( in vec2 p, in vec2 a, in vec2 b, float th )
           q = mat2(d.x,-d.y,d.y,d.x)*q;
           q = abs(q)-vec2(l,th)*0.5;
     return length(max(q,0.0)) + min(max(q.x,q.y),0.0);    
+}
+
+float sdEquilateralTriangle( in vec2 p )
+{
+    const float k = sqrt(3.0);
+    p.x = abs(p.x) - 1.0;
+    p.y = p.y + 1.0/k;
+    if( p.x+k*p.y>0.0 ) p = vec2(p.x-k*p.y,-k*p.x-p.y)/2.0;
+    p.x -= clamp( p.x, -2.0, 0.0 );
+    return -length(p)*sign(p.y);
 }
 
 float sdRhombus( in vec2 p, in vec2 b ) 

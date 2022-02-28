@@ -19,11 +19,10 @@ const defaults =
     layer1:
     {
         brightness: .87,
-        color1: [151, 50, 200],
-        color2: [0, 0, 0],
-        enabled: true,
         blobbyness: 1.2,
-        blur: 1.47
+        blur: 1.47,
+        enabled: true
+
     },
     layer2:
     {
@@ -45,7 +44,8 @@ const defaults =
         scaleX: 1.01,
         scaleY: 1.01,
         centerX: 0.5,
-        centerY: 0.5
+        centerY: 0.5,
+        dist: .05
     }
 }
 
@@ -87,7 +87,7 @@ export default class Aura {
         this.width = this.canvas.width;
         this.height = this.canvas.height;
 
-        this.playing = true;
+        this.playing = false;
         this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
         this.animTime = 0;
         this.frameCount = 0;
@@ -104,23 +104,24 @@ export default class Aura {
             ...params.layer1
         }
 
-        this.globalParams = 
+        this.globalParams =
         {
             ...this.globalParams,
             ...params.globalParams
         }
 
-        this.layer2Params = 
+        this.layer2Params =
         {
             ...this.layer2Params,
             ...params.layer2
         }
 
-        this.feedback = 
+        this.feedback =
         {
             ...this.feedbackSettings,
             ...params.feedbackSettings
         }
+
     }
 
 
@@ -169,7 +170,8 @@ export default class Aura {
                 layer2: this.layer2Params,
                 feedback: this.feedback,
                 noiseDither: this.globalParams.noise,
-                backBufferTex: this.ppb.lastTexture()
+                backBufferTex: this.ppb.lastTexture(),
+                seed: this.globalParams.seed
             }
 
             {
@@ -205,14 +207,14 @@ export default class Aura {
         }
     }
 
-    start = () => {
+    start = (play = true) => {
         if (this.started) return;
 
         this.started = true;
         this.prevTimestamp = window.performance.now();
         this.startTime = this.prevTimestamp;
-
-        this.playing = true;
+        if (play)
+            this.playing = true;
         this.render();
     }
 
@@ -225,6 +227,8 @@ export default class Aura {
             this.canvas.height = this.height;
         }
     }
+
+    setTime = (time) => { this.animTime = time; }
 
     play = () => { this.playing = true; }
 

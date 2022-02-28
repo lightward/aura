@@ -2,6 +2,7 @@ import { Cellular2x2x2 } from "./include/noise/Cellular2x2x2"
 import { Cellular3D } from "./include/noise/Cellular3D"
 import { Noise3D } from "./include/noise/Noise3d"
 import { Noise3DGrad } from "./include/noise/Noise3DGrad"
+import { OpenSimplex2f } from "./include/noise/OpenSimplex2f"
 import { Random } from "./include/noise/Random"
 import { Saturate } from "./include/Saturate"
 import { Shapes } from "./include/shapes/Shapes"
@@ -15,6 +16,8 @@ ${Noise3D}
 ${Saturate}
 ${Cellular2x2x2}
 ${Cellular3D}
+${Random}
+${OpenSimplex2f}
 
 #define TO_FLOAT (1./255.0)
 
@@ -28,8 +31,6 @@ let Types = `
 
 struct Layer1
 {
-  vec3 color1;
-  vec3 color2;
   float brightness;
   float blobbyness;
   float blur;
@@ -51,6 +52,7 @@ struct Feedback
   float scaleY;
   float centerX;
   float centerY;
+  float dist;
 };
 
 `
@@ -68,6 +70,8 @@ uniform sampler2D backBufferTex;
 
 uniform float noiseDither;
 
+uniform uint seed;
+
 // uniform float feedback;
 
 out vec4 FragColor;
@@ -75,40 +79,75 @@ in vec4 fragUV;
 `
 
 let Layer1 = `
-vec3 doLayer1(in vec4 uv, inout vec3 col)
+vec3 doLayer1(in vec4 uv, in vec2 n, inout vec3 col)
 {
   vec2 st = uv.zw;
-  st *= sin(time.x);
+  // st *= sin(time.x);
+  float p1 = hash(seed + uint(156));
+  float p2 = hash(seed + uint(12355));
+  float p3 = hash(seed + uint(62435));
 
-  float sk = .1*sin(time.y*1.56);
+  float s1 = 2.*(p1-.5);
+  float s2 = 2.*(p2-.5);
+  float s3 = 2.*(p3 - .5);
 
-  float d = sdParallelogram(st + vec2(sin(time.z), sin(time.y*1.4)), .4, .1, sk);
-  float d2 = sdRhombus(st + vec2(sin(time.z*.85 + 12.23), sin(time.y)), vec2(1.,1.));
+
+st = scale(st, 2.);
+  float sk = .1*sin(time.y*1.56 + p2);
+
+  float d = sdParallelogram(st + vec2(sin(time.z) + s1, sin(time.y*1.4) + s2), .4, .1, sk);
+  float d2 = sdRhombus(translate(rotate(scale( translate(st, vec2(s2, s3)*vec2(.5, .2)) , 4.*p1), p3*30.*DEG2RAD), vec2(0.,0.)), vec2(1.,1.));
+  float d3 = sdEquilateralTriangle(rotate(scale(st,4.*p1+sin(time.x)), 90.*p2*DEG2RAD + time.z/5.));
   
   float noise = snoise(vec3(uv.xy, time.x));
-  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.y) ));
+  float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.y  + p3*TWOPI ) ));
+
+  dMix = sminCubic(d,d2,.5);
+  dMix = sminCubic(sminCubic(d,d2, .5), d3, .5);
 
   dMix+=layer1.blobbyness*noise;
   d += noise*layer1.blobbyness;
 
-  vec3 layer1Col = layer1.brightness*(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));
+  vec4 r1 = texture2D(ramp, vec2(p1, .5))*.3;
+  vec4 r2 = texture2D(ramp, vec2(p2, .5))*.3;
+  vec4 r3 = texture2D(ramp, vec2(p3, .5))*.3;
+
+
+
+  vec4 rampSample = texture2D(ramp, vec2(time.z *layer2.cycleSpeed + p2 + length(st)*.2  , .5));
+  // vec4 rampSample = texture2D(ramp, vec2(saturate(smoothstep(-layer1.blur, layer1.blur, dMix)) , .5));
+
+
+  // vec3 layer1Col = layer1.brightness*rampSample.rgb*saturate(1.-smoothstep(-layer1.blur, layer1.blur, dMix));//(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));
+  vec3 layer1Col = layer1.brightness*rampSample.rgb*saturate(1.-smoothstep(-layer1.blur,layer1.blur, dMix));//(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));
 
   layer1Col = layer1.enabled ? layer1Col : disabled;
   col += layer1Col;
+
+  // layer1Col = d*vec3(1.,0.,0.) + d2*vec3(0.,1.,0.) + d3*vec3(0.,0.,1.);
+  // vec3(d);
+// return vec3(sminCubic(sminCubic(d,d2, .5), d3, .5));
+
+// return saturate(d*r1.rgb + d2*r2.rgb + d3*r3.rgb);
+
+// return r1.rgb;
+  // return vec3(dMix);
 
   return layer1Col;
 }
 `
 
 let Layer2 = `
-vec3 doLayer2(in vec4 uv, inout vec3 col)
+vec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)
 {
   
   vec3 grad;
   float noise = snoise(vec3(uv.xy, time.x), grad);
   noise *= 0.4;
   noise = smoothstep(-1.,1., noise);
-  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed + rand(uv.xy)*.01  , .5));
+  vec4 rampSample = texture2D(ramp, vec2(noise + time.z *layer2.cycleSpeed + n.y  , .5));
+
+  // rampSample = texture2D(ramp, vec2(n.x, .5));
   
   vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;
   vec3 color = layer2.enabled ? layer2Col : disabled;
@@ -150,13 +189,18 @@ void main() {
   vec2 uvOrig = uv;
   vec2 st = (uv*resolution - vec2(.5, .5)*resolution)/resolution.y;
 
+  vec2 n = vec2(
+    opensimplex2f(vec4(uv*10., time.x, time.y), intToSeedVec(uint(seed))),
+    opensimplex2f(vec4(1.), intToSeedVec(uint(seed)))
+  ) ;
+
   // Init output
   vec4 col = vec4(0.);
   col.a = 1.;
 
   // Calculate layers
-  vec3 l1 = doLayer1(vec4(uv, st), col.rgb);
-  vec3 l2 = doLayer2(vec4(uv, st), col.rgb);
+  vec3 l1 = doLayer1(vec4(uv, st), n, col.rgb);
+  vec3 l2 = doLayer2(vec4(uv, st), n, col.rgb);
 
   // Comp Layers
   col.rgb = l1 + l2;
@@ -165,13 +209,15 @@ void main() {
   vec3 grad;
   float noise = snoise(vec3(uv.xy, time.x)*.5, grad);
 
-  vec4 lastFrame = texture2D(backBufferTex, uv+ grad.xy*.1);
+  vec4 lastFrame = texture2D(backBufferTex, uv+ grad.xy*feedback.dist);
   col.rgb += lastFrame.rgb*feedback.amount;
 
   // Clamp color values
   col.rgb = saturate(col.rgb);
 
+  // col.rgb = texture2D(ramp, uv.xy).rgb;
   FragColor = col;
+
 }
 `
 
