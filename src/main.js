@@ -73,10 +73,6 @@ let setParams = () => {
   aura.setParams(auraParams);
 };
 
-let setFullscreen = (isFullscreen) => {
-  aura.setFullscreen(isFullscreen);
-};
-
 let rgbVals = [
   // [0, 0, 0],
 
@@ -110,7 +106,6 @@ InitGui(
     blurSettings: blurSettings,
   },
   {
-    setFullscreen: setFullscreen,
     setParams: setParams,
   }
 );
@@ -135,8 +130,6 @@ startOverButton.onclick = () => {
   aura.pause();
   aura.setTime(0);
 };
-
-setFullscreen(appParams.fullscreen);
 
 let render = () => {
   requestAnimationFrame(render);

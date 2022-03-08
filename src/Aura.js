@@ -54,8 +54,6 @@ const defaults = {
 const targetTexWidth = 256;
 const targetTexHeight = 256;
 
-let fullscreenStyle = `position: fixed;    width: 100vw;    height: 100vh;    z-index: 0;`;
-
 export default class Aura {
   constructor(gl, params = {}) {
     this.setParams(params);
@@ -250,16 +248,6 @@ export default class Aura {
     this.startTime = this.prevTimestamp;
     if (play) this.playing = true;
     this.render();
-  };
-
-  setFullscreen = (isFullscreen) => {
-    console.log(`set fullscreen: ${isFullscreen}`);
-    this.canvas.style = isFullscreen ? fullscreenStyle : null;
-    if (!isFullscreen) {
-      console.log('set width height', this.width, this.height);
-      this.canvas.width = this.width;
-      this.canvas.height = this.height;
-    }
   };
 
   setTime = (time) => {

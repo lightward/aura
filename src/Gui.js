@@ -11,11 +11,10 @@ let InitGui = (settings, params, callbacks) => {
     layer2,
     blurSettings,
   } = params;
-  let { setFullscreen, setParams } = callbacks;
+  let { setParams } = callbacks;
 
   gui.remember(appParams);
   gui.add(appParams, 'autoSave');
-  gui.add(appParams, 'fullscreen').listen().onChange(setFullscreen);
   gui.add(appParams, 'autoPlay').listen();
 
   // Global
