@@ -51,9 +51,6 @@ const defaults = {
   },
 };
 
-const targetTexWidth = 256;
-const targetTexHeight = 256;
-
 export default class Aura {
   constructor(gl, params = {}) {
     this.setParams(params);
@@ -64,6 +61,16 @@ export default class Aura {
     this.canvas = this.gl.canvas;
     this.width = params.width || this.canvas.width;
     this.height = params.height || this.canvas.height;
+
+    const ratio = this.width / this.height;
+
+    if (ratio > 1) {
+      this.targetTexWidth = 256;
+      this.targetTexHeight = this.targetTexWidth * ratio;
+    } else {
+      this.targetTexHeight = 256;
+      this.targetTexWidth = this.targetTexHeight * ratio;
+    }
 
     this.playing = false;
     this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
@@ -76,8 +83,8 @@ export default class Aura {
       resolution: 256,
     });
     this.ppb = new PingPongBuffer(gl, {
-      width: targetTexWidth,
-      height: targetTexHeight,
+      width: this.targetTexWidth,
+      height: this.targetTexHeight,
     });
   }
 
@@ -169,7 +176,7 @@ export default class Aura {
             this.globalParams.time * 2,
             this.globalParams.time * 10,
           ],
-          resolution: [targetTexWidth, targetTexHeight],
+          resolution: [this.targetTexWidth, this.targetTexHeight],
           ramp: this.ramp,
           layer1: this.layer1Params,
           layer2: this.layer2Params,
@@ -200,7 +207,7 @@ export default class Aura {
         var dir = i % 2 === 0 ? [radius, 0] : [0, radius];
 
         const blurUniforms = {
-          resolution: [targetTexWidth, targetTexHeight],
+          resolution: [this.targetTexWidth, this.targetTexHeight],
           iChannel0: ppb.lastTexture(),
           direction: dir,
         };

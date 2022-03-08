@@ -5,8 +5,7 @@ import { InitGui } from './Gui';
 let auraCanvas = document.getElementById('aura_canvas');
 let gl = auraCanvas.getContext('webgl2');
 
-let pauseButton = document.getElementById('pause_btn');
-let playButton = document.getElementById('play_btn');
+let playpauseButton = document.getElementById('playpause_btn');
 let startOverButton = document.getElementById('start_over_btn');
 
 let timer = document.getElementById('timer');
@@ -30,7 +29,6 @@ let layer2 = {
 
 let appParams = {
   autoSave: true,
-  fullscreen: false,
   autoPlay: true,
 };
 
@@ -124,8 +122,10 @@ let auraParams = {
 let aura = new Aura(gl, auraParams);
 aura.start(appParams.autoPlay);
 
-pauseButton.onclick = () => aura.pause();
-playButton.onclick = () => aura.play();
+playpauseButton.onclick = () => {
+  aura.playing ? aura.pause() : aura.play();
+};
+
 startOverButton.onclick = () => {
   aura.pause();
   aura.setTime(0);

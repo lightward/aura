@@ -1,7 +1,16 @@
 import { GUI } from 'dat.gui';
 
+GUI.TEXT_CLOSED = 'Toggle options';
+GUI.TEXT_OPEN = 'Toggle options';
+
 let InitGui = (settings, params, callbacks) => {
-  let gui = new GUI({ name: 'params', load: settings });
+  let gui = new GUI({
+    name: 'params',
+    load: settings,
+    closed: true,
+    closeOnTop: true,
+    hideable: true,
+  });
 
   let {
     appParams,
