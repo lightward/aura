@@ -261,6 +261,14 @@ export default class Aura {
     this.animTime = time;
   };
 
+  setSeed = (seed) => {
+    this.setParams({
+      globalParams: {
+        seed,
+      },
+    });
+  };
+
   play = () => {
     this.playing = true;
   };

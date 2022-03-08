@@ -6,7 +6,8 @@ let auraCanvas = document.getElementById('aura_canvas');
 let gl = auraCanvas.getContext('webgl2');
 
 let playpauseButton = document.getElementById('playpause_btn');
-let startOverButton = document.getElementById('start_over_btn');
+let shuffleButton = document.getElementById('shuffle_btn');
+let startoverButton = document.getElementById('startover_btn');
 
 let timer = document.getElementById('timer');
 let fpsDisp = document.getElementById('fps');
@@ -126,8 +127,12 @@ playpauseButton.onclick = () => {
   aura.playing ? aura.pause() : aura.play();
 };
 
-startOverButton.onclick = () => {
-  aura.pause();
+shuffleButton.onclick = () => {
+  aura.setSeed(Math.random() * 10000);
+  aura.setTime(0);
+};
+
+startoverButton.onclick = () => {
   aura.setTime(0);
 };
 
