@@ -1,4 +1,4 @@
-import { Kernel_9 } from "./blur/Blur";
+import { Kernel_9 } from './blur/Blur';
 
 let FragBlur = `
 #version 300 es
@@ -22,6 +22,6 @@ void main(){
 
     FragColor = blur(iChannel0, uv, resolution.xy, direction);
 }
-`
+`;
 
-export {FragBlur}
+export { FragBlur };

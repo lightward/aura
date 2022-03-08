@@ -1,4 +1,4 @@
-import * as Settings from '../settings.json'
+import * as Settings from '../settings.json';
 import Aura from './Aura';
 import { InitGui } from './Gui';
 
@@ -9,59 +9,56 @@ let pauseButton = document.getElementById('pause_btn');
 let playButton = document.getElementById('play_btn');
 let startOverButton = document.getElementById('start_over_btn');
 
-let timer = document.getElementById('timer')
-let fpsDisp = document.getElementById('fps')
+let timer = document.getElementById('timer');
+let fpsDisp = document.getElementById('fps');
 
 let layer1 = {
-  brightness: .2,
-  blobbyness: 1.,
-  blur: .4,
+  brightness: 0.2,
+  blobbyness: 1,
+  blur: 0.4,
 
-  enabled: true
-}
+  enabled: true,
+};
 
 let layer2 = {
   brightness: 1,
-  cycleSpeed: .2,
+  cycleSpeed: 0.2,
   blobbyness: 1.2,
   blur: 1.47,
-  enabled: false
-}
+  enabled: false,
+};
 
 let appParams = {
   autoSave: true,
   fullscreen: false,
-  autoPlay: true
-}
+  autoPlay: true,
+};
 
-let feedbackSettings =
-{
-  amount: .4,
+let feedbackSettings = {
+  amount: 0.4,
   scaleX: 1.01,
   scaleY: 1.01,
   centerX: 0.5,
   centerY: 0.5,
-  dist: .05
-}
+  dist: 0.05,
+};
 
-let globalParams =
-{
-  time: 0.,
-  speed: .1,
+let globalParams = {
+  time: 0,
+  speed: 0.1,
   seed: 100,
-  noise: .003,
-  feedback: .99,
+  noise: 0.003,
+  feedback: 0.99,
   saturation: 1,
-  contrast:1
-}
+  contrast: 1,
+};
 
-let blurSettings =
-{
+let blurSettings = {
   iterations: 8,
-  radius: 1
-}
+  radius: 1,
+};
 
-console.log(`Settings: `, Settings)
+console.log(`Settings: `, Settings);
 
 let setParams = () => {
   let auraParams = {
@@ -70,15 +67,15 @@ let setParams = () => {
     layer2: layer2,
     feedbackSettings: feedbackSettings,
     blurSettings: blurSettings,
-    colors: rgbArray
-  }
+    colors: rgbArray,
+  };
   // console.log(auraParams.layer2);
   aura.setParams(auraParams);
-}
+};
 
 let setFullscreen = (isFullscreen) => {
   aura.setFullscreen(isFullscreen);
-}
+};
 
 let rgbVals = [
   // [0, 0, 0],
@@ -97,23 +94,26 @@ let rgbVals = [
 
   // golden
   [253, 205, 0],
-]
+];
 
 let rgbArray = rgbVals;
 
 // load settings and init gui
-InitGui(Settings, {
-  appParams: appParams,
-  globalParams: globalParams,
-  feedbackSettings: feedbackSettings,
-  layer1: layer1,
-  layer2: layer2,
-  blurSettings: blurSettings
-},
+InitGui(
+  Settings,
+  {
+    appParams: appParams,
+    globalParams: globalParams,
+    feedbackSettings: feedbackSettings,
+    layer1: layer1,
+    layer2: layer2,
+    blurSettings: blurSettings,
+  },
   {
     setFullscreen: setFullscreen,
-    setParams: setParams
-  })
+    setParams: setParams,
+  }
+);
 
 let auraParams = {
   globalParams: globalParams,
@@ -124,7 +124,7 @@ let auraParams = {
   colors: rgbArray,
   width: window.innerWidth,
   height: window.innerHeight,
-}
+};
 
 let aura = new Aura(gl, auraParams);
 aura.start(appParams.autoPlay);
@@ -134,15 +134,15 @@ playButton.onclick = () => aura.play();
 startOverButton.onclick = () => {
   aura.pause();
   aura.setTime(0);
-}
+};
 
-setFullscreen(appParams.fullscreen)
+setFullscreen(appParams.fullscreen);
 
 let render = () => {
-  requestAnimationFrame(render)
+  requestAnimationFrame(render);
 
   fpsDisp.textContent = `${aura.currFps} FPS`;
-  timer.textContent = `${(aura.animTime / 1000).toFixed(2)} s`
-}
+  timer.textContent = `${(aura.animTime / 1000).toFixed(2)} s`;
+};
 
 requestAnimationFrame(render);

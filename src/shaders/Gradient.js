@@ -1,5 +1,5 @@
-import { LabColorSpace } from "./include/LabColorSpace"
-import { Random } from "./include/noise/Random"
+import { LabColorSpace } from './include/LabColorSpace';
+import { Random } from './include/noise/Random';
 
 let FragGradientLab = `
 #version 300 es
@@ -49,7 +49,7 @@ void main() {
     // vec3 labOut = oklab_mix(lab1, lab2, linearstep(0.*step, 1.*step, uv.x));
     float dither = rand(uv)*.001;
     vec3 col = mix(rgb2lab(colors[0]/255.), rgb2lab(colors[1]/255.), linearstep(0.*step, 1.*step, uv.x + dither));
-    
+
     for(int i = 2; i < MAX_COLORS; i++)
     {
         // break early when done
@@ -59,7 +59,7 @@ void main() {
 
         col = mix(col, nextLab, linearstep(float(i-1)*step, float(i)*step, uv.x)+ dither);
     }
-    
+
     col = lab2rgb(col);
     // linear to gamma
     col = pow( col, vec3(0.4545) );
@@ -67,6 +67,6 @@ void main() {
 
     FragColor.rgb = (col);
 }
-`
+`;
 
-export { FragGradientLab }
+export { FragGradientLab };

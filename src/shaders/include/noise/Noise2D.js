@@ -1,4 +1,3 @@
-
 let Noise2D = `
 //
 // Description : Array and textureless GLSL 2D simplex noise function.
@@ -9,7 +8,7 @@ let Noise2D = `
 //               Distributed under the MIT License. See LICENSE file.
 //               https://github.com/ashima/webgl-noise
 //               https://github.com/stegu/webgl-noise
-// 
+//
 
 #ifndef MOD289_3
 #define MOD289_3
@@ -80,6 +79,6 @@ float snoise(vec2 v)
   g.yz = a0.yz * x12.xz + h.yz * x12.yw;
   return 130.0 * dot(m, g);
 }
-`
+`;
 
-export { Noise2D }
+export { Noise2D };

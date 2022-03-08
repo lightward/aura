@@ -1,5 +1,4 @@
-let OpenSimplex2f =
-    `
+let OpenSimplex2f = `
 // Included to use integer seed value to generate noise
 
 // https://gist.github.com/KdotJPG/67f847a9d5c89b9ad82cab673cdf1929
@@ -50,7 +49,7 @@ vec4 grad(float index) {
 
 float opensimplex2f(vec4 X, vec4 seedVec) {
 	vec4 Xs = X + dot(X, vec4(-0.138196601125011));
-	
+
 	vec4 Xsb = floor(Xs);
 	vec4 Xsi = Xs - Xsb;
 
@@ -101,16 +100,16 @@ float opensimplex2f(vec4 X, vec4 seedVec) {
 	h4 = permute(mod639(h4 + vh4.y), seedVec.y);
 	h4 = permute(mod639(h4 + vh4.z), seedVec.z);
 	h4 = pmod639(permute(mod639(h4 + vh4.w), seedVec.w));
-	
+
 	vec4 g0 = grad(h0123.x);
 	vec4 g1 = grad(h0123.y);
 	vec4 g2 = grad(h0123.z);
 	vec4 g3 = grad(h0123.w);
 	vec4 g4 = grad(h4);
-	
+
 	/*vec4 norm = inversesqrt(vec4(dot(g0, g0), dot(g1, g1), dot(g2, g2), dot(g3, g3)));
 	g0 *= norm.x; g1 *= norm.y; g2 *= norm.z; g3 *= norm.w; g4 *= inversesqrt(dot(g4, g4));*/
-	
+
 	// "Proper" constant is 0.5. 0.6 produces subtle invisible discontinuities, but looks much better.
 	vec4 a0123 = max(0.6 - vec4(dot(d0, d0), dot(d1, d1), dot(d2, d2), dot(d3, d3)), 0.0);
 	float a4 = max(0.6 - dot(d4, d4), 0.0);
@@ -123,6 +122,6 @@ float opensimplex2f(vec4 X, vec4 seedVec) {
 float opensimplex2f(vec4 X) {
     return opensimplex2f(X, vec4(1.0));
 }
-`
+`;
 
-export { OpenSimplex2f }
+export { OpenSimplex2f };

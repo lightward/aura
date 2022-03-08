@@ -1,12 +1,11 @@
-import { Cellular2x2x2 } from "./include/noise/Cellular2x2x2"
-import { Cellular3D } from "./include/noise/Cellular3D"
-import { Noise3D } from "./include/noise/Noise3d"
-import { Noise3DGrad } from "./include/noise/Noise3DGrad"
-import { OpenSimplex2f } from "./include/noise/OpenSimplex2f"
-import { Random } from "./include/noise/Random"
-import { Saturate } from "./include/Saturate"
-import { Shapes } from "./include/shapes/Shapes"
-
+import { Cellular2x2x2 } from './include/noise/Cellular2x2x2';
+import { Cellular3D } from './include/noise/Cellular3D';
+import { Noise3D } from './include/noise/Noise3d';
+import { Noise3DGrad } from './include/noise/Noise3DGrad';
+import { OpenSimplex2f } from './include/noise/OpenSimplex2f';
+import { Random } from './include/noise/Random';
+import { Saturate } from './include/Saturate';
+import { Shapes } from './include/shapes/Shapes';
 
 let Includes = `
 ${Shapes}
@@ -25,7 +24,7 @@ ${OpenSimplex2f}
 
 #define disabled vec3(0.0)
 
-`
+`;
 
 let Types = `
 
@@ -55,8 +54,7 @@ struct Feedback
   float dist;
 };
 
-`
-
+`;
 
 let Uniforms = `
 uniform vec2 resolution;
@@ -74,7 +72,7 @@ uniform uint seed;
 
 out vec4 FragColor;
 in vec4 fragUV;
-`
+`;
 
 let Layer1 = `
 vec3 doLayer1(in vec4 uv, in vec2 n, inout vec3 col)
@@ -96,7 +94,7 @@ st = scale(st, 2.);
   float d = sdParallelogram(st + vec2(sin(time.z) + s1, sin(time.y*1.4) + s2), .4, .1, sk);
   float d2 = sdRhombus(translate(rotate(scale( translate(st, vec2(s2, s3)*vec2(.5, .2)) , 4.*p1), p3*30.*DEG2RAD), vec2(0.,0.)), vec2(1.,1.));
   float d3 = sdEquilateralTriangle(rotate(scale(st,4.*p1+sin(time.x)), 90.*p2*DEG2RAD + time.z/5.));
-  
+
   float noise = snoise(vec3(uv.xy, time.x));
   float dMix = smoothstep(.0,.2, mix(d,d2, sin01(time.y  + p3*TWOPI ) ));
 
@@ -116,7 +114,7 @@ st = scale(st, 2.);
 
   return layer1Col;
 }
-`
+`;
 
 let Layer2 = `
 vec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)
@@ -128,7 +126,7 @@ vec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)
   noise *= 0.4;
   noise = smoothstep(-1.,1., noise);
   vec4 rampSample = texture2D(ramp, vec2( time.z *layer2.cycleSpeed + p1 + rotate(uv.xy*.5, time.x*DEG2RAD).x  , .5));
-  
+
   vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;
   vec3 color = layer2.enabled ? layer2Col : disabled;
   col.rgb += color;
@@ -136,7 +134,7 @@ vec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)
   return color;
 
 }
-`
+`;
 
 let ScaleUV = `
 
@@ -144,8 +142,7 @@ vec2 scaleUV(vec2 uv, vec2 scaleFactor, vec2 center)
 {
  return ( uv - center)*scaleFactor  + center;
 }
-`
-
+`;
 
 let FragAura = `
 #version 300 es
@@ -198,6 +195,6 @@ void main() {
   FragColor = col;
   // FragColor = lastFrame;
 }
-`
+`;
 
-export default FragAura
+export default FragAura;

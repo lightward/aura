@@ -25,7 +25,7 @@ float intRand(int n){
 #define HASH_3
 
 #define hashi(x)   lowbias32(x)
-//  #define hashi(x)   triple32(x) 
+//  #define hashi(x)   triple32(x)
 
   #define hash(x)  ( float( hashi(x) ) / float( 0xffffffffU ) )
 
@@ -55,6 +55,6 @@ uint triple32(uint x)
 
 #endif
 
-`
+`;
 
-export { Random }
+export { Random };

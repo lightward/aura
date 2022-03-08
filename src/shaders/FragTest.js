@@ -19,6 +19,6 @@ void main() {
   color *= sin( time / 10.0 ) * 0.5;
 
   FragColor = vec4( vec3( color * 0.5, sin( color + time / 2.5 ) * 0.75, color ), 1.0 );
-}`
+}`;
 
-export default FragTest
+export default FragTest;

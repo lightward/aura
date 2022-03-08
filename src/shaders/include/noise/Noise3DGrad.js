@@ -1,5 +1,5 @@
 let Noise3DGrad = `//
-// Description : Array and textureless GLSL 2D/3D/4D simplex 
+// Description : Array and textureless GLSL 2D/3D/4D simplex
 //               noise functions.
 //      Author : Ian McEwan, Ashima Arts.
 //  Maintainer : stegu
@@ -8,7 +8,7 @@ let Noise3DGrad = `//
 //               Distributed under the MIT License. See LICENSE file.
 //               https://github.com/ashima/webgl-noise
 //               https://github.com/stegu/webgl-noise
-// 
+//
 
 #ifndef MOD289_3
 #define MOD289_3
@@ -63,10 +63,10 @@ float snoise(vec3 v, out vec3 gradient)
   vec3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
 
 // Permutations
-  i = mod289(i); 
-  vec4 p = permute( permute( permute( 
+  i = mod289(i);
+  vec4 p = permute( permute( permute(
              i.z + vec4(0.0, i1.z, i2.z, 1.0 ))
-           + i.y + vec4(0.0, i1.y, i2.y, 1.0 )) 
+           + i.y + vec4(0.0, i1.y, i2.y, 1.0 ))
            + i.x + vec4(0.0, i1.x, i2.x, 1.0 ));
 
 // Gradients: 7x7 points over a square, mapped onto an octahedron.
@@ -121,6 +121,6 @@ float snoise(vec3 v, out vec3 gradient)
 
   return 105.0 * dot(m4, pdotx);
 }
-`
+`;
 
-export { Noise3DGrad }
+export { Noise3DGrad };

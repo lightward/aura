@@ -42,7 +42,7 @@ float sdOrientedBox( in vec2 p, in vec2 a, in vec2 b, float th )
     vec2  q = (p-(a+b)*0.5);
           q = mat2(d.x,-d.y,d.y,d.x)*q;
           q = abs(q)-vec2(l,th)*0.5;
-    return length(max(q,0.0)) + min(max(q.x,q.y),0.0);    
+    return length(max(q,0.0)) + min(max(q.x,q.y),0.0);
 }
 
 float sdEquilateralTriangle( in vec2 p )
@@ -55,7 +55,7 @@ float sdEquilateralTriangle( in vec2 p )
     return -length(p)*sign(p.y);
 }
 
-float sdRhombus( in vec2 p, in vec2 b ) 
+float sdRhombus( in vec2 p, in vec2 b )
 {
     p = abs(p);
     float h = clamp( ndot(b-2.0*p,b)/dot(b,b), -1.0, 1.0 );
@@ -80,7 +80,7 @@ float sdParallelogram( in vec2 p, float wi, float he, float sk )
     p = (p.y<0.0)?-p:p;
     vec2  w = p - e; w.x -= clamp(w.x,-wi,wi);
     vec2  d = vec2(dot(w,w), -w.y);
-    float s = p.x*e.y - p.y*e.x; 
+    float s = p.x*e.y - p.y*e.x;
     p = (s<0.0)?-p:p;
     vec2  v = p - vec2(wi,0); v -= e*clamp(dot(v,e)/dot(e,e),-1.0,1.0);
     d = min( d, vec2(dot(v,v), wi*he-abs(s)));
@@ -122,11 +122,10 @@ vec2 rotate(vec2 p, vec2 origin, float a)
 {
     p -= origin;
     mat2 m = mat2(cos(a),sin(a),-sin(a),cos(a));
-    return p*m + origin;	
+    return p*m + origin;
 }
 
 #endif
-`
+`;
 
-export { Shapes }
-
+export { Shapes };

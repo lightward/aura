@@ -101,6 +101,6 @@ vec2 cellular2x2x2(vec3 P) {
 	return sqrt(d.xy); // F1 and F2
 #endif
 }
-`
+`;
 
-export { Cellular2x2x2 }
+export { Cellular2x2x2 };

@@ -12,12 +12,12 @@ void main() {
   vec3 texCol = texture2D(tex, uv).rgb;
 
   vec4 colOut;
-  
+
   colOut.a = 1.;
   colOut.rgb = saturate(texCol);
-  
+
   FragColor = colOut;
 }
-`
+`;
 
-export default FragTexture
+export default FragTexture;

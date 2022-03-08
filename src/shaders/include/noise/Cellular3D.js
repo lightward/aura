@@ -196,6 +196,6 @@ vec2 cellular(vec3 P) {
 #endif
 }
 
-`
+`;
 
-export {Cellular3D}
+export { Cellular3D };
