@@ -71,8 +71,8 @@ export default class Aura {
 
         this.gl = gl;
         this.canvas = this.gl.canvas;
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
+        this.width = params.width || this.canvas.width;
+        this.height = params.height || this.canvas.height;
 
         this.playing = false;
         this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
@@ -161,8 +161,8 @@ export default class Aura {
             var sinceStart = now - this.startTime;
             this.currFps = Math.round(1000 / (sinceStart / ++this.frameCount) * 100) / 100;
             twgl.resizeCanvasToDisplaySize(this.gl.canvas);
-            
-            
+
+
             {
 
                 const auraUniforms = {
@@ -177,7 +177,7 @@ export default class Aura {
                     seed: this.globalParams.seed
                 }
 
-                // Render new Aura frame 
+                // Render new Aura frame
                 ppb.bind();
 
                 gl.useProgram(programAura.program);

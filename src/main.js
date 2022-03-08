@@ -82,10 +82,20 @@ let setFullscreen = (isFullscreen) => {
 
 let rgbVals = [
   // [0, 0, 0],
+
+  // sunset
   [32, 70, 95],
+
+  // pink
   [220, 91, 172],
+
+  // eclipse
   // [48, 64, 92],
+
+  // sea foam
   [111, 200, 111],
+
+  // golden
   [253, 205, 0],
 ]
 
@@ -111,7 +121,9 @@ let auraParams = {
   layer2: layer2,
   feedbackSettings: feedbackSettings,
   blurSettings: blurSettings,
-  colors: rgbArray
+  colors: rgbArray,
+  width: window.innerWidth,
+  height: window.innerHeight,
 }
 
 let aura = new Aura(gl, auraParams);
