@@ -147,7 +147,6 @@ let render = () => {
   requestAnimationFrame(render);
 
   seed.textContent = aura.globalParams.seed;
-  fpsDisp.textContent = `${Math.round(aura.currFps)} FPS`;
   timer.textContent = `${Math.round(aura.animTime / 1000)}`;
 };
 
