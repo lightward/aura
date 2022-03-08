@@ -9,6 +9,7 @@ let playpauseButton = document.getElementById('playpause_btn');
 let shuffleButton = document.getElementById('shuffle_btn');
 let startoverButton = document.getElementById('startover_btn');
 
+let seed = document.getElementById('seed');
 let timer = document.getElementById('timer');
 let fpsDisp = document.getElementById('fps');
 
@@ -128,7 +129,7 @@ playpauseButton.onclick = () => {
 };
 
 shuffleButton.onclick = () => {
-  aura.setSeed(Math.random() * 10000);
+  aura.setSeed(Math.round(Math.random() * 10000));
   aura.setTime(0);
 };
 
@@ -136,9 +137,16 @@ startoverButton.onclick = () => {
   aura.setTime(0);
 };
 
+const maybeSeed = parseInt(`${window.location.search?.replace(/^\?/, '')}`, 10);
+
+if (maybeSeed) {
+  aura.setSeed(maybeSeed);
+}
+
 let render = () => {
   requestAnimationFrame(render);
 
+  seed.textContent = aura.globalParams.seed;
   fpsDisp.textContent = `${aura.currFps} FPS`;
   timer.textContent = `${(aura.animTime / 1000).toFixed(2)} s`;
 };

@@ -267,6 +267,8 @@ export default class Aura {
         seed,
       },
     });
+
+    window.history.replaceState(seed, `Lightward Aura: ${seed}`, `?${seed}`);
   };
 
   play = () => {
