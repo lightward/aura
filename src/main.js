@@ -3,7 +3,7 @@ import Aura from './Aura';
 import { InitGui } from './Gui';
 
 let auraCanvas = document.getElementById('aura_canvas');
-let gl = auraCanvas.getContext('webgl2');
+let gl = auraCanvas.getContext('webgl2', { preserveDrawingBuffer: true });
 
 let playpauseButton = document.getElementById('playpause_btn');
 let shuffleButton = document.getElementById('shuffle_btn');
@@ -151,3 +151,16 @@ let render = () => {
 };
 
 requestAnimationFrame(render);
+
+const setFavicon = () => {
+  aura.canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    document.getElementById('favicon').href = url;
+  }, 'image/png');
+};
+
+setInterval(setFavicon, 10 * 1000);
+
+setTimeout(setFavicon, 100);
+
+window.aura = aura;
