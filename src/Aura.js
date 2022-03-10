@@ -157,47 +157,46 @@ export default class Aura {
     let now = time;
     const deltaTime = now - this.prevTimestamp;
 
-    // console.log(deltaTime, this.fixedDeltaTime, this.playing)
     if (deltaTime > this.fixedDeltaTime) {
       if (this.playing) this.animTime += deltaTime * this.globalParams.speed;
 
       this.globalParams.time = this.animTime * 0.001;
       this.prevTimestamp = now - (deltaTime % this.fixedDeltaTime);
-      var sinceStart = now - this.startTime;
+
+      let sinceStart = now - this.startTime;
       this.currFps =
         Math.round((1000 / (sinceStart / ++this.frameCount)) * 100) / 100;
+
       twgl.resizeCanvasToDisplaySize(this.gl.canvas);
 
-      {
-        const auraUniforms = {
-          time: [
-            this.globalParams.time,
-            this.globalParams.time / 2,
-            this.globalParams.time * 2,
-            this.globalParams.time * 10,
-          ],
-          resolution: [this.targetTexWidth, this.targetTexHeight],
-          ramp: this.ramp,
-          layer1: this.layer1Params,
-          layer2: this.layer2Params,
-          feedback: this.feedback,
-          noiseDither: this.globalParams.noise,
-          backBufferTex: this.ppb.lastTexture(),
-          seed: this.globalParams.seed,
-        };
+      const auraUniforms = {
+        time: [
+          this.globalParams.time,
+          this.globalParams.time / 2,
+          this.globalParams.time * 2,
+          this.globalParams.time * 10,
+        ],
+        resolution: [this.targetTexWidth, this.targetTexHeight],
+        ramp: this.ramp,
+        layer1: this.layer1Params,
+        layer2: this.layer2Params,
+        feedback: this.feedback,
+        noiseDither: this.globalParams.noise,
+        backBufferTex: this.ppb.lastTexture(),
+        seed: this.globalParams.seed,
+      };
 
-        // Render new Aura frame
-        ppb.bind();
+      // Render new Aura frame
+      ppb.bind();
 
-        gl.useProgram(programAura.program);
+      gl.useProgram(programAura.program);
 
-        twgl.setBuffersAndAttributes(gl, programAura, bufferInfo);
-        twgl.setUniforms(programAura, auraUniforms);
-        twgl.drawBufferInfo(gl, bufferInfo);
+      twgl.setBuffersAndAttributes(gl, programAura, bufferInfo);
+      twgl.setUniforms(programAura, auraUniforms);
+      twgl.drawBufferInfo(gl, bufferInfo);
 
-        // Swap buffers
-        ppb.swap();
-      }
+      // Swap buffers
+      ppb.swap();
 
       // Blur stages
       let iterations = this.blurSettings.iterations;
@@ -267,8 +266,6 @@ export default class Aura {
         seed,
       },
     });
-
-    window.history.replaceState(seed, `Lightward Aura: ${seed}`, `?${seed}`);
   };
 
   play = () => {

@@ -3,15 +3,7 @@ import Aura from './Aura';
 import { InitGui } from './Gui';
 
 let auraCanvas = document.getElementById('aura_canvas');
-let gl = auraCanvas.getContext('webgl2', { preserveDrawingBuffer: true });
-
-let playpauseButton = document.getElementById('playpause_btn');
-let shuffleButton = document.getElementById('shuffle_btn');
-let startoverButton = document.getElementById('startover_btn');
-
-let seed = document.getElementById('seed');
-let timer = document.getElementById('timer');
-let fpsDisp = document.getElementById('fps');
+let gl = auraCanvas.getContext('webgl2');
 
 let layer1 = {
   brightness: 0.2,
@@ -58,19 +50,15 @@ let blurSettings = {
   radius: 1,
 };
 
-console.log(`Settings: `, Settings);
-
 let setParams = () => {
-  let auraParams = {
+  aura.setParams({
     globalParams: globalParams,
     layer1: layer1,
     layer2: layer2,
     feedbackSettings: feedbackSettings,
     blurSettings: blurSettings,
     colors: rgbArray,
-  };
-  // console.log(auraParams.layer2);
-  aura.setParams(auraParams);
+  });
 };
 
 let rgbVals = [
@@ -121,46 +109,56 @@ let auraParams = {
   height: window.innerHeight,
 };
 
-let aura = new Aura(gl, auraParams);
+const aura = (window.aura = new Aura(gl, auraParams));
+
 aura.start(appParams.autoPlay);
 
-playpauseButton.onclick = () => {
+const [seed, time] = `${window.location.search?.replace(/^\?/, '')}`.split(',');
+
+const seedInt = parseInt(seed, 10);
+const timeInt = parseInt(time, 10);
+
+if (!isNaN(seedInt)) {
+  aura.setSeed(seedInt);
+}
+
+if (!isNaN(timeInt)) {
+  aura.setTime(timeInt * 1000);
+}
+
+const saveState = () => {
+  const currentSeedInt = aura.globalParams.seed;
+
+  document.getElementById('seed').textContent = currentSeedInt;
+
+  window.history.replaceState(
+    currentSeedInt,
+    `Lightward Aura: ${currentSeedInt}`,
+    `?${currentSeedInt}`
+  );
+};
+
+setInterval(saveState, 1000);
+
+// requires { preserveDrawingBuffer: true }
+// setInterval(() => {
+//   aura.canvas.toBlob((blob) => {
+//     const url = URL.createObjectURL(blob);
+//     document.getElementById('favicon').href = url;
+//   }, 'image/png');
+// }, 10 * 1000);
+
+document.getElementById('playpause_btn').onclick = () => {
   aura.playing ? aura.pause() : aura.play();
 };
 
-shuffleButton.onclick = () => {
+document.getElementById('shuffle_btn').onclick = () => {
   aura.setSeed(Math.round(Math.random() * 10000));
   aura.setTime(0);
+  saveState();
 };
 
-startoverButton.onclick = () => {
+document.getElementById('startover_btn').onclick = () => {
   aura.setTime(0);
+  saveState();
 };
-
-const maybeSeed = parseInt(`${window.location.search?.replace(/^\?/, '')}`, 10);
-
-if (maybeSeed) {
-  aura.setSeed(maybeSeed);
-}
-
-let render = () => {
-  requestAnimationFrame(render);
-
-  seed.textContent = aura.globalParams.seed;
-  timer.textContent = `${Math.round(aura.animTime / 1000)}`;
-};
-
-requestAnimationFrame(render);
-
-const setFavicon = () => {
-  aura.canvas.toBlob((blob) => {
-    const url = URL.createObjectURL(blob);
-    document.getElementById('favicon').href = url;
-  }, 'image/png');
-};
-
-setInterval(setFavicon, 10 * 1000);
-
-setTimeout(setFavicon, 100);
-
-window.aura = aura;
