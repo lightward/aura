@@ -162,3 +162,36 @@ document.getElementById('startover_btn').onclick = () => {
   aura.setTime(0);
   saveState();
 };
+
+const stream = aura.canvas.captureStream(24);
+const mediaRecorder = new MediaRecorder(stream, {
+  mimeType: 'video/webm',
+  audioBitsPerSecond: 0,
+});
+const mediaChunks = [];
+
+mediaRecorder.ondataavailable = (e) => mediaChunks.push(e.data);
+
+mediaRecorder.onstop = function () {
+  const blob = new Blob(mediaChunks, { type: 'video/webm' });
+
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `aura-${aura.globalParams.seed}`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+};
+
+const recordBtn = document.getElementById('record_btn');
+recordBtn.onclick = () => {
+  if (mediaRecorder.state === 'recording') {
+    recordBtn.classList.remove('recording');
+    mediaRecorder.stop();
+  } else {
+    recordBtn.classList.add('recording');
+    mediaRecorder.start();
+  }
+};

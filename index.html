@@ -33,6 +33,18 @@
       cursor: pointer;
     }
 
+    #record_btn .fa-circle-stop {
+      display: none;
+    }
+
+    #record_btn.recording .fa-circle-video {
+      display: none;
+    }
+
+    #record_btn.recording .fa-circle-stop {
+      display: inline;
+    }
+
     #content_root {
       width: 100vw;
       height: 100vh;
@@ -67,6 +79,10 @@
         <i class="fa-solid fa-rotate-left"></i>
       </button>
       <button id="shuffle_btn"><i class="fa-solid fa-shuffle"></i></button>
+      <button id="record_btn">
+        <i class="fa-solid fa-circle-video"></i>
+        <i class="fa-solid fa-circle-stop"></i>
+      </button>
       <div id="seed"></div>
     </div>
 
