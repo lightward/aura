@@ -25,6 +25,9 @@ let InitGui = (settings, params, callbacks) => {
   gui.remember(appParams);
   gui.add(appParams, 'autoSave');
   gui.add(appParams, 'autoPlay').listen();
+  gui.add(globalParams, 'displayGradient')
+    .listen()
+    .onChange(setParams);
 
   // Global
   gui.remember(globalParams);

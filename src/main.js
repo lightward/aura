@@ -43,6 +43,7 @@ let globalParams = {
   feedback: 0.99,
   saturation: 1,
   contrast: 1,
+  displayGradient: false,
 };
 
 let blurSettings = {

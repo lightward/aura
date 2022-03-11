@@ -27,6 +27,7 @@ uniform float contrast;
 
 
 uniform sampler2D ramp;
+uniform bool displayGradient;
 
 mat4 brightnessMatrix( float brightness )
 {
@@ -68,10 +69,21 @@ mat4 saturationMatrix( float s )
                  0, 0, 0, 1 );
 }
 
+void drawRamp(inout vec4 col, vec2 uv, vec2 size)
+{
+
+  uv.y = 1. - uv.y;
+  vec2 rampUV = uv*(1./size);
+
+  float insideRamp = displayGradient ? step(uv.x, size.x) * step(uv.y, size.y) : 0.0;
+  vec4 rampSample = texture2D(ramp, rampUV*2.);
+  col.rgb = mix(col.rgb, rampSample.rgb, insideRamp);// vec3(insideRamp);
+}
 
 void main() {
   vec2 uv = gl_FragCoord.xy / resolution;
   uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));
+
 
   vec4 lastCol = texture2D(backBuffer, uv);
   vec4 colOut;
@@ -82,6 +94,7 @@ void main() {
   // linear to gamma
   // colOut.rgb = pow( colOut.rgb, vec3(0.4545) );
 
+  drawRamp(colOut, uv, vec2(.5,.2));
   FragColor = colOut;
 }
 

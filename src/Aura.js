@@ -17,6 +17,7 @@ const defaults = {
     saturation: 1,
     contrast: 1,
     value: 1,
+    displayGradient: false
   },
   layer1: {
     brightness: 0.87,
@@ -231,6 +232,7 @@ export default class Aura {
           contrast: globalParams.contrast,
           saturation: globalParams.saturation,
           value: globalParams.value,
+          displayGradient: globalParams.displayGradient
         };
 
         // Set dst buffer back to screen
