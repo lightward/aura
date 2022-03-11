@@ -108,7 +108,7 @@ if (!isNaN(seedInt)) {
 }
 
 if (!isNaN(timeFloat)) {
- globalParams.animTime = timeFloat*1000;
+  globalParams.animTime = timeFloat * 1000;
 }
 
 const aura = (window.aura = new Aura(gl, {
@@ -136,6 +136,8 @@ const saveState = () => {
     `Lightward Aura: ${currentSeedInt}`,
     `?${currentSeedInt},${currentTimeInt}`
   );
+
+  console.log('fps:', aura.currFps);
 };
 
 setInterval(saveState, 1000);
