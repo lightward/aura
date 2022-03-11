@@ -16,7 +16,6 @@ let layer1 = {
 let layer2 = {
   brightness: 1,
   cycleSpeed: 0.2,
-  blobbyness: 1.2,
   blur: 1.47,
   enabled: false,
 };
@@ -99,7 +98,20 @@ InitGui(
   }
 );
 
-let auraParams = {
+const [seed, time] = `${window.location.search?.replace(/^\?/, '')}`.split(',');
+
+const seedInt = parseInt(seed, 10);
+const timeFloat = parseFloat(time, 10);
+
+if (!isNaN(seedInt)) {
+  globalParams.seed = seedInt;
+}
+
+if (!isNaN(timeFloat)) {
+ globalParams.animTime = timeFloat*1000;
+}
+
+const aura = (window.aura = new Aura(gl, {
   globalParams: globalParams,
   layer1: layer1,
   layer2: layer2,
@@ -108,24 +120,9 @@ let auraParams = {
   colors: rgbArray,
   width: window.innerWidth,
   height: window.innerHeight,
-};
-
-const aura = (window.aura = new Aura(gl, auraParams));
+}));
 
 aura.start(appParams.autoPlay);
-
-const [seed, time] = `${window.location.search?.replace(/^\?/, '')}`.split(',');
-
-const seedInt = parseInt(seed, 10);
-const timeInt = parseInt(time, 10);
-
-if (!isNaN(seedInt)) {
-  aura.setSeed(seedInt);
-}
-
-if (!isNaN(timeInt)) {
-  aura.setTime(timeInt * 1000);
-}
 
 const saveState = () => {
   const currentSeedInt = aura.globalParams.seed;

@@ -82,7 +82,7 @@ void drawRamp(inout vec4 col, vec2 uv, vec2 size)
 
 void main() {
   vec2 uv = gl_FragCoord.xy / resolution;
-  uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));
+  // uv += noiseDither*vec2(rand(uv), rand(uv + vec2(112.234,253.253)));
 
 
   vec4 lastCol = texture2D(backBuffer, uv);

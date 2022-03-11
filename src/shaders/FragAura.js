@@ -104,7 +104,7 @@ st = scale(st, 2.);
   dMix+=layer1.blobbyness*noise;
   d += noise*layer1.blobbyness;
 
-  vec4 rampSample = texture2D(ramp, vec2(time.z *layer2.cycleSpeed + p2 + length(st)*.2  , .5));
+  vec4 rampSample = texture2D(ramp, vec2(time.z *layer2.cycleSpeed + p2 + length(st)*.2 + noiseDither  , .5));
 
 
   vec3 layer1Col = layer1.brightness*rampSample.rgb*saturate(1.-smoothstep(-layer1.blur,layer1.blur, dMix));//(mix(layer1.color1*TO_FLOAT, layer1.color2*TO_FLOAT, saturate(smoothstep(-layer1.blur, layer1.blur, dMix))));
@@ -125,7 +125,7 @@ vec3 doLayer2(in vec4 uv, in vec2 n, inout vec3 col)
   float noise = snoise(vec3(uv.xy, time.x), grad);
   noise *= 0.4;
   noise = smoothstep(-1.,1., noise);
-  vec4 rampSample = texture2D(ramp, vec2( time.z *layer2.cycleSpeed + p1 + rotate(uv.xy*.5, time.x*DEG2RAD).x  , .5));
+  vec4 rampSample = texture2D(ramp, vec2( time.z *layer2.cycleSpeed + p1 + rotate(uv.xy*.5, time.x*DEG2RAD).x + noiseDither  , .5));
 
   vec3 layer2Col = rampSample.rgb*noise*layer2.brightness;
   vec3 color = layer2.enabled ? layer2Col : disabled;

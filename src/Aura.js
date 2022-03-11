@@ -75,7 +75,8 @@ export default class Aura {
 
     this.playing = false;
     this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
-    this.animTime = 0;
+    this.animTime = params.globalParams.animTime || 0;
+    console.log(this.animTime)
     this.frameCount = 0;
 
     this.createShadersAndBuffers();
@@ -110,7 +111,7 @@ export default class Aura {
       ...params.layer2,
     };
 
-    this.feedback = {
+    this.feedbackSettings = {
       ...defaults.feedbackSettings,
       ...this.feedbackSettings,
       ...params.feedbackSettings,
@@ -169,7 +170,6 @@ export default class Aura {
         Math.round((1000 / (sinceStart / ++this.frameCount)) * 100) / 100;
 
       twgl.resizeCanvasToDisplaySize(this.gl.canvas);
-
       const auraUniforms = {
         time: [
           this.globalParams.time,
@@ -181,7 +181,7 @@ export default class Aura {
         ramp: this.ramp,
         layer1: this.layer1Params,
         layer2: this.layer2Params,
-        feedback: this.feedback,
+        feedback: this.feedbackSettings,
         noiseDither: this.globalParams.noise,
         backBufferTex: this.ppb.lastTexture(),
         seed: this.globalParams.seed,
