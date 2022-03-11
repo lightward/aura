@@ -129,13 +129,15 @@ if (!isNaN(timeInt)) {
 
 const saveState = () => {
   const currentSeedInt = aura.globalParams.seed;
+  const currentTimeInt = Math.round(aura.animTime / 1000);
 
   document.getElementById('seed').textContent = currentSeedInt;
+  document.getElementById('time').textContent = currentTimeInt;
 
   window.history.replaceState(
     currentSeedInt,
     `Lightward Aura: ${currentSeedInt}`,
-    `?${currentSeedInt}`
+    `?${currentSeedInt},${currentTimeInt}`
   );
 };
 
