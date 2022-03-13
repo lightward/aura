@@ -3,7 +3,9 @@ import Aura from './Aura';
 import { InitGui } from './Gui';
 
 let auraCanvas = document.getElementById('aura_canvas');
-let gl = auraCanvas.getContext('webgl2');
+let gl = auraCanvas.getContext('webgl2', {
+  preserveDrawingBuffer: true,
+});
 
 let layer1 = {
   brightness: 0.2,
@@ -163,6 +165,19 @@ document.getElementById('shuffle_btn').onclick = () => {
 document.getElementById('startover_btn').onclick = () => {
   aura.setTime(0);
   saveState();
+};
+
+document.getElementById('snapshot_btn').onclick = () => {
+  const imageUrl = aura.canvas.toDataURL('image/png');
+
+  const link = document.createElement('a');
+  link.href = imageUrl;
+  link.download = `aura-${aura.globalParams.seed}`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+
+  // setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 };
 
 const stream = aura.canvas.captureStream(24);
