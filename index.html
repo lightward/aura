@@ -17,30 +17,47 @@
   />
 
   <style>
+    html,
+    body {
+      color: #101010;
+      background: #fffbe7;
+    }
+
     body,
     button {
       margin: 0;
       font-family: 'Lightward Favorit';
-      color: #fffbe7;
       font-weight: 200;
-      background: #101010;
     }
 
     button {
       border-radius: 3px;
       border: none;
-      padding: 6px 12px;
+      padding: 6px 0;
       cursor: pointer;
+      width: 30px;
+      text-align: center;
+
+      color: #fffbe7;
+      background: #101010;
+    }
+
+    #playpause_btn .fa-play {
+      display: none;
+    }
+    #playpause_btn.paused .fa-pause {
+      display: none;
+    }
+    #playpause_btn.paused .fa-play {
+      display: inline;
     }
 
     #record_btn .fa-circle-stop {
       display: none;
     }
-
     #record_btn.recording .fa-circle-video {
       display: none;
     }
-
     #record_btn.recording .fa-circle-stop {
       display: inline;
     }
@@ -48,12 +65,21 @@
     #content_root {
       width: 100vw;
       height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #content_root canvas {
-      width: 100vw;
-      height: 100vh;
-      /* filter: blur(2px); */
+      width: 500px;
+      height: 500px;
+
+      width: 100%;
+      height: 100%;
+
+      box-shadow: 2px 2px 5px rgba(16, 16, 16, 0.2),
+        2px 2px 20px rgba(16, 16, 16, 0.2);
     }
 
     #overlay {
@@ -74,7 +100,10 @@
     </div>
 
     <div id="overlay">
-      <button id="playpause_btn"><i class="fa-solid fa-play-pause"></i></button>
+      <button id="playpause_btn">
+        <i class="fa-solid fa-play"></i>
+        <i class="fa-solid fa-pause"></i>
+      </button>
       <button id="startover_btn">
         <i class="fa-solid fa-rotate-left"></i>
       </button>

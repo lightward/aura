@@ -23,51 +23,54 @@ let InitGui = (settings, params, callbacks) => {
   let { setParams } = callbacks;
 
   gui.remember(appParams);
-  gui.add(appParams, 'autoSave');
-  gui.add(appParams, 'autoPlay').listen();
-  gui.add(globalParams, 'displayGradient')
+  let appParamsFolder = gui.addFolder('Main');
+  appParamsFolder.add(appParams, 'autoSave');
+  appParamsFolder.add(appParams, 'autoPlay').listen();
+  appParamsFolder
+    .add(globalParams, 'displayGradient')
     .listen()
     .onChange(setParams);
+  appParamsFolder.open();
 
   // Global
   gui.remember(globalParams);
-  let folder = gui.addFolder('Global');
-  folder
+  let globalParamsFolder = gui.addFolder('Global');
+  globalParamsFolder
     .add(globalParams, 'speed')
     .min(0.01)
     .max(1)
     .step(0.01)
     .listen()
     .onChange(setParams);
-  folder
+  globalParamsFolder
     .add(globalParams, 'noise')
     .min(0)
     .max(0.1)
     .step(0.001)
     .listen()
     .onChange(setParams);
-  folder
+  globalParamsFolder
     .add(globalParams, 'seed')
     .min(0)
     .max(10000)
     .step(1)
     .listen()
     .onChange(setParams);
-  folder
+  globalParamsFolder
     .add(globalParams, 'saturation')
     .min(0)
     .max(4)
     .step(0.01)
     .listen()
     .onChange(setParams);
-  folder
+  globalParamsFolder
     .add(globalParams, 'contrast')
     .min(0)
     .max(4)
     .step(0.01)
     .listen()
     .onChange(setParams);
-  folder.open();
+  globalParamsFolder.open();
 
   // Feedback settings
   gui.remember(feedbackSettings);
