@@ -185,9 +185,12 @@ void main() {
   // Feedback stage
   vec3 grad;
   float noise = snoise(vec3(uv.xy, time.x)*.5, grad);
-
   vec4 lastFrame = texture2D(backBufferTex, uv+ grad.xy*feedback.dist);
-  col.rgb += lastFrame.rgb*feedback.amount;
+  // col.rgb += lastFrame.rgb*feedback.amount;
+
+  // trying out using the *current* frame for feedback, instead of going
+  // backwards, so as to achieve always-reproducible state
+  col.rgb += col.rgb*feedback.amount;
 
   // Clamp color values
   col.rgb = saturate(col.rgb);

@@ -59,30 +59,19 @@ let setParams = () => {
     layer2: layer2,
     feedbackSettings: feedbackSettings,
     blurSettings: blurSettings,
-    colors: rgbArray,
+    colors: rgbVals,
   });
 };
 
-let rgbVals = [
-  // [0, 0, 0],
+const eclipse = [48, 64, 92];
+const pink = [220, 91, 172];
+const seaFoam = [111, 200, 111];
+const golden = [253, 205, 0];
 
-  // sunset
-  [32, 70, 95],
+// looks great for seed 7103
+let rgbVals = [eclipse, pink, eclipse, seaFoam, golden];
 
-  // pink
-  [220, 91, 172],
-
-  // eclipse
-  [48, 64, 92],
-
-  // sea foam
-  [111, 200, 111],
-
-  // golden
-  [253, 205, 0],
-];
-
-let rgbArray = rgbVals;
+rgbVals = [eclipse, pink, seaFoam, golden];
 
 // load settings and init gui
 InitGui(
@@ -100,49 +89,80 @@ InitGui(
   }
 );
 
-const [seed, time] = `${window.location.search?.replace(/^\?/, '')}`.split(',');
-
-const seedInt = parseInt(seed, 10);
-const timeFloat = parseFloat(time, 10);
-
-if (!isNaN(seedInt)) {
-  globalParams.seed = seedInt;
-}
-
-if (!isNaN(timeFloat)) {
-  globalParams.animTime = timeFloat * 1000;
-}
-
 const aura = (window.aura = new Aura(gl, {
   globalParams: globalParams,
   layer1: layer1,
   layer2: layer2,
   feedbackSettings: feedbackSettings,
   blurSettings: blurSettings,
-  colors: rgbArray,
+  colors: rgbVals,
   width: window.innerWidth,
   height: window.innerHeight,
 }));
 
-aura.start(appParams.autoPlay);
+const loadFromSearchParams = () => {
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
 
-const saveState = () => {
+  const seedInt = parseInt(params.seed, 10);
+  const timeFloat = parseFloat(params.time, 10);
+  const paused = !!params.paused;
+
+  if (!isNaN(seedInt)) {
+    globalParams.seed = seedInt;
+  }
+
+  if (!isNaN(timeFloat)) {
+    globalParams.animTime = timeFloat;
+  } else {
+    globalParams.animTime = 0;
+  }
+
+  setParams();
+
+  aura.start();
+
+  saveState(false);
+
+  if (paused) {
+    aura.pause();
+    playpauseBtn.classList.add('paused');
+  }
+};
+
+const saveState = (push = false) => {
   const currentSeedInt = aura.globalParams.seed;
-  const currentTimeInt = Math.round(aura.animTime / 1000);
+  const currentTimeInt = Math.round(aura.animTime);
 
   document.getElementById('seed').textContent = currentSeedInt;
   document.getElementById('time').textContent = currentTimeInt;
 
-  window.history.replaceState(
+  const params = { seed: currentSeedInt };
+
+  if (!isNaN(currentTimeInt)) {
+    params.time = currentTimeInt;
+  }
+
+  if (!aura.playing) {
+    params.paused = 'true';
+  }
+
+  var querystring = Object.keys(params)
+    .map((key) => key + '=' + params[key])
+    .join('&');
+
+  window.history[push ? 'pushState' : 'replaceState'](
     currentSeedInt,
     `Lightward Aura: ${currentSeedInt}`,
-    `?${currentSeedInt},${currentTimeInt}`
+    `?${querystring}`
   );
-
-  console.log('fps:', aura.currFps);
 };
 
-setInterval(saveState, 1000);
+loadFromSearchParams();
+window.onpopstate = loadFromSearchParams;
+
+const playpauseBtn = document.getElementById('playpause_btn');
+const recordBtn = document.getElementById('record_btn');
 
 // requires { preserveDrawingBuffer: true }
 // setInterval(() => {
@@ -152,19 +172,29 @@ setInterval(saveState, 1000);
 //   }, 'image/png');
 // }, 10 * 1000);
 
-document.getElementById('playpause_btn').onclick = () => {
-  aura.playing ? aura.pause() : aura.play();
+playpauseBtn.onclick = () => {
+  if (aura.playing) {
+    aura.pause();
+    playpauseBtn.classList.add('paused');
+  } else {
+    aura.play();
+    playpauseBtn.classList.remove('paused');
+  }
+
+  saveState(false);
 };
 
 document.getElementById('shuffle_btn').onclick = () => {
-  aura.setSeed(Math.round(Math.random() * 10000));
-  aura.setTime(0);
-  saveState();
+  globalParams.seed = Math.round(Math.random() * 10000);
+  globalParams.time = Math.round(Math.random() * 60 * 1000);
+  setParams();
+  saveState(true);
 };
 
 document.getElementById('startover_btn').onclick = () => {
-  aura.setTime(0);
-  saveState();
+  globalParams.animTime = 0;
+  setParams();
+  saveState(true);
 };
 
 document.getElementById('snapshot_btn').onclick = () => {
@@ -202,7 +232,6 @@ mediaRecorder.onstop = function () {
   setTimeout(() => URL.revokeObjectURL(link.href), 10000);
 };
 
-const recordBtn = document.getElementById('record_btn');
 recordBtn.onclick = () => {
   if (mediaRecorder.state === 'recording') {
     recordBtn.classList.remove('recording');

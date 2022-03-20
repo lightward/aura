@@ -17,7 +17,7 @@ const defaults = {
     saturation: 1,
     contrast: 1,
     value: 1,
-    displayGradient: false
+    displayGradient: false,
   },
   layer1: {
     brightness: 0.87,
@@ -76,7 +76,6 @@ export default class Aura {
     this.playing = false;
     this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
     this.animTime = params.globalParams.animTime || 0;
-    console.log(this.animTime)
     this.frameCount = 0;
 
     this.createShadersAndBuffers();
@@ -122,6 +121,8 @@ export default class Aura {
       ...this.blurSettings,
       ...params.blurSettings,
     };
+
+    this.animTime = this.globalParams.animTime;
   };
 
   createShadersAndBuffers = () => {
@@ -232,7 +233,7 @@ export default class Aura {
           contrast: globalParams.contrast,
           saturation: globalParams.saturation,
           value: globalParams.value,
-          displayGradient: globalParams.displayGradient
+          displayGradient: globalParams.displayGradient,
         };
 
         // Set dst buffer back to screen
