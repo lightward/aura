@@ -1,15 +1,34 @@
-// rollup.config.js
-import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
-import json from '@rollup/plugin-json'
-import { terser } from "rollup-plugin-terser";
-import dev from 'rollup-plugin-dev'
+import commonjs from '@rollup/plugin-commonjs';
+import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
+import typescript from '@rollup/plugin-typescript';
+import {terser} from 'rollup-plugin-terser';
 
 export default [
-{
-  input: 'src/main.js',
-  output: {
-    file: 'dist/bundle.js'
+  {
+    input: 'src/main.tsx',
+    output: {
+      file: 'dist/bundle.js',
+      format: 'cjs',
+    },
+    plugins: [
+      resolve(),
+      commonjs(),
+      typescript({
+        tsconfig: './tsconfig.json',
+        outputToFilesystem: false,
+      }),
+      terser(),
+      babel({
+        exclude: 'node_modules/**',
+        presets: ['@babel/preset-react'],
+        babelHelpers: 'bundled',
+      }),
+      replace({
+        preventAssignment: true,
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+    ],
   },
-  plugins: [json(), terser(), resolve(), babel({ babelHelpers: 'bundled' })]
-}];
+];
