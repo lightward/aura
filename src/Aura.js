@@ -1,6 +1,7 @@
+import * as twgl from 'twgl.js';
+
 import { CreateGradientTexture2 } from './Gradient';
 import PingPongBuffer from './PingPongBuffer';
-import * as twgl from 'twgl.js';
 import VertDefault from './shaders/VertDefault';
 import FragAura from './shaders/FragAura';
 import { FullScreenQuad } from './Geometry';
@@ -53,42 +54,6 @@ const defaults = {
 };
 
 export default class Aura {
-  constructor(gl, params = {}) {
-    this.setParams(params);
-
-    this.colors = params.colors || defaults.colors;
-
-    this.gl = gl;
-    this.canvas = this.gl.canvas;
-    this.width = params.width || this.canvas.width;
-    this.height = params.height || this.canvas.height;
-
-    const ratio = this.width / this.height;
-
-    if (ratio > 1) {
-      this.targetTexWidth = 256;
-      this.targetTexHeight = this.targetTexWidth * ratio;
-    } else {
-      this.targetTexHeight = 256;
-      this.targetTexWidth = this.targetTexHeight * ratio;
-    }
-
-    this.playing = false;
-    this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
-    this.animTime = params.globalParams.animTime || 0;
-    this.frameCount = 0;
-
-    this.createShadersAndBuffers();
-    this.ramp = CreateGradientTexture2(gl, {
-      colors: this.colors,
-      resolution: 256,
-    });
-    this.ppb = new PingPongBuffer(gl, {
-      width: this.targetTexWidth,
-      height: this.targetTexHeight,
-    });
-  }
-
   setParams = (params) => {
     // Merge defaults with supplied parameters
 
@@ -157,7 +122,7 @@ export default class Aura {
 
     if (programAura == null || programFinal == null) return;
 
-    let now = time;
+    const now = time;
     const deltaTime = now - this.prevTimestamp;
 
     if (deltaTime > this.fixedDeltaTime) {
@@ -166,7 +131,7 @@ export default class Aura {
       this.globalParams.time = this.animTime * 0.001;
       this.prevTimestamp = now - (deltaTime % this.fixedDeltaTime);
 
-      let sinceStart = now - this.startTime;
+      const sinceStart = now - this.startTime;
       this.currFps =
         Math.round((1000 / (sinceStart / ++this.frameCount)) * 100) / 100;
 
@@ -201,11 +166,11 @@ export default class Aura {
       ppb.swap();
 
       // Blur stages
-      let iterations = this.blurSettings.iterations;
-      for (var i = 0; i < iterations; i++) {
+      const iterations = this.blurSettings.iterations;
+      for (let i = 0; i < iterations; i++) {
         // var radius = (iterations - i - 1)
-        let radius = this.blurSettings.radius;
-        var dir = i % 2 === 0 ? [radius, 0] : [0, radius];
+        const radius = this.blurSettings.radius;
+        const dir = i % 2 === 0 ? [radius, 0] : [0, radius];
 
         const blurUniforms = {
           resolution: [this.targetTexWidth, this.targetTexHeight],
@@ -229,7 +194,7 @@ export default class Aura {
           resolution: [gl.canvas.width, gl.canvas.height],
           backBuffer: ppb.lastTexture(),
           noiseDither: globalParams.noise,
-          ramp: ramp,
+          ramp,
           contrast: globalParams.contrast,
           saturation: globalParams.saturation,
           value: globalParams.value,
@@ -278,4 +243,40 @@ export default class Aura {
   pause = () => {
     this.playing = false;
   };
+
+  constructor(gl, params = {}) {
+    this.setParams(params);
+
+    this.colors = params.colors || defaults.colors;
+
+    this.gl = gl;
+    this.canvas = this.gl.canvas;
+    this.width = params.width || this.canvas.width;
+    this.height = params.height || this.canvas.height;
+
+    const ratio = this.width / this.height;
+
+    if (ratio > 1) {
+      this.targetTexWidth = 256;
+      this.targetTexHeight = this.targetTexWidth * ratio;
+    } else {
+      this.targetTexHeight = 256;
+      this.targetTexWidth = this.targetTexHeight * ratio;
+    }
+
+    this.playing = false;
+    this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
+    this.animTime = params.globalParams.animTime || 0;
+    this.frameCount = 0;
+
+    this.createShadersAndBuffers();
+    this.ramp = CreateGradientTexture2(gl, {
+      colors: this.colors,
+      resolution: 256,
+    });
+    this.ppb = new PingPongBuffer(gl, {
+      width: this.targetTexWidth,
+      height: this.targetTexHeight,
+    });
+  }
 }
