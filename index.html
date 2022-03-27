@@ -1,6 +1,7 @@
 <html>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
 
   <link id="favicon" rel="icon" type="image/png" href="favicon.png" />
 
@@ -21,13 +22,25 @@
     body {
       color: #101010;
       background: #fffbe7;
+      overflow: hidden;
     }
 
-    body,
-    button {
+    body {
       margin: 0;
       font-family: 'Lightward Favorit';
       font-weight: 200;
+    }
+
+    label,
+    img {
+      cursor: pointer;
+    }
+
+    canvas,
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
   </style>
 

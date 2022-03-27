@@ -1,7 +1,7 @@
 import * as twgl from 'twgl.js';
-import { FullScreenQuad } from './Geometry';
-import { FragGradientLab } from './shaders/Gradient';
-import { VertDefault } from './shaders/Shaders';
+import {FullScreenQuad} from './Geometry';
+import {FragGradientLab} from './shaders/Gradient';
+import {VertDefault} from './shaders/Shaders';
 
 let createTextureFromPixelArray = (gl, options) => {
   // return createSolidTexture(gl, 1, 0, 0)
@@ -18,7 +18,7 @@ let createTextureFromPixelArray = (gl, options) => {
 
   var dataTypedArray = new Float32Array(textureData);
   console.log(
-    `Create Texture. Width: ${width}, Height: ${height} dataLength: ${dataTypedArray.length}`
+    `Create Texture. Width: ${width}, Height: ${height} dataLength: ${dataTypedArray.length}`,
   );
 
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -31,7 +31,7 @@ let createTextureFromPixelArray = (gl, options) => {
     0,
     gl.RGBA,
     gl.FLOAT,
-    dataTypedArray
+    dataTypedArray,
   );
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -73,7 +73,7 @@ let CreateGradientTexture = (gl, options) => {
     from = to;
     to = colors[i];
     gradData = gradData.concat(
-      from.steps(to, { space: space, outputSpace: outputSpace, steps: steps })
+      from.steps(to, {space: space, outputSpace: outputSpace, steps: steps}),
     );
   }
 
@@ -89,7 +89,7 @@ let CreateGradientTexture = (gl, options) => {
   });
 };
 
-let CreateGradientTexture2 = (gl, options) => {
+let CreateGradientTexture2 = (gl: WebGL2RenderingContext, options) => {
   let width = options.resolution ?? 256;
   let height = options.height ?? 256;
   let colors = options.colors ?? [
@@ -117,7 +117,7 @@ let CreateGradientTexture2 = (gl, options) => {
     0,
     gl.RGB,
     gl.UNSIGNED_BYTE,
-    null
+    null,
   );
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -134,7 +134,7 @@ let CreateGradientTexture2 = (gl, options) => {
     attachmentPoint,
     gl.TEXTURE_2D,
     gradTex,
-    0
+    0,
   );
 
   gl.useProgram(gradShader.program);
@@ -151,4 +151,4 @@ let CreateGradientTexture2 = (gl, options) => {
   return gradTex;
 };
 
-export { CreateGradientTexture, CreateGradientTexture2 };
+export {CreateGradientTexture, CreateGradientTexture2};

@@ -22,7 +22,7 @@ const initialParams = {
   width: window.innerWidth,
   height: window.innerHeight,
   globalParams: {
-    animTime: 121967,
+    animTime: 0,
     contrast: 1.37,
     displayGradient: false,
     feedback: 0.99,
@@ -31,7 +31,7 @@ const initialParams = {
     seed: 7103,
     speed: 0.13,
     targetFps: 60,
-    time: 125.57453915533651,
+    time: 0,
     value: 1,
   },
   layer1: {
@@ -56,8 +56,8 @@ const initialParams = {
     scaleY: 1.01,
   },
   blurSettings: {
-    iterations: 16,
-    radius: 4,
+    iterations: 5,
+    radius: 10,
   },
 };
 
@@ -65,6 +65,8 @@ const Ui = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [aura, setAura] = useState<Aura>();
+  const [auraPlaying, setAuraPlaying] = useState(false);
+  const [auraImage, setAuraImage] = useState<string>();
 
   useLayoutEffect(() => {
     const gl = canvasRef.current?.getContext('webgl2', {
@@ -82,6 +84,19 @@ const Ui = () => {
     auraInstance.start();
   }, []);
 
+  const syncState = useCallback(() => {
+    if (!aura) {
+      return;
+    }
+
+    setAuraPlaying(aura.playing);
+  }, [aura]);
+
+  useEffect(() => {
+    const interval = setInterval(syncState, 100);
+    return () => clearInterval(interval);
+  }, [syncState]);
+
   useEffect(() => {
     window.aura = aura;
   }, [aura]);
@@ -94,12 +109,32 @@ const Ui = () => {
     aura.playing ? aura.pause() : aura.play();
   }, [aura]);
 
+  useEffect(() => {
+    if (!aura) {
+      return;
+    }
+
+    if (auraPlaying) {
+      setAuraImage(undefined);
+    } else {
+      setAuraImage(aura.canvas.toDataURL());
+    }
+  }, [auraPlaying]);
+
   return (
     <>
-      <label>
-        <canvas ref={canvasRef} />
-      </label>
-      <button onClick={playPause}>Play/pause</button>
+      <div id="aura" onScroll={() => console.log('scrolling')}>
+        <label onClick={playPause}>
+          <canvas
+            ref={canvasRef}
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+          />
+        </label>
+        {auraImage && <img src={auraImage} onClick={playPause} />}
+      </div>
     </>
   );
 };

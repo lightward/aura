@@ -1,88 +1,52 @@
 import * as twgl from 'twgl.js';
-
-import { CreateGradientTexture2 } from './Gradient';
+import {FullScreenQuad} from './Geometry';
+import {CreateGradientTexture2} from './Gradient';
 import PingPongBuffer from './PingPongBuffer';
-import VertDefault from './shaders/VertDefault';
 import FragAura from './shaders/FragAura';
-import { FullScreenQuad } from './Geometry';
 import FragComp from './shaders/FragComp';
-import { FragBlur } from './shaders/include/FragBlur';
-
-const defaults = {
-  globalParams: {
-    time: 0,
-    speed: 0.21,
-    seed: 100,
-    noise: 0.003,
-    targetFps: 60,
-    saturation: 1,
-    contrast: 1,
-    value: 1,
-    displayGradient: false,
-  },
-  layer1: {
-    brightness: 0.87,
-    blobbyness: 1.2,
-    blur: 1.47,
-    enabled: true,
-  },
-  layer2: {
-    brightness: 1,
-    enabled: true,
-    cycleSpeed: 0.2,
-  },
-  colors: [
-    [0, 0, 0],
-    [32, 70, 95],
-    [48, 64, 92],
-    [111, 200, 111],
-    [220, 91, 172],
-    [253, 205, 0],
-  ],
-  feedbackSettings: {
-    amount: 0.4,
-    scaleX: 1.01,
-    scaleY: 1.01,
-    centerX: 0.5,
-    centerY: 0.5,
-    dist: 0.05,
-  },
-  blurSettings: {
-    iterations: 8,
-    radius: 1,
-  },
-};
+import {FragBlur} from './shaders/include/FragBlur';
+import VertDefault from './shaders/VertDefault';
 
 export default class Aura {
+  gl: WebGL2RenderingContext;
+  canvas: HTMLCanvasElement;
+  width: number;
+  height: number;
+
+  animTime: number;
+  frameCount: number;
+  playing: boolean;
+
+  ppb: PingPongBuffer;
+  ramp: WebGLTexture;
+
+  targetTexWidth: number;
+  targetTexHeight: number;
+
   setParams = (params) => {
     // Merge defaults with supplied parameters
 
     this.layer1Params = {
-      ...defaults.layer1Params,
       ...this.layer1Params,
       ...params.layer1,
     };
 
     this.globalParams = {
-      ...defaults.globalParams,
       ...this.globalParams,
       ...params.globalParams,
     };
 
     this.layer2Params = {
-      ...defaults.layer2Params,
       ...this.layer2Params,
       ...params.layer2,
     };
 
     this.feedbackSettings = {
-      ...defaults.feedbackSettings,
       ...this.feedbackSettings,
       ...params.feedbackSettings,
     };
 
     this.blurSettings = {
-      ...defaults.blurSettings,
       ...this.blurSettings,
       ...params.blurSettings,
     };
@@ -91,7 +55,7 @@ export default class Aura {
   };
 
   createShadersAndBuffers = () => {
-    const { gl } = this;
+    const {gl} = this;
 
     this.programAura =
       this.programAura ??
@@ -106,19 +70,12 @@ export default class Aura {
       this.bufferInfo ?? twgl.createBuffersFromArrays(gl, FullScreenQuad);
   };
 
-  render = (time) => {
+  render = (time: DOMHighResTimeStamp) => {
     requestAnimationFrame(this.render);
     this.createShadersAndBuffers();
 
-    const {
-      gl,
-      ppb,
-      globalParams,
-      ramp,
-      programAura,
-      programFinal,
-      bufferInfo,
-    } = this;
+    const {gl, ppb, globalParams, ramp, programAura, programFinal, bufferInfo} =
+      this;
 
     if (programAura == null || programFinal == null) return;
 
@@ -224,10 +181,6 @@ export default class Aura {
     this.render();
   };
 
-  setTime = (time) => {
-    this.animTime = time;
-  };
-
   setSeed = (seed) => {
     this.setParams({
       globalParams: {
@@ -244,7 +197,7 @@ export default class Aura {
     this.playing = false;
   };
 
-  constructor(gl, params = {}) {
+  constructor(gl: WebGL2RenderingContext, params = {}) {
     this.setParams(params);
 
     this.colors = params.colors || defaults.colors;
