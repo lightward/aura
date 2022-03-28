@@ -31,16 +31,36 @@
       font-weight: 200;
     }
 
-    label,
-    img {
-      cursor: pointer;
-    }
-
     canvas,
     img {
+      cursor: pointer;
       position: absolute;
       top: 0;
       left: 0;
+    }
+
+    canvas {
+      z-index: 1;
+    }
+
+    img {
+      z-index: 2;
+    }
+
+    #label {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 3;
+    }
+
+    #label a {
+      display: inline-block;
+      background: #101010;
+      border-radius: 2px;
+      color: #fffbe7;
+      text-decoration: underline;
+      padding: 4px 8px;
     }
   </style>
 
