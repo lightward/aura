@@ -6,23 +6,24 @@ import React, {
   useState,
 } from 'react';
 import ReactDOM from 'react-dom';
-import Aura from './Aura';
+import Aura, {AuraColor, AuraParams} from './Aura';
 
 declare let window: Window &
   typeof globalThis & {
     aura: undefined | Aura;
   };
 
-const eclipse = [48, 64, 92];
-const pink = [220, 91, 172];
-const seaFoam = [111, 200, 111];
-const golden = [253, 205, 0];
+const eclipse: AuraColor = [48, 64, 92];
+const pink: AuraColor = [220, 91, 172];
+const seaFoam: AuraColor = [111, 200, 111];
+const golden: AuraColor = [253, 205, 0];
 
-const initialParams = {
+const initialParams: AuraParams = {
   width: window.innerWidth,
   height: window.innerHeight,
   animTime: 0,
   seed: 7103,
+  colors: [eclipse, pink, eclipse, seaFoam, golden],
 
   globalParams: {
     contrast: 1.37,
@@ -34,19 +35,18 @@ const initialParams = {
     targetFps: 60,
     value: 1,
   },
-  layer1: {
+  layer1Params: {
     blobbyness: 1.3,
     blur: 1.01,
     brightness: 0.52,
     enabled: true,
   },
-  layer2: {
+  layer2Params: {
     blur: 1.47,
     brightness: 0.39,
     cycleSpeed: 0.12,
     enabled: true,
   },
-  colors: [eclipse, pink, eclipse, seaFoam, golden],
   feedbackSettings: {
     amount: 0.28,
     centerX: 0.5,

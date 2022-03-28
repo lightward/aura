@@ -7,72 +7,151 @@ import FragComp from './shaders/FragComp';
 import {FragBlur} from './shaders/include/FragBlur';
 import VertDefault from './shaders/VertDefault';
 
+export type AuraColor = [r: number, g: number, b: number];
+
+export interface AuraParams {
+  width: number;
+  height: number;
+  animTime: number;
+  seed: number;
+  colors: AuraColor[];
+
+  globalParams: {
+    contrast: number;
+    displayGradient: boolean;
+    feedback: number;
+    noise: number;
+    saturation: number;
+    speed: number;
+    targetFps: number;
+    value: number;
+  };
+  layer1Params: {
+    blobbyness: number;
+    blur: number;
+    brightness: number;
+    enabled: boolean;
+  };
+  layer2Params: {
+    blur: number;
+    brightness: number;
+    cycleSpeed: number;
+    enabled: boolean;
+  };
+  feedbackSettings: {
+    amount: number;
+    centerX: number;
+    centerY: number;
+    dist: number;
+    scaleX: number;
+    scaleY: number;
+  };
+  blurSettings: {
+    iterations: number;
+    radius: number;
+  };
+}
+
 export default class Aura {
   gl: WebGL2RenderingContext;
   canvas: HTMLCanvasElement;
-  width: number;
-  height: number;
+
+  width: AuraParams['width'];
+  height: AuraParams['height'];
+  animTime: AuraParams['animTime'];
+  seed: AuraParams['seed'];
+  colors: AuraParams['colors'];
+  globalParams: AuraParams['globalParams'];
+  layer1Params: AuraParams['layer1Params'];
+  layer2Params: AuraParams['layer2Params'];
+  feedbackSettings: AuraParams['feedbackSettings'];
+  blurSettings: AuraParams['blurSettings'];
 
   started: boolean;
-  startTime?: DOMHighResTimeStamp;
-  prevTimestamp?: DOMHighResTimeStamp;
-  animTime: number;
-  seed: number;
+  fixedDeltaTime: number;
+  startTime: DOMHighResTimeStamp;
+  prevTimestamp: DOMHighResTimeStamp;
   frameCount: number;
   playing: boolean;
+  currFps?: number;
 
   ppb: PingPongBuffer;
-  ramp: WebGLTexture;
+  ramp: WebGLTexture | null;
 
   targetTexWidth: number;
   targetTexHeight: number;
 
-  setParams = (params) => {
-    // Merge defaults with supplied parameters
+  programAura: twgl.ProgramInfo;
+  programFinal: twgl.ProgramInfo;
+  programBlur: twgl.ProgramInfo;
+  bufferInfo: twgl.BufferInfo;
 
-    this.layer1Params = {
-      ...this.layer1Params,
-      ...params.layer1,
-    };
+  constructor(
+    gl: WebGL2RenderingContext,
+    {
+      animTime,
+      seed,
+      colors,
+      layer1Params,
+      globalParams,
+      layer2Params,
+      feedbackSettings,
+      blurSettings,
+      width,
+      height,
+    }: AuraParams,
+  ) {
+    this.started = false;
 
-    this.globalParams = {
-      ...this.globalParams,
-      ...params.globalParams,
-    };
+    this.globalParams = globalParams;
+    this.layer1Params = layer1Params;
+    this.layer2Params = layer2Params;
+    this.feedbackSettings = feedbackSettings;
+    this.blurSettings = blurSettings;
 
-    this.layer2Params = {
-      ...this.layer2Params,
-      ...params.layer2,
-    };
+    this.animTime = animTime;
+    this.colors = colors;
 
-    this.feedbackSettings = {
-      ...this.feedbackSettings,
-      ...params.feedbackSettings,
-    };
+    this.gl = gl;
+    this.canvas = this.gl.canvas;
+    this.width = width;
+    this.height = height;
 
-    this.blurSettings = {
-      ...this.blurSettings,
-      ...params.blurSettings,
-    };
+    this.startTime = this.prevTimestamp = window.performance.now();
 
-    this.animTime = this.globalParams.animTime;
-  };
+    const ratio = this.width / this.height;
 
-  createShadersAndBuffers = () => {
-    const {gl} = this;
+    if (ratio > 1) {
+      this.targetTexWidth = 256;
+      this.targetTexHeight = this.targetTexWidth * ratio;
+    } else {
+      this.targetTexHeight = 256;
+      this.targetTexWidth = this.targetTexHeight * ratio;
+    }
 
-    this.programAura =
-      this.programAura ??
-      twgl.createProgramInfo(this.gl, [VertDefault, FragAura]);
-    this.programFinal =
-      this.programFinal ??
-      twgl.createProgramInfo(this.gl, [VertDefault, FragComp]);
-    this.programBlur =
-      this.programBlur ??
-      twgl.createProgramInfo(this.gl, [VertDefault, FragBlur]);
-    this.bufferInfo =
-      this.bufferInfo ?? twgl.createBuffersFromArrays(gl, FullScreenQuad);
-  };
+    this.playing = false;
+    this.fixedDeltaTime = 1000 / globalParams.targetFps;
+    this.seed = seed;
+    this.frameCount = 0;
+
+    this.programAura = twgl.createProgramInfo(this.gl, [VertDefault, FragAura]);
+    this.programFinal = twgl.createProgramInfo(this.gl, [
+      VertDefault,
+      FragComp,
+    ]);
+    this.programBlur = twgl.createProgramInfo(this.gl, [VertDefault, FragBlur]);
+    this.bufferInfo = twgl.createBufferInfoFromArrays(gl, FullScreenQuad);
+
+    this.ramp = CreateGradientTexture2(gl, {
+      colors: this.colors,
+      resolution: 256,
+    });
+
+    this.ppb = new PingPongBuffer(gl, {
+      width: this.targetTexWidth,
+      height: this.targetTexHeight,
+    });
+  }
 
   renderLoop = (now: DOMHighResTimeStamp) => {
     requestAnimationFrame(this.renderLoop);
@@ -190,43 +269,4 @@ export default class Aura {
   pause = () => {
     this.playing = false;
   };
-
-  constructor(gl: WebGL2RenderingContext, params = {}) {
-    this.started = false;
-
-    this.setParams(params);
-
-    this.colors = params.colors || defaults.colors;
-
-    this.gl = gl;
-    this.canvas = this.gl.canvas;
-    this.width = params.width || this.canvas.width;
-    this.height = params.height || this.canvas.height;
-
-    const ratio = this.width / this.height;
-
-    if (ratio > 1) {
-      this.targetTexWidth = 256;
-      this.targetTexHeight = this.targetTexWidth * ratio;
-    } else {
-      this.targetTexHeight = 256;
-      this.targetTexWidth = this.targetTexHeight * ratio;
-    }
-
-    this.playing = false;
-    this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
-    this.animTime = params.animTime || 0;
-    this.seed = params.seed || 0;
-    this.frameCount = 0;
-
-    this.createShadersAndBuffers();
-    this.ramp = CreateGradientTexture2(gl, {
-      colors: this.colors,
-      resolution: 256,
-    });
-    this.ppb = new PingPongBuffer(gl, {
-      width: this.targetTexWidth,
-      height: this.targetTexHeight,
-    });
-  }
 }
