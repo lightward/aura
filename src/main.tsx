@@ -21,17 +21,17 @@ const golden = [253, 205, 0];
 const initialParams = {
   width: window.innerWidth,
   height: window.innerHeight,
+  animTime: 0,
+  seed: 7103,
+
   globalParams: {
-    animTime: 0,
     contrast: 1.37,
     displayGradient: false,
     feedback: 0.99,
     noise: 0,
     saturation: 1.69,
-    seed: 7103,
     speed: 0.13,
     targetFps: 60,
-    time: 0,
     value: 1,
   },
   layer1: {
@@ -67,6 +67,7 @@ const Ui = () => {
   const [aura, setAura] = useState<Aura>();
   const [auraPlaying, setAuraPlaying] = useState(false);
   const [auraImage, setAuraImage] = useState<string>();
+  const [auraLabel, setAuraLabel] = useState<string>();
 
   useLayoutEffect(() => {
     const gl = canvasRef.current?.getContext('webgl2', {
@@ -77,11 +78,31 @@ const Ui = () => {
       return;
     }
 
-    const auraInstance = new Aura(gl, initialParams);
+    const queryParams = new URLSearchParams(window.location.search);
+
+    const params = {...initialParams};
+
+    if (queryParams.has('time')) {
+      const timeString = queryParams.get('time');
+
+      if (timeString) {
+        params.animTime = parseFloat(timeString);
+      }
+    }
+
+    if (queryParams.has('seed')) {
+      const seedString = queryParams.get('seed');
+
+      if (seedString) {
+        params.seed = parseInt(seedString, 10);
+      }
+    }
+
+    const auraInstance = new Aura(gl, params);
 
     setAura(auraInstance);
 
-    auraInstance.start();
+    auraInstance.start(!queryParams.has('seed') && !queryParams.has('time'));
   }, []);
 
   const syncState = useCallback(() => {
@@ -90,6 +111,7 @@ const Ui = () => {
     }
 
     setAuraPlaying(aura.playing);
+    setAuraLabel(`${aura.seed}x${Math.round(aura.animTime)}`);
   }, [aura]);
 
   useEffect(() => {
@@ -102,12 +124,34 @@ const Ui = () => {
   }, [aura]);
 
   const playPause = useCallback(() => {
-    if (!aura) {
-      return;
-    }
+    if (!aura) return;
 
     aura.playing ? aura.pause() : aura.play();
   }, [aura]);
+
+  const onDocumentKeydown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!aura) return;
+
+      switch (event.key) {
+        case ' ':
+          playPause();
+          return;
+        case 'ArrowRight':
+          aura.animTime += 100;
+          return;
+        case 'ArrowLeft':
+          aura.animTime -= 100;
+          return;
+      }
+    },
+    [aura, playPause],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', onDocumentKeydown);
+    return () => document.removeEventListener('keydown', onDocumentKeydown);
+  }, [onDocumentKeydown]);
 
   useEffect(() => {
     if (!aura) {
@@ -124,17 +168,26 @@ const Ui = () => {
   return (
     <>
       <div id="aura" onScroll={() => console.log('scrolling')}>
-        <label onClick={playPause}>
-          <canvas
-            ref={canvasRef}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          />
-        </label>
+        <canvas
+          ref={canvasRef}
+          onClick={playPause}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+        />
         {auraImage && <img src={auraImage} onClick={playPause} />}
       </div>
+      {!auraPlaying && (
+        <div id="label">
+          <a
+            href={`?seed=${aura?.seed}&time=${aura?.animTime}`}
+            target="_blank"
+          >
+            {auraLabel}
+          </a>
+        </div>
+      )}
     </>
   );
 };

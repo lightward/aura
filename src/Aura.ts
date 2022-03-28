@@ -13,7 +13,11 @@ export default class Aura {
   width: number;
   height: number;
 
+  started: boolean;
+  startTime?: DOMHighResTimeStamp;
+  prevTimestamp?: DOMHighResTimeStamp;
   animTime: number;
+  seed: number;
   frameCount: number;
   playing: boolean;
 
@@ -70,126 +74,116 @@ export default class Aura {
       this.bufferInfo ?? twgl.createBuffersFromArrays(gl, FullScreenQuad);
   };
 
-  render = (time: DOMHighResTimeStamp) => {
-    requestAnimationFrame(this.render);
-    this.createShadersAndBuffers();
+  renderLoop = (now: DOMHighResTimeStamp) => {
+    requestAnimationFrame(this.renderLoop);
+    this.render(now);
+  };
 
+  render = (now: DOMHighResTimeStamp) => {
     const {gl, ppb, globalParams, ramp, programAura, programFinal, bufferInfo} =
       this;
 
     if (programAura == null || programFinal == null) return;
 
-    const now = time;
-    const deltaTime = now - this.prevTimestamp;
+    if (this.playing) {
+      const deltaTime = now - this.prevTimestamp;
 
-    if (deltaTime > this.fixedDeltaTime) {
-      if (this.playing) this.animTime += deltaTime * this.globalParams.speed;
+      if (deltaTime <= this.fixedDeltaTime) {
+        return;
+      }
 
-      this.globalParams.time = this.animTime * 0.001;
+      this.animTime += deltaTime * this.globalParams.speed;
       this.prevTimestamp = now - (deltaTime % this.fixedDeltaTime);
 
       const sinceStart = now - this.startTime;
       this.currFps =
         Math.round((1000 / (sinceStart / ++this.frameCount)) * 100) / 100;
+    }
 
-      twgl.resizeCanvasToDisplaySize(this.gl.canvas);
-      const auraUniforms = {
-        time: [
-          this.globalParams.time,
-          this.globalParams.time / 2,
-          this.globalParams.time * 2,
-          this.globalParams.time * 10,
-        ],
+    const time = this.animTime * 0.001;
+
+    twgl.resizeCanvasToDisplaySize(this.gl.canvas);
+    const auraUniforms = {
+      time: [time, time / 2, time * 2, time * 10],
+      resolution: [this.targetTexWidth, this.targetTexHeight],
+      ramp: this.ramp,
+      layer1: this.layer1Params,
+      layer2: this.layer2Params,
+      feedback: this.feedbackSettings,
+      noiseDither: this.globalParams.noise,
+      backBufferTex: this.ppb.lastTexture(),
+      seed: this.seed,
+    };
+
+    // Render new Aura frame
+    ppb.bind();
+
+    gl.useProgram(programAura.program);
+
+    twgl.setBuffersAndAttributes(gl, programAura, bufferInfo);
+    twgl.setUniforms(programAura, auraUniforms);
+    twgl.drawBufferInfo(gl, bufferInfo);
+
+    // Swap buffers
+    ppb.swap();
+
+    // Blur stages
+    const iterations = this.blurSettings.iterations;
+    for (let i = 0; i < iterations; i++) {
+      // var radius = (iterations - i - 1)
+      const radius = this.blurSettings.radius;
+      const dir = i % 2 === 0 ? [radius, 0] : [0, radius];
+
+      const blurUniforms = {
         resolution: [this.targetTexWidth, this.targetTexHeight],
-        ramp: this.ramp,
-        layer1: this.layer1Params,
-        layer2: this.layer2Params,
-        feedback: this.feedbackSettings,
-        noiseDither: this.globalParams.noise,
-        backBufferTex: this.ppb.lastTexture(),
-        seed: this.globalParams.seed,
+        iChannel0: ppb.lastTexture(),
+        direction: dir,
       };
 
-      // Render new Aura frame
       ppb.bind();
 
-      gl.useProgram(programAura.program);
-
-      twgl.setBuffersAndAttributes(gl, programAura, bufferInfo);
-      twgl.setUniforms(programAura, auraUniforms);
+      gl.useProgram(this.programBlur.program);
+      twgl.setBuffersAndAttributes(gl, this.programBlur, bufferInfo);
+      twgl.setUniforms(this.programBlur, blurUniforms);
       twgl.drawBufferInfo(gl, bufferInfo);
 
-      // Swap buffers
       ppb.swap();
-
-      // Blur stages
-      const iterations = this.blurSettings.iterations;
-      for (let i = 0; i < iterations; i++) {
-        // var radius = (iterations - i - 1)
-        const radius = this.blurSettings.radius;
-        const dir = i % 2 === 0 ? [radius, 0] : [0, radius];
-
-        const blurUniforms = {
-          resolution: [this.targetTexWidth, this.targetTexHeight],
-          iChannel0: ppb.lastTexture(),
-          direction: dir,
-        };
-
-        ppb.bind();
-
-        gl.useProgram(this.programBlur.program);
-        twgl.setBuffersAndAttributes(gl, this.programBlur, bufferInfo);
-        twgl.setUniforms(this.programBlur, blurUniforms);
-        twgl.drawBufferInfo(gl, bufferInfo);
-
-        ppb.swap();
-      }
-
-      // Render to screen
-      {
-        const compUniforms = {
-          resolution: [gl.canvas.width, gl.canvas.height],
-          backBuffer: ppb.lastTexture(),
-          noiseDither: globalParams.noise,
-          ramp,
-          contrast: globalParams.contrast,
-          saturation: globalParams.saturation,
-          value: globalParams.value,
-          displayGradient: globalParams.displayGradient,
-        };
-
-        // Set dst buffer back to screen
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        gl.useProgram(programFinal.program);
-        twgl.setBuffersAndAttributes(gl, programFinal, bufferInfo);
-        twgl.setUniforms(programFinal, compUniforms);
-        twgl.drawBufferInfo(gl, bufferInfo);
-
-        ppb.swap();
-      }
     }
+
+    // Render to screen
+
+    const compUniforms = {
+      resolution: [gl.canvas.width, gl.canvas.height],
+      backBuffer: ppb.lastTexture(),
+      noiseDither: globalParams.noise,
+      ramp,
+      contrast: globalParams.contrast,
+      saturation: globalParams.saturation,
+      value: globalParams.value,
+      displayGradient: globalParams.displayGradient,
+    };
+
+    // Set dst buffer back to screen
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.useProgram(programFinal.program);
+    twgl.setBuffersAndAttributes(gl, programFinal, bufferInfo);
+    twgl.setUniforms(programFinal, compUniforms);
+    twgl.drawBufferInfo(gl, bufferInfo);
+
+    ppb.swap();
   };
 
   start = (play = true) => {
     if (this.started) return;
 
     this.started = true;
-    this.prevTimestamp = window.performance.now();
-    this.startTime = this.prevTimestamp;
-    if (play) this.playing = true;
-    this.render();
-  };
-
-  setSeed = (seed) => {
-    this.setParams({
-      globalParams: {
-        seed,
-      },
-    });
+    if (play) this.play();
+    this.renderLoop(window.performance.now());
   };
 
   play = () => {
+    this.startTime = this.prevTimestamp = window.performance.now();
     this.playing = true;
   };
 
@@ -198,6 +192,8 @@ export default class Aura {
   };
 
   constructor(gl: WebGL2RenderingContext, params = {}) {
+    this.started = false;
+
     this.setParams(params);
 
     this.colors = params.colors || defaults.colors;
@@ -219,7 +215,8 @@ export default class Aura {
 
     this.playing = false;
     this.fixedDeltaTime = 1000 / this.globalParams.targetFps;
-    this.animTime = params.globalParams.animTime || 0;
+    this.animTime = params.animTime || 0;
+    this.seed = params.seed || 0;
     this.frameCount = 0;
 
     this.createShadersAndBuffers();
