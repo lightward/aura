@@ -29,7 +29,7 @@ const initialParams: AuraParams = {
     contrast: 1.37,
     displayGradient: false,
     feedback: 0.99,
-    noise: 0,
+    noise: 0.5,
     saturation: 1.69,
     speed: 0.13,
     targetFps: 60,
@@ -57,7 +57,7 @@ const initialParams: AuraParams = {
   },
   blurSettings: {
     iterations: 5,
-    radius: 10,
+    radius: 5,
   },
 };
 
@@ -68,6 +68,7 @@ const Ui = () => {
   const [auraPlaying, setAuraPlaying] = useState(false);
   const [auraImage, setAuraImage] = useState<string>();
   const [auraLabel, setAuraLabel] = useState<string>();
+  const [stateUrl, setStateUrl] = useState<string>();
 
   useLayoutEffect(() => {
     const gl = canvasRef.current?.getContext('webgl2', {
@@ -112,6 +113,7 @@ const Ui = () => {
 
     setAuraPlaying(aura.playing);
     setAuraLabel(`${aura.seed}x${Math.round(aura.animTime)}`);
+    setStateUrl(`?seed=${aura?.seed}&time=${aura?.animTime}`);
   }, [aura]);
 
   useEffect(() => {
@@ -126,8 +128,13 @@ const Ui = () => {
   const playPause = useCallback(() => {
     if (!aura) return;
 
-    aura.playing ? aura.pause() : aura.play();
-  }, [aura]);
+    if (aura.playing) {
+      aura.pause();
+      history.pushState({}, '', stateUrl);
+    } else {
+      aura.play();
+    }
+  }, [aura, stateUrl]);
 
   const onDocumentKeydown = useCallback(
     (event: KeyboardEvent) => {
@@ -180,10 +187,7 @@ const Ui = () => {
       </div>
       {!auraPlaying && (
         <div id="label">
-          <a
-            href={`?seed=${aura?.seed}&time=${aura?.animTime}`}
-            target="_blank"
-          >
+          <a href={stateUrl} target="_blank">
             {auraLabel}
           </a>
         </div>

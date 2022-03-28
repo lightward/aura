@@ -1,4 +1,4 @@
-import { Kernel_9 } from './blur/Blur';
+import {Kernel_13} from './blur/Blur';
 
 let FragBlur = `
 #version 300 es
@@ -14,7 +14,7 @@ uniform sampler2D iChannel0;
 uniform vec2 direction;
 out vec4 FragColor;
 
-${Kernel_9}
+${Kernel_13}
 
 
 void main(){
@@ -24,4 +24,4 @@ void main(){
 }
 `;
 
-export { FragBlur };
+export {FragBlur};
