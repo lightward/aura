@@ -21,8 +21,9 @@ const golden: AuraColor = [253, 205, 0];
 const initialParams: AuraParams = {
   width: window.innerWidth,
   height: window.innerHeight,
-  animTime: 0,
-  seed: 7103,
+  animTime: Math.random() * 9999,
+  // seed: 7103,
+  seed: Math.round(Math.random() * 9999),
   colors: [eclipse, pink, eclipse, seaFoam, golden],
 
   globalParams: {
@@ -172,6 +173,13 @@ const Ui = () => {
     }
   }, [auraPlaying]);
 
+  useEffect(() => {
+    setTimeout(
+      () => document.getElementById('controls')?.classList.add('hide'),
+      2500,
+    );
+  }, []);
+
   return (
     <>
       <div id="aura" onScroll={() => console.log('scrolling')}>
@@ -192,6 +200,19 @@ const Ui = () => {
           </a>
         </div>
       )}
+      <div id="controls">
+        <h1>Lightward Aura</h1>
+        <table>
+          <tr>
+            <th>[space]</th>
+            <td>play/pause</td>
+          </tr>
+          <tr>
+            <th>[left/right]</th>
+            <td>back/forward</td>
+          </tr>
+        </table>
+      </div>
     </>
   );
 };

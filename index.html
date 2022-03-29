@@ -16,6 +16,10 @@
     rel="stylesheet"
     href="https://fonts.lightward.io/lightward-favorit.css"
   />
+  <link
+    rel="stylesheet"
+    href="https://fonts.lightward.io/lightward-favorit-expanded.css"
+  />
 
   <style>
     html,
@@ -47,6 +51,11 @@
       z-index: 2;
     }
 
+    #label,
+    #controls {
+      mix-blend-mode: hard-light;
+    }
+
     #label {
       position: absolute;
       bottom: 20px;
@@ -57,10 +66,49 @@
     #label a {
       display: inline-block;
       background: #101010;
-      border-radius: 2px;
+      border-radius: 5px;
       color: #fffbe7;
       text-decoration: underline;
       padding: 4px 8px;
+    }
+
+    #controls {
+      background: #101010;
+      border-radius: 5px;
+      left: 10vw;
+      top: 10vh;
+      position: absolute;
+      z-index: 4;
+      padding: 10px 55px 10px 15px;
+
+      opacity: 1;
+      transition: opacity 2s cubic-bezier(0.61, 1, 0.88, 1);
+    }
+
+    #controls h1 {
+      padding: 0;
+      margin: 0 0 10px;
+      font-family: 'Lightward Favorit Expanded';
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: #fffbe7;
+      font-weight: 200;
+    }
+
+    #controls.hide {
+      opacity: 0;
+    }
+
+    #controls table {
+      width: 100%;
+      border-spacing: 10px;
+      border-collapse: collapse;
+    }
+
+    #controls td,
+    #controls th {
+      color: #fffbe7;
+      text-align: left;
     }
   </style>
 
