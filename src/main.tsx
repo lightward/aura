@@ -98,6 +98,17 @@ const Ui = () => {
     auraInstance.start();
     setAura(auraInstance);
 
+    setTimeout(() => {
+      canvasRef.current?.toBlob((blob) => {
+        if (!blob) return;
+
+        const url = URL.createObjectURL(blob);
+        const favicon = document.getElementById('favicon') as HTMLLinkElement;
+
+        if (favicon) favicon.href = url;
+      }, 'image/png');
+    }, 100);
+
     history.pushState(
       {},
       '',
