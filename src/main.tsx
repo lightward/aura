@@ -3,11 +3,16 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import ReactDOM from 'react-dom';
 import Aura, {AuraColor, AuraParams} from './Aura';
+
+type QueryParams = Partial<
+  Pick<AuraParams, 'animTime' | 'seed' | 'width' | 'height'>
+>;
 
 declare let window: Window &
   typeof globalThis & {
@@ -18,14 +23,15 @@ const eclipse: AuraColor = [48, 64, 92];
 const pink: AuraColor = [220, 91, 172];
 const seaFoam: AuraColor = [111, 200, 111];
 const golden: AuraColor = [253, 205, 0];
+const ketchup: AuraColor = [214, 50, 48];
+const cerulean: AuraColor = [58, 174, 216];
 
 const initialParams: AuraParams = {
   width: window.innerWidth,
   height: window.innerHeight,
   animTime: Math.random() * 9999,
-  // seed: 7103,
   seed: Math.round(Math.random() * 9999),
-  colors: [eclipse, pink, eclipse, seaFoam, golden],
+  colors: [eclipse, pink, seaFoam, golden, ketchup, cerulean],
 
   globalParams: {
     contrast: 1.37,
@@ -66,46 +72,81 @@ const initialParams: AuraParams = {
 const Ui = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [gl, setGl] = useState<WebGL2RenderingContext>();
+  const [queryParams, setQueryParams] = useState<QueryParams>();
   const [aura, setAura] = useState<Aura>();
   const [auraPlaying, setAuraPlaying] = useState(false);
   const [auraImage, setAuraImage] = useState<string>();
   const [auraLabel, setAuraLabel] = useState<string>();
   const [stateUrl, setStateUrl] = useState<string>();
 
+  const auraParams = useMemo(() => {
+    return {
+      ...initialParams,
+      ...queryParams,
+    };
+  }, [queryParams]);
+
+  useEffect(() => {
+    if (!gl || !auraParams || !queryParams) {
+      return () => {};
+    }
+
+    console.log('constructing aura', auraParams);
+    const auraInstance = new Aura(gl, auraParams);
+    auraInstance.start();
+    setAura(auraInstance);
+
+    history.pushState(
+      {},
+      '',
+      `?seed=${auraParams.seed}&time=${auraParams.animTime}`,
+    );
+
+    return () => {
+      auraInstance.shutdown();
+    };
+  }, [gl, auraParams]);
+
   useLayoutEffect(() => {
     const gl = canvasRef.current?.getContext('webgl2', {
       preserveDrawingBuffer: true,
     });
 
-    if (!gl) {
-      return;
+    if (gl) setGl(gl);
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const queryParams: QueryParams = {};
+
+    if (searchParams.has('size')) {
+      const sizes = searchParams
+        .get('size')
+        ?.split('x')
+        .map((n) => parseInt(n, 10));
+
+      if (sizes?.length === 2) {
+        queryParams.width = sizes[0];
+        queryParams.height = sizes[1];
+      }
     }
 
-    const queryParams = new URLSearchParams(window.location.search);
-
-    const params = {...initialParams};
-
-    if (queryParams.has('time')) {
-      const timeString = queryParams.get('time');
+    if (searchParams.has('time')) {
+      const timeString = searchParams.get('time');
 
       if (timeString) {
-        params.animTime = parseFloat(timeString);
+        queryParams.animTime = parseFloat(timeString);
       }
     }
 
-    if (queryParams.has('seed')) {
-      const seedString = queryParams.get('seed');
+    if (searchParams.has('seed')) {
+      const seedString = searchParams.get('seed');
 
       if (seedString) {
-        params.seed = parseInt(seedString, 10);
+        queryParams.seed = parseInt(seedString, 10);
       }
     }
 
-    const auraInstance = new Aura(gl, params);
-
-    setAura(auraInstance);
-
-    auraInstance.start(!queryParams.has('seed') && !queryParams.has('time'));
+    setQueryParams(queryParams);
   }, []);
 
   const syncState = useCallback(() => {
@@ -146,10 +187,11 @@ const Ui = () => {
         return;
       }
 
-      aura.animTime = Math.random() * 9999;
-      aura.seed = Math.round(Math.random() * 9999);
-      history.pushState({}, '', `?seed=${aura.seed}&time=${aura.animTime}`);
-      aura.play();
+      setQueryParams({
+        ...queryParams,
+        seed: Math.round(Math.random() * 9999),
+        animTime: Math.random() * 9999,
+      });
     },
     [aura],
   );
@@ -202,16 +244,18 @@ const Ui = () => {
 
   return (
     <>
-      <div id="aura" onScroll={() => console.log('scrolling')}>
-        <canvas
-          ref={canvasRef}
-          onClick={playPause}
-          style={{
-            width: '100%',
-            height: '100%',
-          }}
-        />
-        {auraImage && <img src={auraImage} onClick={playPause} />}
+      <div id="aura-container">
+        <div id="aura" onScroll={() => console.log('scrolling')}>
+          <canvas
+            ref={canvasRef}
+            onClick={playPause}
+            style={{
+              width: aura?.width,
+              height: aura?.height,
+            }}
+          />
+          {auraImage && <img src={auraImage} onClick={playPause} />}
+        </div>
       </div>
       <div id="label" className={auraPlaying ? 'hide' : ''}>
         <a href="/" onClick={shuffle}>

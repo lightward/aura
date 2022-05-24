@@ -1,3 +1,4 @@
+import seedrandom from 'seedrandom';
 import * as twgl from 'twgl.js';
 import {FullScreenQuad} from './Geometry';
 import {CreateGradientTexture2} from './Gradient';
@@ -53,6 +54,7 @@ export interface AuraParams {
 }
 
 export default class Aura {
+  rng: seedrandom.PRNG;
   gl: WebGL2RenderingContext;
   canvas: HTMLCanvasElement;
 
@@ -101,6 +103,7 @@ export default class Aura {
       height,
     }: AuraParams,
   ) {
+    this.rng = seedrandom(`${seed}`);
     this.started = false;
 
     this.globalParams = globalParams;
@@ -116,6 +119,9 @@ export default class Aura {
     this.canvas = this.gl.canvas;
     this.width = width;
     this.height = height;
+
+    this.canvas.width = width;
+    this.canvas.height = height;
 
     this.startTime = this.prevTimestamp = window.performance.now();
 
@@ -142,8 +148,21 @@ export default class Aura {
     this.programBlur = twgl.createProgramInfo(this.gl, [VertDefault, FragBlur]);
     this.bufferInfo = twgl.createBufferInfoFromArrays(gl, FullScreenQuad);
 
+    const shuffledColors: AuraParams['colors'] = [];
+    const unshuffledColors = [...this.colors];
+
+    // purposefully leaving one color out
+    while (unshuffledColors.length > 1) {
+      shuffledColors.push(
+        unshuffledColors.splice(
+          Math.floor(this.rng() * unshuffledColors.length),
+          1,
+        )[0],
+      );
+    }
+
     this.ramp = CreateGradientTexture2(gl, {
-      colors: this.colors,
+      colors: shuffledColors,
       resolution: 256,
     });
 
@@ -268,5 +287,15 @@ export default class Aura {
 
   pause = () => {
     this.playing = false;
+  };
+
+  shutdown = () => {
+    this.playing = false;
+
+    requestAnimationFrame(() => {
+      this.gl.deleteProgram(this.programAura.program);
+      this.gl.deleteProgram(this.programFinal.program);
+      this.gl.deleteProgram(this.programBlur.program);
+    });
   };
 }

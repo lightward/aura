@@ -36,6 +36,7 @@
     "@shopify/prettier-config": "^1.1.2",
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
+    "@types/seedrandom": "^3.0.2",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.29.4",
     "prettier": "^2.6.1",
@@ -43,6 +44,7 @@
     "rollup": "^2.66.0",
     "rollup-plugin-dev": "^2.0.2",
     "rollup-plugin-terser": "^7.0.2",
+    "seedrandom": "^3.0.5",
     "twgl.js": "^4.21.2",
     "typescript": "^4.6.2"
   },
