@@ -125,15 +125,8 @@ export default class Aura {
 
     this.startTime = this.prevTimestamp = window.performance.now();
 
-    const ratio = this.width / this.height;
-
-    if (ratio > 1) {
-      this.targetTexWidth = 256;
-      this.targetTexHeight = this.targetTexWidth * ratio;
-    } else {
-      this.targetTexHeight = 256;
-      this.targetTexWidth = this.targetTexHeight * ratio;
-    }
+    this.targetTexWidth = 256;
+    this.targetTexHeight = 256;
 
     this.playing = false;
     this.fixedDeltaTime = 1000 / globalParams.targetFps;
@@ -250,8 +243,10 @@ export default class Aura {
 
     // Render to screen
 
+    const maxDimension = Math.max(gl.canvas.width, gl.canvas.height);
+
     const compUniforms = {
-      resolution: [gl.canvas.width, gl.canvas.height],
+      resolution: [maxDimension, maxDimension],
       backBuffer: ppb.lastTexture(),
       noiseDither: globalParams.noise,
       ramp,
@@ -263,7 +258,7 @@ export default class Aura {
 
     // Set dst buffer back to screen
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.viewport(0, 0, maxDimension, maxDimension);
     gl.useProgram(programFinal.program);
     twgl.setBuffersAndAttributes(gl, programFinal, bufferInfo);
     twgl.setUniforms(programFinal, compUniforms);
