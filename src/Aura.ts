@@ -258,7 +258,7 @@ export default class Aura {
 
     // Set dst buffer back to screen
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.viewport(0, 0, maxDimension, maxDimension);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.useProgram(programFinal.program);
     twgl.setBuffersAndAttributes(gl, programFinal, bufferInfo);
     twgl.setUniforms(programFinal, compUniforms);

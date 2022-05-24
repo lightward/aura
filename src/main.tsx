@@ -25,13 +25,14 @@ const seaFoam: AuraColor = [111, 200, 111];
 const golden: AuraColor = [253, 205, 0];
 const ketchup: AuraColor = [214, 50, 48];
 const cerulean: AuraColor = [58, 174, 216];
+const charcoal: AuraColor = [16, 16, 16];
 
 const initialParams: AuraParams = {
   width: window.innerWidth,
   height: window.innerHeight,
   animTime: Math.random() * 9999,
   seed: Math.round(Math.random() * 9999),
-  colors: [eclipse, pink, seaFoam, golden, ketchup, cerulean],
+  colors: [eclipse, pink, seaFoam, golden, ketchup, cerulean, charcoal],
 
   globalParams: {
     contrast: 1.37,
@@ -51,7 +52,7 @@ const initialParams: AuraParams = {
   },
   layer2Params: {
     blur: 1.47,
-    brightness: 0.39,
+    brightness: 0.6,
     cycleSpeed: 0.12,
     enabled: true,
   },
