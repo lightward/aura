@@ -145,7 +145,7 @@ export default class Aura {
     const unshuffledColors = [...this.colors];
 
     // purposefully leaving one color out
-    while (unshuffledColors.length > 1) {
+    while (unshuffledColors.length > 0) {
       shuffledColors.push(
         unshuffledColors.splice(
           Math.floor(this.rng() * unshuffledColors.length),

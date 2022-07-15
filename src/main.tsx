@@ -19,6 +19,7 @@ declare let window: Window &
     aura: undefined | Aura;
   };
 
+const freedom: AuraColor = [95, 168, 242];
 const eclipse: AuraColor = [48, 64, 92];
 const pink: AuraColor = [220, 91, 172];
 const seaFoam: AuraColor = [111, 200, 111];
@@ -32,7 +33,7 @@ const initialParams: AuraParams = {
   height: window.innerHeight,
   animTime: Math.random() * 9999,
   seed: Math.round(Math.random() * 9999),
-  colors: [eclipse, pink, seaFoam, golden, ketchup, cerulean, charcoal],
+  colors: [freedom, eclipse, pink, seaFoam, golden, freedom],
 
   globalParams: {
     contrast: 1.37,
