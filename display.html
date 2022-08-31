@@ -149,10 +149,33 @@
       color: #fffbe7;
       text-align: left;
     }
+
+    #wordmark {
+      position: absolute;
+      z-index: 100;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      /* center everything, vertically and horizontally */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #wordmark img {
+      width: 60vw;
+      position: initial;
+    }
   </style>
 
   <body>
     <div id="aura-embed" data-app></div>
+    <div id="wordmark">
+      <div><img src="wordmark-display.png" alt="Lightward Aura" /></div>
+    </div>
     <script src="dist/bundle.js"></script>
   </body>
 </html>

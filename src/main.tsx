@@ -32,8 +32,12 @@ const cerulean: AuraColor = [58, 174, 216];
 const charcoal: AuraColor = [16, 16, 16];
 
 const initialParams: AuraParams = {
-  width: useApp ? window.innerWidth : container?.clientWidth || 100,
-  height: useApp ? window.innerHeight : container?.clientHeight || 100,
+  width: useApp
+    ? window.innerWidth
+    : container?.offsetWidth || window.innerWidth,
+  height: useApp
+    ? window.innerHeight
+    : container?.offsetHeight || window.innerHeight + 100,
   animTime: useApp
     ? Math.random() * 9999
     : parseFloat(container?.dataset.time || '0'),
