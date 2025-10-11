@@ -6,6 +6,7 @@ import typescript from '@rollup/plugin-typescript';
 import {terser} from 'rollup-plugin-terser';
 
 export default [
+  // Original React app bundle
   {
     input: 'src/main.tsx',
     output: {
@@ -25,6 +26,30 @@ export default [
         presets: ['@babel/preset-react'],
         babelHelpers: 'bundled',
       }),
+      replace({
+        preventAssignment: true,
+        'process.env.NODE_ENV': JSON.stringify('production'),
+      }),
+    ],
+  },
+  // Library build for script tag usage
+  {
+    input: 'src/Aura.ts',
+    output: {
+      file: 'dist/aura.js',
+      format: 'iife',
+      name: 'LightwardAura'
+    },
+    plugins: [
+      resolve({
+        browser: true
+      }),
+      commonjs(),
+      typescript({
+        tsconfig: './tsconfig.json',
+        outputToFilesystem: false,
+      }),
+      terser(),
       replace({
         preventAssignment: true,
         'process.env.NODE_ENV': JSON.stringify('production'),
