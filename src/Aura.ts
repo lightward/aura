@@ -53,7 +53,54 @@ export interface AuraParams {
   };
 }
 
+const defaultColors: AuraColor[] = [
+  [95, 168, 242],  // freedom
+  [48, 64, 92],    // eclipse
+  [220, 91, 172],  // pink
+  [111, 200, 111], // seaFoam
+  [253, 205, 0],   // golden
+];
+
 export default class Aura {
+  static defaultParams: Omit<AuraParams, 'width' | 'height'> = {
+    animTime: 0,
+    seed: 1,
+    colors: [...defaultColors, defaultColors[0]],
+    globalParams: {
+      contrast: 1.37,
+      displayGradient: false,
+      feedback: 0.99,
+      noise: 0.5,
+      saturation: 1.69,
+      speed: 0.13,
+      targetFps: 60,
+      value: 1,
+    },
+    layer1Params: {
+      blobbyness: 1.3,
+      blur: 1.01,
+      brightness: 0.52,
+      enabled: true,
+    },
+    layer2Params: {
+      blur: 1.47,
+      brightness: 0.6,
+      cycleSpeed: 0.12,
+      enabled: true,
+    },
+    feedbackSettings: {
+      amount: 0.28,
+      centerX: 0.5,
+      centerY: 0.5,
+      dist: 0.06,
+      scaleX: 1.01,
+      scaleY: 1.01,
+    },
+    blurSettings: {
+      iterations: 5,
+      radius: 5,
+    },
+  };
   rng: seedrandom.PRNG;
   gl: WebGL2RenderingContext;
   canvas: HTMLCanvasElement;
