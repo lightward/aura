@@ -56,6 +56,8 @@
 
     canvas {
       z-index: 1;
+      width: 100%;
+      height: 100%;
     }
 
     img {
@@ -128,6 +130,26 @@
     <div id="wordmark">
       <div><img src="wordmark.png" alt="Lightward Aura" /></div>
     </div>
-    <script src="dist/bundle.js"></script>
+    <script src="dist/aura.js"></script>
+    <script>
+      // Initialize the aura using the library API
+      const container = document.getElementById('aura-embed');
+      const canvas = document.createElement('canvas');
+      container.appendChild(canvas);
+
+      const gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true });
+
+      const params = {
+        ...LightwardAura.defaultParams,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        animTime: Math.random() * 9999,
+        seed: Math.round(Math.random() * 9999),
+      };
+
+      const aura = new LightwardAura(gl, params);
+      aura.start();
+      window.aura = aura;
+    </script>
   </body>
 </html>
